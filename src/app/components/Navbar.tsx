@@ -16,26 +16,24 @@ export default function Navbar() {
           </a>
           {/* 상단 메뉴 */}
 <div style={{display:'flex',alignItems:'center',gap:'28px'}}>
-  <a href="/" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
-    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
-    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
-    홈
-  </a>
-  <a href="/about" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
-    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
-    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
-    서비스 소개
-  </a>
-  <a href="/about#how" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
-    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
-    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
-    이용 방법
-  </a>
-  <a href="/about#withy" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
-    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
-    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
-    Withy
-  </a>
+  <a href="/" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px'}}
+  onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+  onMouseLeave={e=>(e.currentTarget.style.color='#666')}>홈</a>
+<a href="/about" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px'}}
+  onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+  onMouseLeave={e=>(e.currentTarget.style.color='#666')}>서비스 소개</a>
+<a href="/products/new" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px'}}
+  onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+  onMouseLeave={e=>(e.currentTarget.style.color='#666')}>신상품</a>
+<a href="/fitting" style={{fontSize:'13px',color:'#C94E1A',textDecoration:'none',letterSpacing:'0.3px',fontWeight:500}}
+  onMouseEnter={e=>(e.currentTarget.style.opacity='0.8')}
+  onMouseLeave={e=>(e.currentTarget.style.opacity='1')}>선피팅관</a>
+<a href="/withy" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px'}}
+  onMouseEnter={e=>(e.currentTarget.style.color='#B08D57')}
+  onMouseLeave={e=>(e.currentTarget.style.color='#666')}>위디</a>
+<a href="/magazine" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px'}}
+  onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+  onMouseLeave={e=>(e.currentTarget.style.color='#666')}>매거진</a>
 </div>
           <div style={{display:'flex',alignItems:'center',gap:'8px',border:'1px solid #e8e8e8',padding:'9px 14px',width:'260px'}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
