@@ -14,6 +14,29 @@ export default function Navbar() {
           <a href="/" style={{fontFamily:'Georgia,serif',fontSize:'26px',fontWeight:500,letterSpacing:'5px',color:'#111',textDecoration:'none'}}>
             CLY<span style={{color:'#C94E1A'}}>Q</span>
           </a>
+          {/* 상단 메뉴 */}
+<div style={{display:'flex',alignItems:'center',gap:'28px'}}>
+  <a href="/" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
+    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
+    홈
+  </a>
+  <a href="/about" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
+    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
+    서비스 소개
+  </a>
+  <a href="/about#how" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
+    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
+    이용 방법
+  </a>
+  <a href="/about#withy" style={{fontSize:'13px',color:'#666',textDecoration:'none',letterSpacing:'0.3px',transition:'color 0.15s'}}
+    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+    onMouseLeave={e=>(e.currentTarget.style.color='#666')}>
+    Withy
+  </a>
+</div>
           <div style={{display:'flex',alignItems:'center',gap:'8px',border:'1px solid #e8e8e8',padding:'9px 14px',width:'260px'}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             <input type="text" placeholder="브랜드, 상품명 검색" style={{border:'none',outline:'none',fontSize:'12px',width:'100%',background:'transparent'}}/>
