@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar'
 
 const TERMS = {
   service: `제1조 (목적)
-본 약관은 CLYQ(이하 "회사")가 제공하는 피팅박스 서비스 및 쇼핑 서비스(이하 "서비스")의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.
+본 약관은 CLYQ(이하 "회사")가 제공하는 피팅박스 서비스 및 쇼핑 서비스의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.
 
 제2조 (서비스 이용)
 ① 회원은 회사가 정한 절차에 따라 서비스를 이용할 수 있습니다.
@@ -16,7 +16,7 @@ const TERMS = {
 ② 피팅 기간은 수령일을 포함하여 3일이며, 기간 초과 시 자동 구매 확정 처리됩니다.
 ③ 피팅박스 서비스는 무료이나, 제품 구매 확정 시 해당 제품 금액이 결제됩니다.`,
 
-  privacy: `개인정보보호법에 따라 CLYQ에 회원가입을 신청하시는 분께 수집하는 개인정보의 항목, 목적, 보유기간 등에 대하여 안내 드립니다.
+  privacy: `개인정보보호법에 따라 CLYQ에 회원가입을 신청하시는 분께 수집하는 개인정보의 항목, 목적, 보유기간 등에 대하여 안내드립니다.
 
 1. 수집하는 개인정보 항목
 · 필수: 이메일, 비밀번호, 이름, 휴대폰번호
@@ -53,13 +53,11 @@ const TERMS = {
    [경미한 손상 — 제품 정가의 30% 배상]
    · 단순 세탁으로 복원 불가능한 이염, 오염
    · 스트레칭으로 인한 원단 변형
-   · 소재 특성상 복원 불가능한 구김
 
    [중대한 손상 — 제품 정가의 70~100% 배상]
    · 찢어짐, 구멍, 절단
    · 단추·지퍼·부자재 파손
    · 심각한 오염(혈액, 유분 등 복원 불가 상태)
-   · 분실
 
    [고의적 훼손 — 제품 정가의 100% 배상 + 손해배상 청구]
    · 고의로 제품을 훼손한 사실이 확인된 경우
@@ -79,8 +77,7 @@ const TERMS = {
    · 신용정보기관 등록 및 채권추심
 
 제6조 (분쟁 해결)
-① 본 약관과 관련된 분쟁은 대한민국 법률에 따르며, 관할 법원은 서울중앙지방법원으로 합니다.
-② CLYQ는 분쟁 발생 시 먼저 고객센터를 통한 원만한 해결을 시도하며, 합의가 이루어지지 않을 경우 법적 절차를 진행합니다.
+본 약관과 관련된 분쟁은 대한민국 법률에 따르며, 관할 법원은 서울중앙지방법원으로 합니다.
 
 본 약관에 동의함으로써 회원은 피팅박스 제품에 대한 관리 책임을 인지하고 수락한 것으로 간주됩니다.`,
 
@@ -89,21 +86,21 @@ const TERMS = {
 
 export default function SignupPage() {
   const [step, setStep] = useState(1)
-  const [agreements, setAgreements] = useState({service:false, privacy:false, fitting:false, marketing:false})
+  const [agreements, setAgreements] = useState({ service:false, privacy:false, fitting:false, marketing:false })
   const [allChecked, setAllChecked] = useState(false)
-  const [expandedTerm, setExpandedTerm] = useState<string|null>(null)
-  const [form, setForm] = useState({name:'',email:'',pw:'',pw2:'',phone:'',birthdate:'',gender:'',referral:''})
-  const [errors, setErrors] = useState<any>({})
+  const [expandedTerm, setExpandedTerm] = useState(null)
+  const [form, setForm] = useState({ name:'', email:'', pw:'', pw2:'', phone:'', birthdate:'', gender:'', referral:'' })
+  const [errors, setErrors] = useState({})
   const [done, setDone] = useState(false)
   const [pwVisible, setPwVisible] = useState(false)
 
-  function toggleAll(checked: boolean) {
+  function toggleAll(checked) {
     setAllChecked(checked)
-    setAgreements({service:checked, privacy:checked, fitting:checked, marketing:checked})
+    setAgreements({ service:checked, privacy:checked, fitting:checked, marketing:checked })
   }
 
-  function toggleOne(key: string, checked: boolean) {
-    const next = {...agreements, [key]: checked}
+  function toggleOne(key, checked) {
+    const next = { ...agreements, [key]: checked }
     setAgreements(next)
     setAllChecked(Object.values(next).every(Boolean))
   }
@@ -113,7 +110,7 @@ export default function SignupPage() {
   }
 
   function validateStep2() {
-    const errs: any = {}
+    const errs = {}
     if (!form.name.trim()) errs.name = '이름을 입력해주세요'
     if (!form.email.includes('@')) errs.email = '올바른 이메일을 입력해주세요'
     if (form.pw.length < 8) errs.pw = '비밀번호는 8자 이상이어야 해요'
@@ -124,10 +121,10 @@ export default function SignupPage() {
   }
 
   const termItems = [
-    {key:'service', label:'[필수] 서비스 이용약관', required:true},
-    {key:'privacy', label:'[필수] 개인정보 수집·이용 동의', required:true},
-    {key:'fitting', label:'[필수] 피팅박스 제품 관리 약관', required:true, highlight:true},
-    {key:'marketing', label:'[선택] 마케팅 정보 수신 동의', required:false},
+    { key:'service', label:'[필수] 서비스 이용약관', required:true, highlight:false },
+    { key:'privacy', label:'[필수] 개인정보 수집·이용 동의', required:true, highlight:false },
+    { key:'fitting', label:'[필수] 피팅박스 제품 관리 약관', required:true, highlight:true },
+    { key:'marketing', label:'[선택] 마케팅 정보 수신 동의', required:false, highlight:false },
   ]
 
   return (
@@ -157,25 +154,29 @@ export default function SignupPage() {
         .su-btn:disabled { background:#ccc; cursor:not-allowed; }
         .su-btn-outline { width:100%; padding:13px; border:1px solid #e8e8e8; background:#fff; color:#666; font-size:13px; cursor:pointer; font-family:inherit; margin-top:8px; }
         .su-btn-outline:hover { border-color:#111; color:#111; }
-        /* 약관 체크박스 */
-        .term-all { display:flex; align-items:center; gap:10px; padding:16px; background:#f9f7f4; border-radius:2px; margin-bottom:16px; cursor:pointer; }
+        .term-all { display:flex; align-items:center; gap:10px; padding:16px; background:#f9f7f4; margin-bottom:16px; cursor:pointer; }
         .term-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #f5f5f5; }
         .term-item:last-child { border-bottom:none; }
-        .cbox { width:18px; height:18px; border:1.5px solid #ccc; border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all .15s; }
+        .cbox { width:18px; height:18px; border:1.5px solid #ccc; border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all .15s; font-size:11px; }
         .cbox.on { background:#111; border-color:#111; color:#fff; }
-        .cbox.highlight.on { background:#C94E1A; border-color:#C94E1A; }
+        .cbox.hl.on { background:#C94E1A; border-color:#C94E1A; }
         .term-label { font-size:13px; color:#333; flex:1; cursor:pointer; }
-        .term-label.highlight { font-weight:500; color:#C94E1A; }
+        .term-label.hl { font-weight:500; color:#C94E1A; }
         .term-expand { font-size:11px; color:#999; cursor:pointer; text-decoration:underline; flex-shrink:0; }
         .term-expand:hover { color:#111; }
-        .term-content { background:#f9f9f9; border:1px solid #f0f0f0; padding:14px 16px; font-size:11px; color:#666; line-height:1.9; white-space:pre-wrap; max-height:200px; overflow-y:auto; margin:8px 0; font-weight:300; }
-        .term-highlight-banner { background:#fff5f2; border-left:3px solid #C94E1A; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#333; line-height:1.7; }
-        /* 완료 */
-        .su-done { text-align:center; padding:40px 0; }
-        .su-done-icon { width:72px; height:72px; border-radius:50%; background:#2a7a50; display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 20px; color:#fff; }
+        .term-content { background:#f9f9f9; border:1px solid #f0f0f0; padding:14px 16px; font-size:11px; color:#666; line-height:1.9; white-space:pre-wrap; max-height:200px; overflow-y:auto; margin:6px 0 10px; font-weight:300; }
+        .term-hl-banner { background:#fff5f2; border-left:3px solid #C94E1A; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#333; line-height:1.7; }
+        .su-done { text-align:center; padding:32px 0; }
+        .su-done-icon { width:68px; height:68px; border-radius:50%; background:#2a7a50; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 18px; color:#fff; }
+        .pw-strength { display:flex; gap:4px; margin-top:6px; }
+        .pw-bar { flex:1; height:3px; border-radius:2px; transition:background .3s; }
+        .gender-btns { display:flex; gap:8px; }
+        .gender-btn { flex:1; padding:11px; border:1px solid #e8e8e8; background:#fff; color:#666; font-size:13px; cursor:pointer; font-family:inherit; transition:all .15s; }
+        .gender-btn.on { border-color:#111; background:#111; color:#fff; }
         @media (max-width:768px) {
           .su-wrap { padding:24px 16px 80px; }
           .su-card { padding:20px 16px; }
+          .su-step-line { width:32px; }
         }
       `}</style>
 
@@ -185,9 +186,9 @@ export default function SignupPage() {
         <div className="su-title">CLY<span style={{color:'#C94E1A'}}>Q</span></div>
         <div className="su-sub">회원가입</div>
 
-        {/* 스텝 표시 */}
+        {/* 스텝 */}
         <div className="su-step">
-          {['약관 동의','정보 입력','가입 완료'].map((label,i) => (
+          {['약관 동의','정보 입력','가입 완료'].map((label, i) => (
             <div key={i} style={{display:'flex',alignItems:'center'}}>
               <div className="su-step-item">
                 <div className={`su-step-num ${done?'done':step===i+1?'on':step>i+1?'done':'off'}`}>
@@ -204,8 +205,7 @@ export default function SignupPage() {
         {step === 1 && (
           <>
             <div className="su-card">
-              {/* 피팅 약관 강조 배너 */}
-              <div className="term-highlight-banner">
+              <div className="term-hl-banner">
                 <strong>📦 피팅박스 제품 관리 약관을 반드시 확인해주세요</strong><br/>
                 CLYQ의 피팅박스 제품은 다수의 회원이 공유하는 제품입니다. 훼손·손상 발생 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다.
               </div>
@@ -222,11 +222,13 @@ export default function SignupPage() {
                 {termItems.map(item => (
                   <div key={item.key}>
                     <div className="term-item">
-                      <div className={`cbox ${agreements[item.key]?'on':''} ${item.highlight?'highlight':''}`}
+                      <div
+                        className={`cbox ${agreements[item.key]?'on':''} ${item.highlight?'hl':''}`}
                         onClick={() => toggleOne(item.key, !agreements[item.key])}>
-                        {agreements[item.key]&&'✓'}
+                        {agreements[item.key] && '✓'}
                       </div>
-                      <div className={`term-label ${item.highlight?'highlight':''}`}
+                      <div
+                        className={`term-label ${item.highlight?'hl':''}`}
                         onClick={() => toggleOne(item.key, !agreements[item.key])}>
                         {item.label}
                       </div>
@@ -236,9 +238,7 @@ export default function SignupPage() {
                       </span>
                     </div>
                     {expandedTerm === item.key && (
-                      <div className="term-content">
-                        {TERMS[item.key as keyof typeof TERMS]}
-                      </div>
+                      <div className="term-content">{TERMS[item.key]}</div>
                     )}
                   </div>
                 ))}
@@ -248,9 +248,9 @@ export default function SignupPage() {
             <button className="su-btn" disabled={!canProceed()} onClick={() => setStep(2)}>
               동의하고 계속하기
             </button>
-            <div style={{textAlign:'center',fontSize:'12px',color:'#999',marginTop:'12px'}}>
+            <div style={{textAlign:'center',fontSize:'12px',color:'#999',marginTop:'14px'}}>
               이미 회원이신가요?{' '}
-              <a href="/" style={{color:'#C94E1A',fontWeight:500,cursor:'pointer',textDecoration:'none'}}>로그인</a>
+              <a href="/" style={{color:'#C94E1A',fontWeight:500,textDecoration:'none'}}>로그인</a>
             </div>
           </>
         )}
@@ -261,7 +261,6 @@ export default function SignupPage() {
             <div className="su-card">
               <div style={{fontSize:'14px',fontWeight:500,marginBottom:'20px',color:'#111'}}>기본 정보</div>
 
-              {/* 이름 */}
               <div className="su-input-wrap">
                 <div className="su-label">이름 <span style={{color:'#e74c3c'}}>*</span></div>
                 <input className={`su-input ${errors.name?'error':''}`} type="text" placeholder="실명을 입력해주세요"
@@ -269,7 +268,6 @@ export default function SignupPage() {
                 {errors.name && <div className="su-error">{errors.name}</div>}
               </div>
 
-              {/* 이메일 */}
               <div className="su-input-wrap">
                 <div className="su-label">이메일 <span style={{color:'#e74c3c'}}>*</span></div>
                 <input className={`su-input ${errors.email?'error':''}`} type="email" placeholder="example@clyq.com"
@@ -277,10 +275,9 @@ export default function SignupPage() {
                 {errors.email && <div className="su-error">{errors.email}</div>}
               </div>
 
-              {/* 비밀번호 */}
               <div className="su-input-wrap">
                 <div className="su-label">
-                  비밀번호 <span style={{color:'#e74c3c'}}>*</span>
+                  <span>비밀번호 <span style={{color:'#e74c3c'}}>*</span></span>
                   <span style={{fontSize:'11px',color:'#999',fontWeight:300,cursor:'pointer'}} onClick={() => setPwVisible(!pwVisible)}>
                     {pwVisible?'숨기기':'보기'}
                   </span>
@@ -288,20 +285,18 @@ export default function SignupPage() {
                 <input className={`su-input ${errors.pw?'error':''}`} type={pwVisible?'text':'password'} placeholder="8자 이상, 영문+숫자 조합"
                   value={form.pw} onChange={e => setForm({...form,pw:e.target.value})}/>
                 {errors.pw && <div className="su-error">{errors.pw}</div>}
-                {/* 비밀번호 강도 */}
                 {form.pw && (
-                  <div style={{marginTop:'6px',display:'flex',gap:'4px'}}>
-                    {[form.pw.length>=8, /[A-Z]/.test(form.pw)||/[0-9]/.test(form.pw), /[^a-zA-Z0-9]/.test(form.pw)].map((ok,i) => (
-                      <div key={i} style={{flex:1,height:'3px',borderRadius:'2px',background:ok?i<2?'#2a7a50':'#B08D57':'#e8e8e8',transition:'background .3s'}}/>
-                    ))}
+                  <div className="pw-strength">
+                    <div className="pw-bar" style={{background:form.pw.length>=8?'#2a7a50':'#e8e8e8'}}/>
+                    <div className="pw-bar" style={{background:/[A-Z]/.test(form.pw)||/[0-9]/.test(form.pw)?'#2a7a50':'#e8e8e8'}}/>
+                    <div className="pw-bar" style={{background:/[^a-zA-Z0-9]/.test(form.pw)?'#B08D57':'#e8e8e8'}}/>
                   </div>
                 )}
               </div>
 
-              {/* 비밀번호 확인 */}
               <div className="su-input-wrap">
                 <div className="su-label">비밀번호 확인 <span style={{color:'#e74c3c'}}>*</span></div>
-                <input className={`su-input ${errors.pw2?'error':form.pw2&&form.pw===form.pw2?'':''}`} type={pwVisible?'text':'password'} placeholder="비밀번호 다시 입력"
+                <input className={`su-input ${errors.pw2?'error':''}`} type={pwVisible?'text':'password'} placeholder="비밀번호 다시 입력"
                   value={form.pw2} onChange={e => setForm({...form,pw2:e.target.value})}/>
                 {errors.pw2 && <div className="su-error">{errors.pw2}</div>}
                 {form.pw2 && form.pw === form.pw2 && !errors.pw2 && (
@@ -309,8 +304,7 @@ export default function SignupPage() {
                 )}
               </div>
 
-              {/* 휴대폰 */}
-              <div className="su-input-wrap">
+              <div className="su-input-wrap" style={{marginBottom:0}}>
                 <div className="su-label">휴대폰 번호 <span style={{color:'#e74c3c'}}>*</span></div>
                 <div style={{display:'flex',gap:'8px'}}>
                   <input className={`su-input ${errors.phone?'error':''}`} type="tel" placeholder="010-0000-0000" style={{flex:1}}
@@ -323,43 +317,43 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* 추가 정보 */}
             <div className="su-card">
-              <div style={{fontSize:'14px',fontWeight:500,marginBottom:'4px',color:'#111'}}>추가 정보 <span style={{fontSize:'11px',color:'#999',fontWeight:300'}}>(선택)</span></div>
+              <div style={{fontSize:'14px',fontWeight:500,marginBottom:'4px',color:'#111'}}>
+                추가 정보 <span style={{fontSize:'11px',color:'#999',fontWeight:300}}>(선택)</span>
+              </div>
               <div style={{fontSize:'11px',color:'#999',marginBottom:'20px'}}>입력하면 AI 맞춤 추천 정확도가 높아져요</div>
 
-              {/* 생년월일 */}
               <div className="su-input-wrap">
                 <div className="su-label">생년월일</div>
                 <input className="su-input" type="text" placeholder="YYYYMMDD (예: 19900101)"
                   value={form.birthdate} onChange={e => setForm({...form,birthdate:e.target.value})}/>
               </div>
 
-              {/* 성별 */}
               <div className="su-input-wrap">
                 <div className="su-label">성별</div>
-                <div style={{display:'flex',gap:'8px'}}>
+                <div className="gender-btns">
                   {['여성','남성','선택 안 함'].map(g => (
-                    <button key={g} onClick={() => setForm({...form,gender:g})}
-                      style={{flex:1,padding:'11px',border:`1px solid ${form.gender===g?'#111':'#e8e8e8'}`,background:form.gender===g?'#111':'#fff',color:form.gender===g?'#fff':'#666',fontSize:'13px',cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>
+                    <button key={g} className={`gender-btn ${form.gender===g?'on':''}`}
+                      onClick={() => setForm({...form,gender:g})}>
                       {g}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* 추천인 */}
               <div className="su-input-wrap" style={{marginBottom:0}}>
-                <div className="su-label">추천인 코드 <span style={{fontSize:'11px',color:'#B08D57',fontWeight:300}}>입력 시 위디 200P 지급</span></div>
+                <div className="su-label">
+                  추천인 코드
+                  <span style={{fontSize:'11px',color:'#B08D57',fontWeight:300}}>입력 시 위디 200P 지급</span>
+                </div>
                 <input className="su-input" type="text" placeholder="추천인 코드 (선택)"
                   value={form.referral} onChange={e => setForm({...form,referral:e.target.value})}/>
               </div>
             </div>
 
-            {/* 피팅 약관 동의 확인 배너 */}
             <div style={{background:'#fff8f5',border:'1px solid rgba(201,78,26,.2)',padding:'14px 16px',fontSize:'12px',color:'#333',lineHeight:1.7,marginBottom:'16px'}}>
               <strong>📦 피팅박스 제품 관리 약관에 동의하셨습니다.</strong><br/>
-              피팅 제품 훼손 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다. 피팅 기간(3일) 내 반납 부탁드립니다.
+              피팅 제품 훼손 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다.
             </div>
 
             <button className="su-btn" onClick={() => { if(validateStep2()) { setStep(3); setDone(true) } }}>
@@ -377,15 +371,13 @@ export default function SignupPage() {
               <div style={{fontSize:'24px',fontWeight:400,marginBottom:'8px'}}>
                 환영합니다, <strong>{form.name||'회원'}</strong>님!
               </div>
-              <div style={{fontSize:'13px',color:'#999',marginBottom:'8px'}}>
-                CLYQ 회원이 되셨어요 🎉
-              </div>
-              <div style={{background:'#f9f7f4',padding:'16px',marginBottom:'24px'}}>
-                <div style={{fontSize:'12px',color:'#666',lineHeight:1.8}}>
+              <div style={{fontSize:'13px',color:'#999',marginBottom:'20px'}}>CLYQ 회원이 되셨어요 🎉</div>
+              <div style={{background:'#f9f7f4',padding:'16px',marginBottom:'24px',textAlign:'left'}}>
+                <div style={{fontSize:'12px',color:'#666',lineHeight:2}}>
                   가입 축하 혜택이 지급됐어요<br/>
                   <strong style={{color:'#B08D57'}}>💛 위디 포인트 500P</strong> 자동 적립<br/>
-                  {agreements.marketing && <><strong style={{color:'#B08D57'}}>💛 마케팅 동의 보너스 100P</strong> 추가 적립<br/></>}
-                  {form.referral && <><strong style={{color:'#B08D57'}}>💛 추천인 코드 보너스 200P</strong> 추가 적립<br/></>}
+                  {agreements.marketing && <span><strong style={{color:'#B08D57'}}>💛 마케팅 동의 보너스 100P</strong> 추가 적립<br/></span>}
+                  {form.referral && <span><strong style={{color:'#B08D57'}}>💛 추천인 코드 보너스 200P</strong> 추가 적립<br/></span>}
                 </div>
               </div>
               <a href="/" style={{display:'block',width:'100%',padding:'14px',background:'#111',color:'#fff',fontSize:'14px',fontWeight:500,textDecoration:'none',textAlign:'center',marginBottom:'8px'}}>
