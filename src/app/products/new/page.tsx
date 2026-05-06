@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
@@ -26,7 +25,7 @@ const allProducts = [
 const categories = ['전체', '아우터', '상의', '하의', '원피스', '가방']
 const sorts = ['최신순', '가격 낮은순', '가격 높은순']
 
-function ProductCard({ product }: any) {
+function ProductCard({ product }) {
   const [hovered, setHovered] = useState(false)
   const dc = product.original > product.price ? Math.round((1 - product.price / product.original) * 100) : 0
   return (
@@ -37,7 +36,7 @@ function ProductCard({ product }: any) {
           style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.4s',transform:hovered?'scale(1.05)':'scale(1)'}}/>
         <div style={{position:'absolute',top:'10px',left:'10px',display:'flex',flexDirection:'column',gap:'4px'}}>
           <span style={{background:'#111',color:'#fff',fontSize:'9px',fontWeight:700,padding:'3px 7px'}}>NEW</span>
-          {product.fit && <span style={{background:'#C94E1A',color:'#fff',fontSize:'9px',fontWeight:700,padding:'3px 7px'}}>선피팅 가능</span>}
+          {product.fit && <span style={{background:'#C94E1A',color:'#fff',fontSize:'9px',fontWeight:700,padding:'3px 7px'}}>선피팅</span>}
         </div>
         <button style={{position:'absolute',top:'10px',right:'10px',width:'30px',height:'30px',borderRadius:'50%',background:'rgba(255,255,255,0.9)',border:'none',cursor:'pointer',fontSize:'13px'}}
           onClick={e => e.preventDefault()}>🤍</button>
@@ -74,54 +73,70 @@ export default function NewProducts() {
 
   return (
     <main>
+      <style>{`
+        .new-page-header { padding:32px 40px 0; border-bottom:1px solid #e8e8e8; }
+        .new-filter-bar { padding:14px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e8e8e8; background:#fafafa; }
+        .new-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:40px 20px; margin-bottom:48px; }
+        .sort-btns { display:flex; gap:8px; }
+        @media (max-width:768px) {
+          .new-page-header { padding:20px 16px 0; }
+          .new-filter-bar { padding:12px 16px; flex-direction:column; gap:12px; align-items:flex-start; }
+          .new-grid { grid-template-columns:repeat(2,1fr); gap:20px 12px; }
+          .sort-btns { flex-wrap:wrap; gap:6px; }
+          .new-grid-wrap { padding:20px 16px; }
+        }
+        @media (min-width:769px) { .new-grid-wrap { padding:32px 40px; } }
+      `}</style>
+
       <Navbar />
-      <div style={{padding:'48px 40px 0',borderBottom:'1px solid #e8e8e8'}}>
-        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:'24px'}}>
+
+      <div className="new-page-header">
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:'20px'}}>
           <div>
             <div style={{fontSize:'10px',letterSpacing:'3px',color:'#999',marginBottom:'8px'}}>NEW ARRIVALS</div>
-            <h1 style={{fontSize:'28px',fontWeight:500,color:'#111'}}>신상품</h1>
+            <h1 style={{fontSize:'24px',fontWeight:500,color:'#111'}}>신상품</h1>
           </div>
-          <div style={{fontSize:'13px',color:'#999',fontWeight:300}}>총 {filtered.length}개</div>
+          <div style={{fontSize:'13px',color:'#999',fontWeight:300,paddingBottom:'4px'}}>총 {filtered.length}개</div>
         </div>
-        <div style={{display:'flex',gap:'0'}}>
+        <div style={{display:'flex',gap:'0',overflowX:'auto'}}>
           {categories.map(cat => (
             <button key={cat} onClick={() => { setActiveCategory(cat); setVisibleCount(12) }}
-              style={{padding:'12px 20px',fontSize:'13px',fontWeight:activeCategory===cat?500:400,color:activeCategory===cat?'#111':'#999',background:'none',border:'none',borderBottom:activeCategory===cat?'2px solid #111':'2px solid transparent',cursor:'pointer'}}>
+              style={{padding:'12px 16px',fontSize:'13px',fontWeight:activeCategory===cat?500:400,color:activeCategory===cat?'#111':'#999',background:'none',border:'none',borderBottom:activeCategory===cat?'2px solid #111':'2px solid transparent',cursor:'pointer',whiteSpace:'nowrap'}}>
               {cat}
             </button>
           ))}
         </div>
       </div>
 
-      <div style={{padding:'16px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid #e8e8e8',background:'#fafafa'}}>
+      <div className="new-filter-bar">
         <div style={{display:'flex',alignItems:'center',gap:'10px',cursor:'pointer'}} onClick={() => setFitOnly(!fitOnly)}>
           <div style={{width:'40px',height:'22px',borderRadius:'11px',background:fitOnly?'#C94E1A':'#ddd',position:'relative',transition:'background 0.2s'}}>
             <div style={{width:'18px',height:'18px',borderRadius:'50%',background:'#fff',position:'absolute',top:'2px',left:fitOnly?'20px':'2px',transition:'left 0.2s',boxShadow:'0 1px 3px rgba(0,0,0,0.2)'}}/>
           </div>
           <span style={{fontSize:'13px',color:fitOnly?'#C94E1A':'#666',fontWeight:fitOnly?500:400}}>선피팅 가능만 보기</span>
         </div>
-        <div style={{display:'flex',gap:'8px'}}>
+        <div className="sort-btns">
           {sorts.map(sort => (
             <button key={sort} onClick={() => setActiveSort(sort)}
-              style={{padding:'7px 16px',fontSize:'12px',color:activeSort===sort?'#111':'#999',background:activeSort===sort?'#fff':'transparent',border:activeSort===sort?'1px solid #111':'1px solid #e8e8e8',cursor:'pointer',borderRadius:'20px'}}>
+              style={{padding:'7px 14px',fontSize:'12px',color:activeSort===sort?'#111':'#999',background:activeSort===sort?'#fff':'transparent',border:activeSort===sort?'1px solid #111':'1px solid #e8e8e8',cursor:'pointer',borderRadius:'20px'}}>
               {sort}
             </button>
           ))}
         </div>
       </div>
 
-      <div style={{padding:'40px'}}>
+      <div className="new-grid-wrap">
         {filtered.length === 0 ? (
-          <div style={{textAlign:'center',padding:'80px 0',color:'#999',fontSize:'14px'}}>해당 조건의 상품이 없어요.</div>
+          <div style={{textAlign:'center',padding:'60px 0',color:'#999'}}>해당 조건의 상품이 없어요.</div>
         ) : (
           <>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'40px 20px',marginBottom:'48px'}}>
+            <div className="new-grid">
               {filtered.slice(0, visibleCount).map(p => <ProductCard key={p.id} product={p} />)}
             </div>
             {visibleCount < filtered.length && (
               <div style={{textAlign:'center'}}>
                 <button onClick={() => setVisibleCount(v => v + 8)}
-                  style={{padding:'14px 48px',border:'1px solid #111',background:'#fff',fontSize:'13px',fontWeight:500,cursor:'pointer',letterSpacing:'0.5px'}}>
+                  style={{padding:'14px 48px',border:'1px solid #111',background:'#fff',fontSize:'13px',fontWeight:500,cursor:'pointer'}}>
                   더보기 ({filtered.length - visibleCount}개 남음)
                 </button>
               </div>
@@ -130,10 +145,10 @@ export default function NewProducts() {
         )}
       </div>
 
-      <footer style={{background:'#111',padding:'40px 80px',marginTop:'40px'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <div style={{fontFamily:'Georgia,serif',fontSize:'22px',color:'#fff',letterSpacing:'4px'}}>CLY<span style={{color:'#C94E1A'}}>Q</span></div>
-          <div style={{fontSize:'12px',color:'rgba(255,255,255,0.3)'}}>© 2026 CLYQ Inc. exyai company.</div>
+      <footer style={{background:'#111',padding:'32px 40px',marginTop:'40px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+          <div style={{fontFamily:'Georgia,serif',fontSize:'20px',color:'#fff',letterSpacing:'4px'}}>CLY<span style={{color:'#C94E1A'}}>Q</span></div>
+          <div style={{fontSize:'12px',color:'rgba(255,255,255,0.3)'}}>© 2026 CLYQ Inc.</div>
         </div>
       </footer>
     </main>
