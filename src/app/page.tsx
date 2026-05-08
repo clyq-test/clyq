@@ -146,7 +146,7 @@ export default function Home() {
         .withy-stats { display:flex; gap:28px; align-items:center; flex-wrap:wrap; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.08); }
         .ai-panel-wrap { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:800; display:flex; align-items:center; transition:all 0.4s cubic-bezier(0.4,0,0.2,1); }
-        .ai-panel-body { background:#fff; border:1px solid #e8e8e8; border-left:none; box-shadow:4px 0 24px rgba(0,0,0,.1); width:240px; max-height:520px; overflow-y:auto; scrollbar-width:none; }
+        .ai-panel-body { background:#fff; border:1px solid #e8e8e8; border-left:none; box-shadow:4px 0 24px rgba(0,0,0,.1); width:33vw; max-height:85vh; overflow-y:auto; scrollbar-width:none; }
         .ai-panel-body::-webkit-scrollbar { display:none; }
         .ai-tab-btn { background:#111; color:#fff; width:28px; writing-mode:vertical-rl; padding:16px 8px; font-size:11px; font-weight:500; letter-spacing:1px; cursor:pointer; border:none; font-family:inherit; transition:background 0.2s; display:flex; align-items:center; justify-content:center; }
         .ai-tab-btn:hover { background:#C94E1A; }
@@ -172,7 +172,7 @@ export default function Home() {
           .withy-banner { margin:0 16px 40px; padding:20px; }
           .footer-grid { grid-template-columns:1fr 1fr; gap:28px; }
           .ai-panel-wrap { top:auto; transform:none; bottom:80px; }
-          .ai-panel-body { width:calc(100vw - 44px); max-width:260px; }
+          .ai-panel-body { width:calc(100vw - 44px); max-width:85vw; }
         }
         @media (max-width:1024px) and (min-width:769px) {
           .grid-5 { grid-template-columns:repeat(3,1fr); }
@@ -187,7 +187,7 @@ export default function Home() {
 
       {/* AI 추천 패널 — 로그인 시 */}
       {aiPanelVisible && (
-        <div className="ai-panel-wrap" style={{left: aiPanelOpen ? '0' : '-240px'}}>
+        <div className="ai-panel-wrap" style={{left: aiPanelOpen ? '0' : '-33vw'}}>
           <div className="ai-panel-body">
             <div style={{padding:'14px 14px 10px',background:'linear-gradient(90deg,#1a1814,#2d2318)',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
               <div style={{fontSize:'9px',letterSpacing:'2px',color:'rgba(255,255,255,0.45)',marginBottom:'4px'}}>AI CURATION</div>
