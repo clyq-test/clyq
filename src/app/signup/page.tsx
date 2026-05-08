@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
+import StyleSetup from '../components/StyleSetup'
 
 const TERMS = {
   service: `제1조 (목적)
@@ -93,6 +94,8 @@ export default function SignupPage() {
   const [errors, setErrors] = useState({})
   const [done, setDone] = useState(false)
   const [pwVisible, setPwVisible] = useState(false)
+  const [styleSetupOpen, setStyleSetupOpen] = useState(false)
+  const [styleComplete, setStyleComplete] = useState(false)
 
   function toggleAll(checked) {
     setAllChecked(checked)
@@ -186,7 +189,7 @@ export default function SignupPage() {
         <div className="su-title">CLY<span style={{color:'#C94E1A'}}>Q</span></div>
         <div className="su-sub">회원가입</div>
 
-        {/* 스텝 */}
+        {/* 스텝 인디케이터 */}
         <div className="su-step">
           {['약관 동의','정보 입력','가입 완료'].map((label, i) => (
             <div key={i} style={{display:'flex',alignItems:'center'}}>
@@ -209,26 +212,20 @@ export default function SignupPage() {
                 <strong>📦 피팅박스 제품 관리 약관을 반드시 확인해주세요</strong><br/>
                 CLYQ의 피팅박스 제품은 다수의 회원이 공유하는 제품입니다. 훼손·손상 발생 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다.
               </div>
-
-              {/* 전체 동의 */}
               <div className="term-all" onClick={() => toggleAll(!allChecked)}>
                 <div className={`cbox ${allChecked?'on':''}`}>{allChecked&&'✓'}</div>
                 <div style={{fontWeight:600,fontSize:'14px',color:'#111'}}>전체 동의하기</div>
                 <div style={{fontSize:'11px',color:'#999',marginLeft:'auto'}}>(필수 3개 + 선택 1개)</div>
               </div>
-
-              {/* 개별 약관 */}
               <div>
                 {termItems.map(item => (
                   <div key={item.key}>
                     <div className="term-item">
-                      <div
-                        className={`cbox ${agreements[item.key]?'on':''} ${item.highlight?'hl':''}`}
+                      <div className={`cbox ${agreements[item.key]?'on':''} ${item.highlight?'hl':''}`}
                         onClick={() => toggleOne(item.key, !agreements[item.key])}>
                         {agreements[item.key] && '✓'}
                       </div>
-                      <div
-                        className={`term-label ${item.highlight?'hl':''}`}
+                      <div className={`term-label ${item.highlight?'hl':''}`}
                         onClick={() => toggleOne(item.key, !agreements[item.key])}>
                         {item.label}
                       </div>
@@ -244,7 +241,6 @@ export default function SignupPage() {
                 ))}
               </div>
             </div>
-
             <button className="su-btn" disabled={!canProceed()} onClick={() => setStep(2)}>
               동의하고 계속하기
             </button>
@@ -356,7 +352,14 @@ export default function SignupPage() {
               피팅 제품 훼손 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다.
             </div>
 
-            <button className="su-btn" onClick={() => { if(validateStep2()) { setStep(3); setDone(true) } }}>
+            <button className="su-btn" onClick={() => {
+              if (validateStep2()) {
+                setStep(3)
+                setDone(true)
+                // 가입 완료 후 취향 설정 팝업 자동 오픈
+                setTimeout(() => setStyleSetupOpen(true), 800)
+              }
+            }}>
               가입 완료하기
             </button>
             <button className="su-btn-outline" onClick={() => setStep(1)}>← 이전 단계</button>
@@ -372,7 +375,8 @@ export default function SignupPage() {
                 환영합니다, <strong>{form.name||'회원'}</strong>님!
               </div>
               <div style={{fontSize:'13px',color:'#999',marginBottom:'20px'}}>CLYQ 회원이 되셨어요 🎉</div>
-              <div style={{background:'#f9f7f4',padding:'16px',marginBottom:'24px',textAlign:'left'}}>
+
+              <div style={{background:'#f9f7f4',padding:'16px',marginBottom:'20px',textAlign:'left'}}>
                 <div style={{fontSize:'12px',color:'#666',lineHeight:2}}>
                   가입 축하 혜택이 지급됐어요<br/>
                   <strong style={{color:'#B08D57'}}>💛 위디 포인트 500P</strong> 자동 적립<br/>
@@ -380,6 +384,26 @@ export default function SignupPage() {
                   {form.referral && <span><strong style={{color:'#B08D57'}}>💛 추천인 코드 보너스 200P</strong> 추가 적립<br/></span>}
                 </div>
               </div>
+
+              {/* 취향 설정 유도 */}
+              {!styleComplete ? (
+                <div style={{background:'linear-gradient(110deg,#1a1814,#2d2318)',padding:'20px',marginBottom:'16px',textAlign:'left'}}>
+                  <div style={{fontSize:'10px',letterSpacing:'3px',color:'#C94E1A',fontWeight:600,marginBottom:'8px'}}>AI 취향 분석</div>
+                  <div style={{fontSize:'15px',fontWeight:500,color:'#fff',marginBottom:'6px'}}>취향을 설정하고 위디 100P 받으세요</div>
+                  <div style={{fontSize:'12px',color:'rgba(255,255,255,.5)',marginBottom:'16px',lineHeight:1.6}}>
+                    스타일·컬러·체형 정보를 입력하면 AI가 나에게 딱 맞는 피팅박스를 추천해드려요.
+                  </div>
+                  <button onClick={() => setStyleSetupOpen(true)}
+                    style={{padding:'12px 20px',background:'#C94E1A',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
+                    ✨ 취향 설정하기 (+100P)
+                  </button>
+                </div>
+              ) : (
+                <div style={{background:'#f0f9f4',border:'1px solid rgba(42,122,80,.2)',padding:'14px',marginBottom:'16px',fontSize:'12px',color:'#2a7a50',textAlign:'left'}}>
+                  ✓ 취향 설정이 완료됐어요! 위디 100P가 적립됐습니다.
+                </div>
+              )}
+
               <a href="/" style={{display:'block',width:'100%',padding:'14px',background:'#111',color:'#fff',fontSize:'14px',fontWeight:500,textDecoration:'none',textAlign:'center',marginBottom:'8px'}}>
                 쇼핑 시작하기
               </a>
@@ -390,6 +414,18 @@ export default function SignupPage() {
           </div>
         )}
       </div>
+
+      {/* 취향 설정 팝업 */}
+      {styleSetupOpen && (
+        <StyleSetup
+          isModal={true}
+          onComplete={(data) => {
+            setStyleSetupOpen(false)
+            setStyleComplete(true)
+          }}
+          onSkip={() => setStyleSetupOpen(false)}
+        />
+      )}
     </main>
   )
 }
