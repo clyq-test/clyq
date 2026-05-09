@@ -118,16 +118,21 @@ export default function Home() {
 
   const b = banners[bannerIdx]
 
+  /* AI 패널 너비 — 데스크탑 20vw / 모바일 75vw */
+  const PANEL_W_DESK = '20vw'
+  const PANEL_W_MOB  = '75vw'
+
   return (
     <main>
       <style>{`
+        /* ── 공통 ── */
         .hero { position:relative; height:580px; overflow:hidden; background:#1a1814; }
         .hero-img { position:absolute; right:0; top:0; width:60%; height:100%; object-fit:cover; opacity:0.38; }
         .hero-inner { position:relative; z-index:1; padding:0 80px; height:100%; display:flex; align-items:center; }
         .hero-title { font-family:Georgia,serif; font-size:54px; font-weight:300; color:#fff; line-height:1.15; margin-bottom:16px; white-space:pre-line; }
         .hero-desc { font-size:13px; color:rgba(255,255,255,0.5); font-weight:300; line-height:1.8; margin-bottom:32px; white-space:pre-line; }
         .hero-btns { display:flex; gap:12px; }
-        .quick-menu { padding:24px 40px; border-bottom:1px solid #e8e8e8; display:flex; gap:0; overflow-x:auto; scrollbar-width:none; }
+        .quick-menu { padding:24px 40px; border-bottom:1px solid #e8e8e8; display:flex; overflow-x:auto; scrollbar-width:none; }
         .quick-menu::-webkit-scrollbar { display:none; }
         .grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:24px 16px; }
         .grid-6 { display:grid; grid-template-columns:repeat(6,1fr); gap:24px 16px; }
@@ -136,23 +141,50 @@ export default function Home() {
         .fit-strip { background:linear-gradient(90deg,#1a1814,#2c2218,#1a1814); padding:16px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
         .fit-strip-right { display:flex; gap:36px; align-items:center; flex-wrap:wrap; }
         .ed-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:0 40px 52px; }
-        .ed-card { position:relative; overflow:hidden; cursor:pointer; }
+        .ed-card { position:relative; overflow:hidden; display:block; text-decoration:none; }
         .ed-img { width:100%; height:220px; object-fit:cover; display:block; transition:transform 0.45s; }
         .ed-card:hover .ed-img { transform:scale(1.04); }
         .comm-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; padding:0 40px 52px; }
-        .cm-post { display:flex; gap:12px; padding:14px 0; border-bottom:1px solid #f5f5f5; cursor:pointer; }
+        .cm-post { display:flex; gap:12px; padding:14px 0; border-bottom:1px solid #f5f5f5; text-decoration:none; color:inherit; }
         .cm-post:last-child { border-bottom:none; }
         .withy-banner { margin:0 40px 52px; background:#f5f5f5; border:1px solid #e8e8e8; padding:24px 32px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; }
-        .withy-stats { display:flex; gap:28px; align-items:center; flex-wrap:wrap; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.08); }
-        .ai-panel-wrap { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:800; display:flex; align-items:center; transition:all 0.4s cubic-bezier(0.4,0,0.2,1); }
-        .ai-panel-body { background:#fff; border:1px solid #e8e8e8; border-left:none; box-shadow:4px 0 24px rgba(0,0,0,.1); width:33vw; max-height:85vh; overflow-y:auto; scrollbar-width:none; }
+
+        /* ── AI 패널 — 데스크탑 ── */
+        .ai-panel-wrap {
+          position:fixed; left:0; top:50%; transform:translateY(-50%);
+          z-index:800; display:flex; align-items:center;
+          transition:left 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .ai-panel-body {
+          width:20vw; min-width:200px; max-height:520px;
+          background:#fff; border:1px solid #e8e8e8; border-left:none;
+          box-shadow:4px 0 24px rgba(0,0,0,.12);
+          overflow-y:auto; scrollbar-width:none;
+        }
         .ai-panel-body::-webkit-scrollbar { display:none; }
-        .ai-tab-btn { background:#111; color:#fff; width:28px; writing-mode:vertical-rl; padding:16px 8px; font-size:11px; font-weight:500; letter-spacing:1px; cursor:pointer; border:none; font-family:inherit; transition:background 0.2s; display:flex; align-items:center; justify-content:center; }
+        .ai-tab-btn {
+          background:#111; color:#fff; width:28px; border:none;
+          writing-mode:vertical-rl; padding:14px 7px;
+          font-size:10px; font-weight:600; letter-spacing:1px;
+          cursor:pointer; font-family:inherit;
+          transition:background 0.2s; display:flex;
+          align-items:center; justify-content:center; flex-shrink:0;
+          align-self:stretch;
+        }
         .ai-tab-btn:hover { background:#C94E1A; }
-        .ai-prod { display:flex; gap:10px; padding:12px; border-bottom:1px solid #f0f0f0; cursor:pointer; transition:background 0.15s; text-decoration:none; color:inherit; }
+        .ai-prod {
+          display:flex; gap:10px; padding:12px;
+          border-bottom:1px solid #f0f0f0;
+          text-decoration:none; color:inherit;
+          transition:background 0.15s;
+        }
         .ai-prod:hover { background:#fafafa; }
         .ai-prod:last-child { border-bottom:none; }
+        .ai-mobile-close { display:none; }
+        .ai-backdrop { display:none; }
+
+        /* ── 모바일 ── */
         @media (max-width:768px) {
           .hero { height:auto; min-height:420px; }
           .hero-img { width:100%; opacity:0.18; }
@@ -161,18 +193,41 @@ export default function Home() {
           .hero-desc { font-size:12px; margin-bottom:20px; }
           .hero-btns { flex-direction:column; gap:8px; }
           .quick-menu { padding:16px; }
-          .grid-5 { grid-template-columns:repeat(2,1fr); gap:18px 12px; }
-          .grid-6 { grid-template-columns:repeat(2,1fr); gap:18px 12px; }
-          .sec-pad { padding:36px 16px; }
-          .fit-strip { padding:16px; }
-          .fit-strip-right { gap:20px; }
-          .ed-grid { grid-template-columns:1fr; padding:0 16px 40px; }
-          .ed-img { height:200px; }
-          .comm-grid { grid-template-columns:1fr; padding:0 16px 40px; gap:0; }
-          .withy-banner { margin:0 16px 40px; padding:20px; }
-          .footer-grid { grid-template-columns:1fr 1fr; gap:28px; }
-          .ai-panel-wrap { top:auto; transform:none; bottom:80px; }
-          .ai-panel-body { width:calc(100vw - 44px); max-width:85vw; }
+          .grid-5 { grid-template-columns:repeat(2,1fr); gap:16px 10px; }
+          .grid-6 { grid-template-columns:repeat(2,1fr); gap:16px 10px; }
+          .sec-pad { padding:32px 16px; }
+          .fit-strip { padding:14px 16px; }
+          .fit-strip-right { gap:16px; }
+          .ed-grid { grid-template-columns:1fr; padding:0 16px 36px; }
+          .ed-img { height:180px; }
+          .comm-grid { grid-template-columns:1fr; padding:0 16px 36px; gap:0; }
+          .withy-banner { margin:0 16px 36px; padding:18px; }
+          .footer-grid { grid-template-columns:1fr 1fr; gap:24px; }
+
+          /* 모바일 AI 패널 — 상단에서 아래로 */
+          .ai-panel-wrap {
+            top:68px; transform:none; left:0;
+            flex-direction:column; align-items:flex-start;
+          }
+          .ai-panel-body {
+            width:75vw; max-width:300px;
+            max-height:65vh; border-left:1px solid #e8e8e8;
+          }
+          .ai-tab-btn {
+            writing-mode:horizontal-tb; width:auto;
+            padding:8px 14px; font-size:11px; align-self:auto;
+            border-top:none; border-bottom:1px solid rgba(255,255,255,0.1);
+            order:-1;
+          }
+          .ai-mobile-close {
+            display:flex; align-items:center; justify-content:center;
+            background:rgba(255,255,255,0.15); border:none; color:#fff;
+            width:26px; height:26px; cursor:pointer; font-size:13px; flex-shrink:0;
+          }
+          .ai-backdrop {
+            display:block; position:fixed; inset:0;
+            background:rgba(0,0,0,0.4); z-index:799; cursor:pointer;
+          }
         }
         @media (max-width:1024px) and (min-width:769px) {
           .grid-5 { grid-template-columns:repeat(3,1fr); }
@@ -180,60 +235,96 @@ export default function Home() {
           .hero-inner { padding:0 40px; }
           .hero-title { font-size:44px; }
           .footer-grid { grid-template-columns:1fr 1fr 1fr; }
+          .ai-panel-body { width:22vw; }
         }
       `}</style>
 
       <Navbar />
 
-      {/* AI 추천 패널 — 로그인 시 */}
+      {/* ── AI 추천 패널 (로그인 시) ── */}
       {aiPanelVisible && (
-        <div className="ai-panel-wrap" style={{left: aiPanelOpen ? '0' : '-33vw'}}>
-          <div className="ai-panel-body">
-            <div style={{padding:'14px 14px 10px',background:'linear-gradient(90deg,#1a1814,#2d2318)',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-              <div style={{fontSize:'9px',letterSpacing:'2px',color:'rgba(255,255,255,0.45)',marginBottom:'4px'}}>AI CURATION</div>
-              <div style={{fontSize:'13px',fontWeight:500,color:'#fff',marginBottom:'2px'}}>{userName}님을 위한 추천</div>
-              {savedStyle && savedStyle.style && savedStyle.style.length > 0 && (
-                <div style={{fontSize:'10px',color:'rgba(255,255,255,0.4)'}}>{savedStyle.style.slice(0,2).join(' · ')} 취향 분석 완료</div>
-              )}
-            </div>
-            {aiProducts.map(p => (
-              <a key={p.id} href={'/products/' + p.id} className="ai-prod">
-                <img src={p.image} alt={p.name} style={{width:'52px',height:'64px',objectFit:'cover',flexShrink:0,background:'#f5f5f5'}}/>
-                <div style={{flex:1,minWidth:0}}>
-                  <span style={{display:'inline-block',fontSize:'10px',fontWeight:700,color:'#C94E1A',background:'#fff5f2',padding:'2px 6px',borderRadius:'10px',marginBottom:'3px'}}>일치도 {p.match}%</span>
-                  <div style={{fontSize:'10px',letterSpacing:'1px',color:'#999',marginBottom:'2px'}}>{p.brand}</div>
-                  <div style={{fontSize:'12px',color:'#111',fontWeight:400,marginBottom:'3px',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{p.name}</div>
-                  <div style={{fontSize:'11px',color:'#999',fontWeight:300,marginBottom:'4px'}}>{p.reason}</div>
-                  <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                    <span style={{fontSize:'12px',fontWeight:500}}>{p.price.toLocaleString()}원</span>
-                    {p.fit && <span style={{fontSize:'9px',background:'#C94E1A',color:'#fff',padding:'1px 5px',fontWeight:700}}>피팅가능</span>}
-                  </div>
+        <>
+          {/* 모바일 백드롭 — 패널 열렸을 때만 */}
+          {aiPanelOpen && (
+            <div className="ai-backdrop" onClick={() => setAiPanelOpen(false)} />
+          )}
+
+          <div
+            className="ai-panel-wrap"
+            style={{ left: aiPanelOpen ? '0' : `calc(-${PANEL_W_DESK} - 28px)` }}>
+
+            {/* 모바일: 탭 버튼이 위에 */}
+            <button className="ai-tab-btn" onClick={() => setAiPanelOpen(!aiPanelOpen)}>
+              {aiPanelOpen ? '◀ 닫기' : '▶ AI 추천'}
+            </button>
+
+            <div className="ai-panel-body">
+              {/* 헤더 */}
+              <div style={{
+                padding:'14px 14px 10px',
+                background:'linear-gradient(135deg,#1a1814,#2d2318)',
+                borderBottom:'1px solid rgba(255,255,255,0.08)',
+                display:'flex', justifyContent:'space-between', alignItems:'flex-start',
+              }}>
+                <div>
+                  <div style={{fontSize:'9px',letterSpacing:'2px',color:'rgba(255,255,255,0.45)',marginBottom:'4px'}}>AI CURATION</div>
+                  <div style={{fontSize:'13px',fontWeight:500,color:'#fff',marginBottom:'2px'}}>{userName}님을 위한 추천</div>
+                  {savedStyle && savedStyle.style && savedStyle.style.length > 0 && (
+                    <div style={{fontSize:'10px',color:'rgba(255,255,255,0.4)'}}>{savedStyle.style.slice(0,2).join(' · ')} 취향 분석 완료</div>
+                  )}
                 </div>
-              </a>
-            ))}
-            <div style={{padding:'12px 14px',borderTop:'1px solid #f0f0f0'}}>
-              <a href="/mypage" style={{display:'block',textAlign:'center',padding:'10px',background:'#111',color:'#fff',fontSize:'12px',fontWeight:500,textDecoration:'none'}}>
-                취향 분석 더보기 →
-              </a>
+                {/* 모바일 ✕ 버튼 */}
+                <button className="ai-mobile-close" onClick={() => setAiPanelOpen(false)}>✕</button>
+              </div>
+
+              {/* 상품 목록 */}
+              {aiProducts.map(p => (
+                <a key={p.id} href={'/products/' + p.id} className="ai-prod">
+                  <img src={p.image} alt={p.name}
+                    style={{width:'52px',height:'64px',objectFit:'cover',flexShrink:0,background:'#f5f5f5'}}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <span style={{display:'inline-block',fontSize:'10px',fontWeight:700,color:'#C94E1A',background:'#fff5f2',padding:'2px 6px',borderRadius:'10px',marginBottom:'3px'}}>
+                      일치도 {p.match}%
+                    </span>
+                    <div style={{fontSize:'10px',letterSpacing:'1px',color:'#999',marginBottom:'2px'}}>{p.brand}</div>
+                    <div style={{fontSize:'12px',color:'#111',fontWeight:400,marginBottom:'2px',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{p.name}</div>
+                    <div style={{fontSize:'11px',color:'#999',fontWeight:300,marginBottom:'4px'}}>{p.reason}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                      <span style={{fontSize:'12px',fontWeight:500}}>{p.price.toLocaleString()}원</span>
+                      {p.fit && <span style={{fontSize:'9px',background:'#C94E1A',color:'#fff',padding:'1px 5px',fontWeight:700}}>피팅가능</span>}
+                    </div>
+                  </div>
+                </a>
+              ))}
+
+              {/* 더보기 */}
+              <div style={{padding:'12px 14px',borderTop:'1px solid #f0f0f0'}}>
+                <a href="/mypage" style={{display:'block',textAlign:'center',padding:'10px',background:'#111',color:'#fff',fontSize:'12px',fontWeight:500,textDecoration:'none'}}>
+                  취향 분석 더보기 →
+                </a>
+              </div>
+            </div>
+
+            {/* 데스크탑: 탭 버튼이 오른쪽 */}
+            <div style={{display:'contents'}}>
+              <style>{`@media (min-width:769px){ .ai-tab-btn{order:1 !important;} }`}</style>
             </div>
           </div>
-          <button className="ai-tab-btn" onClick={() => setAiPanelOpen(!aiPanelOpen)}>
-            {aiPanelOpen ? '◀ 닫기' : '▶ AI추천'}
-          </button>
-        </div>
+        </>
       )}
 
-      {/* 비로그인 AI 탭 */}
+      {/* 비로그인 미니 탭 */}
       {!isLoggedIn && (
         <div style={{position:'fixed',left:0,top:'50%',transform:'translateY(-50%)',zIndex:800}}>
-          <button onClick={() => showToast('로그인 후 AI 맞춤 추천을 받아보세요')}
-            style={{display:'flex',flexDirection:'column',alignItems:'center',background:'#111',color:'#fff',padding:'14px 8px',fontSize:'10px',fontWeight:500,border:'none',cursor:'pointer',fontFamily:'inherit',gap:'6px',writingMode:'vertical-rl'}}>
+          <button
+            onClick={() => showToast('로그인 후 AI 맞춤 추천을 받아보세요')}
+            style={{display:'flex',flexDirection:'column',alignItems:'center',background:'#111',color:'#fff',padding:'14px 8px',fontSize:'10px',fontWeight:500,border:'none',cursor:'pointer',fontFamily:'inherit',gap:'6px',writingMode:'vertical-rl',letterSpacing:'1px'}}>
             ✦ AI 맞춤추천
           </button>
         </div>
       )}
 
-      {/* 메인 배너 */}
+      {/* ── 메인 배너 ── */}
       <div className="hero">
         <img className="hero-img" src={b.image} alt="banner"/>
         <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,#1a1814 38%,rgba(26,24,20,0.5) 65%,transparent 100%)'}}/>
@@ -246,11 +337,12 @@ export default function Home() {
             <h1 className="hero-title">{b.title}</h1>
             <p className="hero-desc">{b.sub}</p>
             <div className="hero-btns">
-              <a href={b.ctaLink} style={{padding:'13px 28px',background:'#C94E1A',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none',letterSpacing:'0.5px'}}>{b.cta}</a>
+              <a href={b.ctaLink} style={{padding:'13px 28px',background:'#C94E1A',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none'}}>{b.cta}</a>
               <a href="/products/new" style={{padding:'12px 24px',border:'1px solid rgba(255,255,255,0.3)',color:'rgba(255,255,255,0.7)',fontSize:'13px',textDecoration:'none'}}>전체 상품 보기</a>
             </div>
           </div>
         </div>
+        {/* 인디케이터 */}
         <div style={{position:'absolute',bottom:'24px',left:'50%',transform:'translateX(-50%)',display:'flex',gap:'6px',zIndex:10}}>
           {banners.map((_,i) => (
             <div key={i} onClick={() => setBannerIdx(i)}
@@ -262,7 +354,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 퀵메뉴 */}
+      {/* ── 퀵메뉴 ── */}
       <div className="quick-menu">
         {[
           {icon:'📦',label:'피팅박스관',href:'/fitting'},
@@ -280,14 +372,15 @@ export default function Home() {
           {icon:'💬',label:'커뮤니티',href:'/community'},
           {icon:'💛',label:'위디혜택',href:'/withy'},
         ].map(item => (
-          <a key={item.label} href={item.href} style={{flex:'1',minWidth:'64px',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',textDecoration:'none',padding:'0 6px'}}>
-            <div style={{width:'48px',height:'48px',borderRadius:'50%',border:'1px solid #e8e8e8',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px'}}>{item.icon}</div>
+          <a key={item.label} href={item.href}
+            style={{flex:'1',minWidth:'60px',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',textDecoration:'none',padding:'0 4px'}}>
+            <div style={{width:'46px',height:'46px',borderRadius:'50%',border:'1px solid #e8e8e8',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px'}}>{item.icon}</div>
             <span style={{fontSize:'10px',color:'#666',whiteSpace:'nowrap'}}>{item.label}</span>
           </a>
         ))}
       </div>
 
-      {/* 피팅박스 스트립 */}
+      {/* ── 피팅박스 스트립 ── */}
       <div className="fit-strip">
         <div style={{display:'flex',alignItems:'center',gap:'14px'}}>
           <span style={{background:'#C94E1A',color:'#fff',fontSize:'10px',fontWeight:700,padding:'5px 10px',letterSpacing:'1px'}}>피팅박스 서비스</span>
@@ -306,7 +399,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 베스트 상품 */}
+      {/* ── 베스트 상품 ── */}
       <section className="sec-pad">
         <div className="sec-row">
           <div>
@@ -320,39 +413,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI 추천 인라인 배너 */}
-      <div style={{margin:'0 40px',background:'linear-gradient(110deg,#1a1814,#2d2318)',padding:'28px 36px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'32px',flexWrap:'wrap'}}>
+      {/* ── AI 추천 인라인 배너 ── */}
+      <div style={{margin:'0 40px',background:'linear-gradient(110deg,#1a1814,#2d2318)',padding:'28px 32px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'24px',flexWrap:'wrap'}}>
         <div>
-          <div style={{display:'flex',alignItems:'center',gap:'8px',fontSize:'10px',letterSpacing:'3px',color:'#C94E1A',fontWeight:600,marginBottom:'10px'}}>
-            <div style={{width:'8px',height:'8px',borderRadius:'50%',background:'#C94E1A'}}/>
+          <div style={{fontSize:'10px',letterSpacing:'3px',color:'#C94E1A',fontWeight:600,marginBottom:'10px',display:'flex',alignItems:'center',gap:'8px'}}>
+            <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#C94E1A'}}/>
             AI CURATION — {isLoggedIn ? userName + '님 맞춤 추천' : '취향 분석 기반 추천'}
           </div>
-          <div style={{fontSize:'20px',fontWeight:300,color:'#fff',lineHeight:1.4,marginBottom:'8px'}}>
+          <div style={{fontSize:'20px',fontWeight:300,color:'#fff',lineHeight:1.4,marginBottom:'6px'}}>
             AI가 분석한 <strong style={{fontWeight:500}}>오늘의 추천</strong>
           </div>
           <div style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',fontWeight:300}}>
-            {isLoggedIn ? '취향 데이터를 기반으로 지금 나에게 딱 맞는 제품을 골랐어요' : '5가지 질문으로 나만을 위한 피팅박스를 구성해드려요'}
+            {isLoggedIn ? '취향 데이터 기반으로 딱 맞는 제품을 골랐어요' : '5가지 질문으로 나만을 위한 피팅박스를 구성해드려요'}
           </div>
         </div>
-        <div style={{display:'flex',gap:'10px',flexShrink:0}}>
+        <div style={{display:'flex',gap:'8px',flexShrink:0,flexWrap:'wrap'}}>
           {(isLoggedIn ? aiProducts : bestProducts).slice(0,4).map(p => (
-            <a key={p.id} href={'/products/' + p.id} style={{width:'90px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',overflow:'hidden',cursor:'pointer',flexShrink:0,textDecoration:'none',display:'block'}}>
-              <img src={p.image} alt={p.name} style={{width:'100%',height:'110px',objectFit:'cover',display:'block'}}/>
-              <div style={{padding:'7px'}}>
-                <div style={{fontSize:'8px',letterSpacing:'1px',color:'rgba(255,255,255,0.35)',marginBottom:'2px'}}>{p.brand}</div>
+            <a key={p.id} href={'/products/' + p.id}
+              style={{width:'80px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',overflow:'hidden',flexShrink:0,textDecoration:'none',display:'block'}}>
+              <img src={p.image} alt={p.name} style={{width:'100%',height:'100px',objectFit:'cover',display:'block'}}/>
+              <div style={{padding:'6px'}}>
+                <div style={{fontSize:'8px',color:'rgba(255,255,255,0.35)',marginBottom:'2px'}}>{p.brand}</div>
                 <div style={{fontSize:'10px',color:'rgba(255,255,255,0.7)',fontWeight:300}}>{p.name.slice(0,8)}...</div>
-                {p.match && <div style={{fontSize:'9px',color:'#C94E1A',marginTop:'2px'}}>일치도 {p.match}%</div>}
+                {p.match && <div style={{fontSize:'9px',color:'#C94E1A',marginTop:'2px'}}>{p.match}% 일치</div>}
               </div>
             </a>
           ))}
         </div>
         <a href={isLoggedIn ? '/mypage' : '/signup'}
-          style={{padding:'12px 22px',background:'#C94E1A',color:'#fff',fontSize:'12px',fontWeight:500,textDecoration:'none',whiteSpace:'nowrap',flexShrink:0}}>
+          style={{padding:'12px 20px',background:'#C94E1A',color:'#fff',fontSize:'12px',fontWeight:500,textDecoration:'none',whiteSpace:'nowrap',flexShrink:0}}>
           {isLoggedIn ? 'AI 추천 더보기' : 'AI 취향 분석 시작'}
         </a>
       </div>
 
-      {/* 신상품 */}
+      {/* ── 신상품 ── */}
       <section className="sec-pad">
         <div className="sec-row">
           <div>
@@ -366,26 +460,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 기획전 */}
+      {/* ── 기획전 ── */}
       <div className="ed-grid">
         {[
-          { title:'F/W 코트 피팅박스', sub:'이번 시즌 베스트 코트 7선', badge:'FITTING BOX', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=700&auto=format&fit=crop', link:'/fitting' },
-          { title:'출근룩 스타일 가이드', sub:'데이터로 본 40대 오피스룩', badge:'DATA PICK', image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&auto=format&fit=crop', link:'/magazine' },
-          { title:'순환유통 특별전', sub:'피팅 후 반납 제품의 새 여정', badge:'ECO', image:'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=700&auto=format&fit=crop', link:'/fitting' },
+          {title:'F/W 코트 피팅박스', sub:'이번 시즌 베스트 코트 7선', badge:'FITTING BOX', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=700&auto=format&fit=crop', link:'/fitting'},
+          {title:'출근룩 스타일 가이드', sub:'데이터로 본 40대 오피스룩', badge:'DATA PICK', image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&auto=format&fit=crop', link:'/magazine'},
+          {title:'순환유통 특별전', sub:'피팅 후 반납 제품의 새 여정', badge:'ECO', image:'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=700&auto=format&fit=crop', link:'/fitting'},
         ].map((ed,i) => (
-          <a key={i} href={ed.link} className="ed-card" style={{textDecoration:'none',display:'block'}}>
+          <a key={i} href={ed.link} className="ed-card">
             <img className="ed-img" src={ed.image} alt={ed.title}/>
             <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 55%)'}}/>
-            <span style={{position:'absolute',top:'12px',left:'12px',background:'#C94E1A',color:'#fff',fontSize:'9px',fontWeight:700,padding:'3px 8px',letterSpacing:'0.5px'}}>{ed.badge}</span>
+            <span style={{position:'absolute',top:'12px',left:'12px',background:'#C94E1A',color:'#fff',fontSize:'9px',fontWeight:700,padding:'3px 8px'}}>{ed.badge}</span>
             <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'18px',color:'#fff'}}>
-              <div style={{fontSize:'11px',color:'rgba(255,255,255,0.7)',marginBottom:'5px',fontWeight:300}}>{ed.sub}</div>
+              <div style={{fontSize:'11px',color:'rgba(255,255,255,0.7)',marginBottom:'4px'}}>{ed.sub}</div>
               <div style={{fontSize:'16px',fontWeight:500,lineHeight:1.3}}>{ed.title}</div>
             </div>
           </a>
         ))}
       </div>
 
-      {/* 커뮤니티 + 매거진 */}
+      {/* ── 커뮤니티 + 매거진 ── */}
       <div className="comm-grid">
         <div>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:'16px'}}>
@@ -396,26 +490,21 @@ export default function Home() {
             <a href="/community" style={{fontSize:'11px',color:'#666',textDecoration:'none'}}>더보기 ›</a>
           </div>
           {communityPosts.map((post,i) => (
-            <a key={i} href="/community" style={{textDecoration:'none',color:'inherit'}}>
-              <div className="cm-post">
-                {post.image ? (
-                  <img src={post.image} alt={post.title} style={{width:'56px',height:'56px',objectFit:'cover',flexShrink:0,background:'#f5f5f5'}}/>
-                ) : (
-                  <div style={{width:'56px',height:'56px',flexShrink:0,background:'#f5f5f5',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px'}}>💬</div>
-                )}
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:'10px',color:'#C94E1A',fontWeight:600,marginBottom:'4px'}}>{post.tag}</div>
-                  <div style={{fontSize:'13px',color:'#111',fontWeight:400,lineHeight:1.4,marginBottom:'6px',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{post.title}</div>
-                  <div style={{fontSize:'11px',color:'#ccc',display:'flex',gap:'10px'}}>
-                    <span>{post.author}</span>
-                    <span>❤️ {post.likes}</span>
-                    <span>💬 {post.comments}</span>
-                  </div>
+            <a key={i} href="/community" className="cm-post">
+              {post.image
+                ? <img src={post.image} alt={post.title} style={{width:'56px',height:'56px',objectFit:'cover',flexShrink:0}}/>
+                : <div style={{width:'56px',height:'56px',flexShrink:0,background:'#f5f5f5',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px'}}>💬</div>
+              }
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:'10px',color:'#C94E1A',fontWeight:600,marginBottom:'4px'}}>{post.tag}</div>
+                <div style={{fontSize:'13px',color:'#111',lineHeight:1.4,marginBottom:'5px',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{post.title}</div>
+                <div style={{fontSize:'11px',color:'#ccc',display:'flex',gap:'10px'}}>
+                  <span>{post.author}</span><span>❤️ {post.likes}</span><span>💬 {post.comments}</span>
                 </div>
               </div>
             </a>
           ))}
-          <a href="/community" style={{display:'block',marginTop:'14px',padding:'11px',background:'#f5f5f5',textAlign:'center',fontSize:'12px',color:'#666',textDecoration:'none',fontWeight:500}}>
+          <a href="/community" style={{display:'block',marginTop:'12px',padding:'11px',background:'#f5f5f5',textAlign:'center',fontSize:'12px',color:'#666',textDecoration:'none',fontWeight:500}}>
             ✍️ 피팅 후기 작성하기 — 위디 50P 적립
           </a>
         </div>
@@ -428,10 +517,11 @@ export default function Home() {
             <a href="/magazine" style={{fontSize:'11px',color:'#666',textDecoration:'none'}}>더보기 ›</a>
           </div>
           <a href="/magazine" style={{textDecoration:'none',color:'inherit',display:'block'}}>
-            <div style={{position:'relative',height:'180px',overflow:'hidden',background:'#1a1814',marginBottom:'12px',cursor:'pointer'}}>
-              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&auto=format&fit=crop" alt="매거진" style={{width:'100%',height:'100%',objectFit:'cover',opacity:0.5,display:'block'}}/>
+            <div style={{position:'relative',height:'170px',overflow:'hidden',background:'#1a1814',marginBottom:'12px'}}>
+              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&auto=format&fit=crop" alt="매거진"
+                style={{width:'100%',height:'100%',objectFit:'cover',opacity:0.5,display:'block'}}/>
               <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',justifyContent:'flex-end',padding:'16px'}}>
-                <div style={{fontSize:'9px',letterSpacing:'2px',color:'#C94E1A',fontWeight:700,marginBottom:'5px'}}>TREND</div>
+                <div style={{fontSize:'9px',letterSpacing:'2px',color:'#C94E1A',fontWeight:700,marginBottom:'4px'}}>TREND</div>
                 <div style={{fontFamily:'Georgia,serif',fontSize:'15px',color:'#fff',fontWeight:300,lineHeight:1.4}}>2026 F/W 키 트렌드: 오버사이즈의 귀환</div>
               </div>
             </div>
@@ -441,8 +531,9 @@ export default function Home() {
             {title:'MARCIA 2026 F/W 컬렉션 프리뷰', tag:'BRAND', date:'2026.04.25'},
             {title:'40대 여성이 가장 많이 선택한 스타일', tag:'STYLING', date:'2026.04.20'},
           ].map((art,i) => (
-            <a key={i} href="/magazine" style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'10px 0',borderBottom:'1px solid #f5f5f5',textDecoration:'none',color:'inherit'}}>
-              <div style={{flex:1,minWidth:0,paddingRight:'10px'}}>
+            <a key={i} href="/magazine"
+              style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'10px 0',borderBottom:'1px solid #f5f5f5',textDecoration:'none',color:'inherit'}}>
+              <div style={{flex:1,paddingRight:'10px'}}>
                 <div style={{fontSize:'9px',color:'#C94E1A',fontWeight:700,marginBottom:'3px'}}>{art.tag}</div>
                 <div style={{fontSize:'12px',color:'#333',lineHeight:1.4}}>{art.title}</div>
               </div>
@@ -452,7 +543,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Withy 배너 */}
+      {/* ── Withy 배너 ── */}
       <div className="withy-banner">
         <div style={{display:'flex',alignItems:'center',gap:'16px'}}>
           <span style={{fontSize:'28px'}}>💛</span>
@@ -461,7 +552,7 @@ export default function Home() {
             <div style={{fontSize:'12px',color:'#666',fontWeight:300,lineHeight:1.6}}>피팅하고 구매할 때마다 쌓이는 나만의 패션 포인트.<br/>커뮤니티 활동으로도 모을 수 있어요.</div>
           </div>
         </div>
-        <div className="withy-stats">
+        <div style={{display:'flex',gap:'28px',alignItems:'center',flexWrap:'wrap'}}>
           {[{num:'+50P',label:'피팅 이용'},{num:'+30P',label:'글 작성'},{num:'+10P',label:'댓글'}].map(s => (
             <div key={s.label} style={{textAlign:'center'}}>
               <div style={{fontFamily:'Georgia,serif',fontSize:'22px',color:'#B08D57',fontWeight:300}}>{s.num}</div>
@@ -472,12 +563,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 파트너 브랜드 */}
-      <div style={{padding:'36px 40px',borderTop:'1px solid #e8e8e8',borderBottom:'1px solid #e8e8e8'}}>
-        <div style={{fontSize:'10px',letterSpacing:'3px',color:'#999',textAlign:'center',marginBottom:'24px'}}>CLYQ PARTNER BRANDS</div>
-        <div style={{display:'flex',gap:'32px',alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
+      {/* ── 파트너 브랜드 ── */}
+      <div style={{padding:'32px 40px',borderTop:'1px solid #e8e8e8',borderBottom:'1px solid #e8e8e8'}}>
+        <div style={{fontSize:'10px',letterSpacing:'3px',color:'#999',textAlign:'center',marginBottom:'20px'}}>CLYQ PARTNER BRANDS</div>
+        <div style={{display:'flex',gap:'28px',alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
           {['MARCIA','MATIN KIM','EENK','D.POUND','ANOTHER A','EIGHT','ANDERSSONBELL','ADER ERROR'].map(br => (
-            <div key={br} style={{fontFamily:'Georgia,serif',fontSize:'15px',fontWeight:300,color:'#999',letterSpacing:'1.5px',cursor:'pointer',transition:'color 0.15s'}}
+            <div key={br}
+              style={{fontFamily:'Georgia,serif',fontSize:'14px',fontWeight:300,color:'#999',letterSpacing:'1.5px',cursor:'pointer',transition:'color 0.15s'}}
               onMouseEnter={e=>(e.currentTarget.style.color='#111')}
               onMouseLeave={e=>(e.currentTarget.style.color='#999')}>
               {br}
@@ -486,8 +578,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 푸터 */}
-      <footer style={{background:'#111',padding:'56px 40px 32px'}}>
+      {/* ── 푸터 ── */}
+      <footer style={{background:'#111',padding:'52px 40px 28px'}}>
         <div className="footer-grid">
           <div>
             <div style={{fontFamily:'Georgia,serif',fontSize:'22px',color:'#fff',letterSpacing:'4px',marginBottom:'12px'}}>
@@ -508,9 +600,12 @@ export default function Home() {
               <div style={{fontSize:'11px',fontWeight:500,color:'rgba(255,255,255,0.5)',letterSpacing:'1px',marginBottom:'14px'}}>{col.title}</div>
               <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
                 {col.links.map(l => (
-                  <a key={l.t} href={l.h} style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',textDecoration:'none',fontWeight:300}}
+                  <a key={l.t} href={l.h}
+                    style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',textDecoration:'none',fontWeight:300}}
                     onMouseEnter={e=>(e.currentTarget.style.color='rgba(255,255,255,0.7)')}
-                    onMouseLeave={e=>(e.currentTarget.style.color='rgba(255,255,255,0.3)')}>{l.t}</a>
+                    onMouseLeave={e=>(e.currentTarget.style.color='rgba(255,255,255,0.3)')}>
+                    {l.t}
+                  </a>
                 ))}
               </div>
             </div>
@@ -522,7 +617,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* 토스트 — inline style로 동적 처리 */}
+      {/* 토스트 */}
       <div style={{
         position:'fixed', bottom:'24px', left:'50%',
         transform: toast ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(60px)',
