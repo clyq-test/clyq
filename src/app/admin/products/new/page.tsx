@@ -18,7 +18,6 @@ export default function AdminProductNew() {
     description:'',
   })
   const [saved, setSaved] = useState(false)
-  const [activeSection, setActiveSection] = useState(null)
 
   function f(key, val) { setForm(p => ({...p, [key]:val})) }
 
@@ -586,7 +585,6 @@ export default function AdminProductNew() {
           <span style={{color:'#C94E1A'}}>⑨</span> 상품 상세 설명
         </div>
         <div style={{padding:'16px 20px'}}>
-          {/* 에디터 툴바 시뮬레이션 */}
           <div style={{border:'1px solid #d0d0d8',borderRadius:'4px',overflow:'hidden'}}>
             <div style={{padding:'8px 12px',background:'#f5f5f7',borderBottom:'1px solid #d0d0d8',display:'flex',gap:'8px',flexWrap:'wrap'}}>
               {['B','I','U','H1','H2','─','정렬','리스트','링크','이미지'].map(tool => (
