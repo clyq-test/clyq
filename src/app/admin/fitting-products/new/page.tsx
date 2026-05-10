@@ -131,12 +131,12 @@ export default function FittingProductNew() {
             </select>
             <select style={selectS} value={form.category2} onChange={e=>f('category2',e.target.value)}>
               <option value="">중분류</option>
-              {form.category1==='아우터'?['코트','재킷','패딩']:
-               form.category1==='상의'?['블라우스','니트','티셔츠']:
-               form.category1==='하의'?['스커트','팬츠']:
-               form.category1==='원피스·세트'?['미디드레스','미니드레스','세트업']:
-               ['기타']
-              }.map(c=><option key={c}>{c}</option>)}
+              {(form.category1==='아우터'?['코트','재킷','패딩']:
+ form.category1==='상의'?['블라우스','니트','티셔츠']:
+ form.category1==='하의'?['스커트','팬츠']:
+ form.category1==='원피스·세트'?['미디드레스','미니드레스','세트업']:
+ ['기타']
+).map(c=><option key={c}>{c}</option>)}
             </select>
             <select style={selectS} value={form.season} onChange={e=>f('season',e.target.value)}>
               <option value="">시즌</option>

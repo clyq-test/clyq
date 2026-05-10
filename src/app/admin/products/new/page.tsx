@@ -175,12 +175,12 @@ export default function AdminProductNew() {
             </select>
             <select style={selectStyle} value={form.category2} onChange={e=>f('category2',e.target.value)}>
               <option value="">중분류</option>
-              {form.category1==='아우터'?['코트','재킷','패딩','조끼']:
-               form.category1==='상의'?['블라우스','니트','티셔츠','셔츠']:
-               form.category1==='하의'?['스커트','팬츠','레깅스']:
-               form.category1==='원피스·세트'?['미디드레스','미니드레스','맥시드레스','세트업']:
-               ['기타']
-              }.map(c=><option key={c}>{c}</option>)}
+              {(form.category1==='아우터'?['코트','재킷','패딩','조끼']:
+ form.category1==='상의'?['블라우스','니트','티셔츠','셔츠']:
+ form.category1==='하의'?['스커트','팬츠','레깅스']:
+ form.category1==='원피스·세트'?['미디드레스','미니드레스','맥시드레스','세트업']:
+ ['기타']
+).map(c=><option key={c}>{c}</option>)}
             </select>
             <select style={selectStyle} value={form.category3} onChange={e=>f('category3',e.target.value)}>
               <option value="">세분류 (선택)</option>
