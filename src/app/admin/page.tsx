@@ -1,314 +1,220 @@
 // @ts-nocheck
 'use client'
-import { useState } from 'react'
 
-const ROLE = 'clyq'
+const BRAND = 'MARCIA'
 
-/* CLYQ 관리자 전용 통계 */
-const clyqTodos = [
-  { label:'피팅 반납 검수', count:5, color:'#C94E1A', href:'/admin/fitting-products/inspection' },
-  { label:'신규 주문', count:12, color:'#3b82f6', href:'/admin/orders/paid' },
-  { label:'상품 승인 대기', count:7, color:'#8b5cf6', href:'/admin/products/pending' },
-  { label:'훼손 패널티 처리', count:2, color:'#e74c3c', href:'/admin/fitting-products/penalty' },
-  { label:'Q&A 미답변', count:8, color:'#10b981', href:'/admin/products/qna' },
-  { label:'재고 부족 상품', count:47, color:'#6366f1', href:'/admin/products/stock' },
-  { label:'배송중 확인', count:28, color:'#f59e0b', href:'/admin/orders/shipping' },
+const stats = [
+  { label:'등록 상품', value:'24', unit:'개', sub:'피팅 가능 18개', color:'#1a1a2e' },
+  { label:'이달 주문', value:'247', unit:'건', sub:'전월 대비 +22%', color:'#2563eb' },
+  { label:'이달 매출', value:'12,840,000', unit:'원', sub:'정산 예정 8,988,000원', color:'#16a34a' },
+  { label:'피팅 진행중', value:'8', unit:'건', sub:'반납 예정 3건 (오늘)', color:'#C94E1A' },
 ]
 
-const brandTodos = [
-  { label:'신규 주문', count:4, color:'#3b82f6', href:'/admin/orders/my' },
-  { label:'상품 승인 대기', count:2, color:'#8b5cf6', href:'/admin/products/my' },
-  { label:'Q&A 미답변', count:3, color:'#10b981', href:'/admin/products/qna' },
-  { label:'반품 요청', count:1, color:'#e74c3c', href:'/admin/orders/claims' },
+const recentOrders = [
+  { id:'ORD-0510-024', product:'오버핏 캐시미어 울 코트', size:'M', status:'결제완료', amount:'298,000', date:'05-10 10:18' },
+  { id:'ORD-0510-023', product:'레더 재킷', size:'S', status:'배송중', amount:'456,000', date:'05-10 09:22' },
+  { id:'ORD-0509-041', product:'울 블레이저 세트업', size:'M', status:'배송완료', amount:'389,000', date:'05-09 16:44' },
+  { id:'ORD-0509-038', product:'캐시미어 니트', size:'L', status:'배송완료', amount:'178,000', date:'05-09 14:11' },
+  { id:'ORD-0509-031', product:'오버핏 캐시미어 울 코트', size:'L', status:'반품접수', amount:'298,000', date:'05-09 11:05' },
 ]
 
-const todos = ROLE === 'clyq' ? clyqTodos : brandTodos
-
-const fittingStatus = [
-  { label:'신청 대기', count:6, color:'#f59e0b' },
-  { label:'배송중', count:18, color:'#3b82f6' },
-  { label:'피팅중', count:24, color:'#8b5cf6' },
-  { label:'반납 수거중', count:9, color:'#C94E1A' },
-  { label:'검수중', count:5, color:'#e74c3c' },
-  { label:'완료 (오늘)', count:12, color:'#10b981' },
+const fittingList = [
+  { id:'FIT-0510-018', product:'오버핏 캐시미어 울 코트', stage:'반납 완료', dDay:'-', alert:false },
+  { id:'FIT-0510-015', product:'울 블레이저 세트업', stage:'피팅중', dDay:'D-1', alert:true },
+  { id:'FIT-0509-042', product:'레더 재킷', stage:'피팅중', dDay:'D-2', alert:false },
+  { id:'FIT-0509-039', product:'캐시미어 니트', stage:'배송중', dDay:'-', alert:false },
 ]
 
-const recentActivity = [
-  { type:'fit', label:'FIT-2026-0510-018 피팅 완료 → 검수 대기', time:'10:24', badge:'피팅박스', badgeColor:'#C94E1A' },
-  { type:'order', label:'ORD-0510-024 결제 완료 / 마르시아 캐시미어 코트', time:'10:18', badge:'주문', badgeColor:'#3b82f6' },
-  { type:'penalty', label:'FIT-0509-012 훼손 패널티 청구 — 이주연** 32,000원', time:'09:55', badge:'패널티', badgeColor:'#e74c3c' },
-  { type:'fit', label:'FIT-2026-0510-017 반납 완료 → 세탁 처리', time:'09:40', badge:'피팅박스', badgeColor:'#C94E1A' },
-  { type:'order', label:'ORD-0510-023 배송 완료 / MATIN KIM 레더재킷', time:'09:22', badge:'주문', badgeColor:'#10b981' },
-  { type:'member', label:'신규 회원 가입 — 박소연** (위디 500P 자동 지급)', time:'08:58', badge:'회원', badgeColor:'#8b5cf6' },
+const myProducts = [
+  { name:'오버핏 캐시미어 울 코트', sku:'MA-2026-CT-001', price:'298,000', stock:12, fitting:true, orders:24 },
+  { name:'울 블레이저 세트업', sku:'MA-2026-ST-003', price:'389,000', stock:8, fitting:true, orders:18 },
+  { name:'레더 재킷', sku:'MA-2026-JK-007', price:'456,000', stock:3, fitting:false, orders:14 },
+  { name:'캐시미어 니트', sku:'MA-2026-KN-012', price:'178,000', stock:0, fitting:true, orders:31 },
 ]
 
-const brandSales = [
-  { brand:'MARCIA', sales:'12,840,000', orders:24, fit:8 },
-  { brand:'MATIN KIM', sales:'9,620,000', orders:16, fit:5 },
-  { brand:'EENK', sales:'5,280,000', orders:18, fit:12 },
-  { brand:'D.POUND', sales:'4,150,000', orders:14, fit:3 },
-  { brand:'ANDERSSONBELL', sales:'3,960,000', orders:12, fit:7 },
-]
+const statusStyle = {
+  '결제완료': { bg:'#eff6ff', color:'#2563eb' },
+  '배송중':   { bg:'#f0fdf4', color:'#16a34a' },
+  '배송완료': { bg:'#f5f5f7', color:'#666' },
+  '반품접수': { bg:'#fff1f0', color:'#dc2626' },
+  '반납 완료':{ bg:'#f5f5f7', color:'#666' },
+  '피팅중':   { bg:'#fff7ed', color:'#C94E1A' },
+}
 
-export default function AdminDashboard() {
-  const [orderTab, setOrderTab] = useState('전체')
-
-  const card = (style={}) => ({
-    background:'#fff', border:'1px solid #e8e8eb',
-    borderRadius:'8px', overflow:'hidden', ...style
-  })
-  const cardH = { padding:'14px 20px', background:'#fafafa', borderBottom:'1px solid #e8e8eb', display:'flex', justifyContent:'space-between', alignItems:'center' }
-  const cardT = { fontSize:'14px', fontWeight:700, color:'#1a1a2e' }
-  const cardL = { fontSize:'12px', color:'#C94E1A', textDecoration:'none', cursor:'pointer' }
-
+export default function BrandDashboard() {
   return (
-    <div>
+    <>
       <style>{`
-        .todo-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-bottom:24px; }
-        .todo-card { background:#fff; border:1px solid #e8e8eb; padding:16px 14px; cursor:pointer; transition:all 0.15s; border-radius:8px; text-decoration:none; display:block; }
-        .todo-card:hover { box-shadow:0 3px 12px rgba(0,0,0,.09); transform:translateY(-1px); }
-        .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
-        .stat-card { background:#fff; border:1px solid #e8e8eb; padding:18px 20px; border-radius:8px; }
-        .fit-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
-        .fit-card { background:#fff; border:1px solid #e8e8eb; border-radius:8px; padding:16px; text-align:center; }
-        .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
-        .right-col { display:flex; flex-direction:column; gap:16px; }
-        .adm-table { width:100%; border-collapse:collapse; font-size:12px; }
-        .adm-table th { padding:9px 14px; text-align:left; font-size:11px; font-weight:600; color:#888; background:#fafafa; border-bottom:1px solid #e8e8eb; white-space:nowrap; }
-        .adm-table td { padding:10px 14px; border-bottom:1px solid #f5f5f7; color:#333; }
-        .adm-table tr:last-child td { border-bottom:none; }
-        .adm-table tr:hover td { background:#fafffe; }
-        .badge { display:inline-block; font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; }
-        /* 역할 배너 */
-        .role-banner { border-radius:8px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; }
-        .role-banner-clyq { background:rgba(201,78,26,0.08); border:1px solid rgba(201,78,26,0.2); color:#C94E1A; }
-        .role-banner-brand { background:rgba(26,26,46,0.05); border:1px solid rgba(26,26,46,0.12); color:#1a1a2e; }
-        /* 분리 섹션 타이틀 */
-        .section-label { font-size:11px; font-weight:700; letter-spacing:1.5px; color:#999; margin:20px 0 10px; display:flex; align-items:center; gap:8px; }
-        .section-label::after { content:''; flex:1; height:1px; background:#e8e8eb; }
-        @media (max-width:1300px) {
-          .todo-grid { grid-template-columns:repeat(4,1fr); }
-          .fit-grid { grid-template-columns:repeat(3,1fr); }
+        .db-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+        .db-stat { background:#fff; border:1px solid #e8e8eb; border-radius:8px; padding:20px 24px; }
+        .db-two { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+        .db-card { background:#fff; border:1px solid #e8e8eb; border-radius:8px; overflow:hidden; }
+        .db-card-head { padding:14px 20px; border-bottom:1px solid #f0f0f2; display:flex; align-items:center; justify-content:space-between; }
+        .db-card-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+        .db-link { font-size:12px; color:#C94E1A; font-weight:600; background:none; border:none; cursor:pointer; font-family:inherit; }
+        .db-table { width:100%; border-collapse:collapse; font-size:13px; }
+        .db-table th { padding:9px 16px; text-align:left; font-size:11px; font-weight:600; color:#999; background:#fafafa; border-bottom:1px solid #f0f0f2; white-space:nowrap; }
+        .db-table td { padding:12px 16px; border-bottom:1px solid #f5f5f7; color:#333; white-space:nowrap; }
+        .db-table tr:last-child td { border-bottom:none; }
+        .db-table tbody tr:hover td { background:#fafafa; }
+        .db-badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+        .db-btn-primary { padding:8px 18px; background:#C94E1A; color:#fff; border:none; border-radius:5px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+        .db-btn-primary:hover { background:#a83d14; }
+        .db-btn-outline { padding:8px 14px; background:#fff; color:#555; border:1px solid #d8d8dc; border-radius:5px; font-size:13px; cursor:pointer; font-family:inherit; }
+        @media (max-width:1200px) {
+          .db-stat-grid { grid-template-columns:repeat(2,1fr); }
+          .db-two { grid-template-columns:1fr; }
         }
-        @media (max-width:900px) {
-          .stat-grid { grid-template-columns:1fr 1fr; }
-          .bottom-grid { grid-template-columns:1fr; }
-          .todo-grid { grid-template-columns:repeat(2,1fr); }
-          .fit-grid { grid-template-columns:repeat(2,1fr); }
+        @media (max-width:600px) {
+          .db-stat-grid { grid-template-columns:repeat(2,1fr); }
         }
       `}</style>
 
-      {/* 역할 배너 */}
-      <div className={`role-banner role-banner-${ROLE}`}>
-        {ROLE === 'clyq' ? (
-          <>🔑 <strong>CLYQ 관리자 모드</strong> — 피팅박스 제품 등록·수정·검수 및 전체 서비스 관리 권한</>
-        ) : (
-          <>🏷 <strong>MARCIA 브랜드 파트너 모드</strong> — 내 상품·주문·정산 관리 가능 · 피팅박스 제품은 <strong>열람만</strong> 가능</>
-        )}
-      </div>
-
-      {/* 페이지 제목 */}
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px',flexWrap:'wrap',gap:'8px'}}>
+      {/* 페이지 헤더 */}
+      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'24px', flexWrap:'wrap', gap:'12px' }}>
         <div>
-          <div style={{fontSize:'22px',fontWeight:700,color:'#1a1a2e'}}>
-            {new Date().toLocaleDateString('ko-KR',{month:'long',day:'numeric'})} 대시보드
-          </div>
-          <div style={{fontSize:'12px',color:'#999',marginTop:'2px'}}>
-            오늘 오전 10시 기준 · 자동 갱신
-          </div>
+          <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>오전 10시 기준 · 자동 갱신</div>
+          <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', letterSpacing:'-0.3px' }}>대시보드</h1>
         </div>
-        {ROLE === 'clyq' && (
-          <div style={{display:'flex',gap:'8px'}}>
-            <a href="/admin/fitting-products/new"
-              style={{padding:'9px 16px',background:'#C94E1A',color:'#fff',textDecoration:'none',fontSize:'12px',fontWeight:600,borderRadius:'4px',display:'flex',alignItems:'center',gap:'5px'}}>
-              📦 피팅 제품 등록
-            </a>
-            <a href="/admin/products/pending"
-              style={{padding:'9px 16px',background:'#1a1a2e',color:'#fff',textDecoration:'none',fontSize:'12px',fontWeight:600,borderRadius:'4px'}}>
-              상품 승인 처리
-            </a>
-          </div>
-        )}
+        <div style={{ display:'flex', gap:'8px' }}>
+          <button className="db-btn-outline">정산 내역</button>
+          <button className="db-btn-primary" onClick={() => location.href='/admin/products/new'}>상품 등록</button>
+        </div>
       </div>
 
-      {/* TO-DO */}
-      <div className="section-label">처리 필요 항목</div>
-      <div className="todo-grid">
-        {todos.map(t => (
-          <a key={t.label} href={t.href} className="todo-card">
-            <div style={{fontSize:'11px',color:'#888',marginBottom:'8px',fontWeight:500}}>{t.label}</div>
-            <div style={{fontSize:'28px',fontWeight:700,color:t.count>0?t.color:'#ccc'}}>{t.count}</div>
-          </a>
-        ))}
-      </div>
-
-      {/* 오늘 통계 */}
-      <div className="section-label">오늘 핵심 지표</div>
-      <div className="stat-grid">
-        {(ROLE === 'clyq' ? [
-          { label:'오늘 매출', value:'8,240,000원', delta:'+22%', up:true },
-          { label:'오늘 주문', value:'24건', delta:'+12%', up:true },
-          { label:'피팅 신청', value:'18건', delta:'+8%', up:true },
-          { label:'위디 발행', value:'+12,400P', delta:'누적 24.8M', up:true },
-        ] : [
-          { label:'내 브랜드 매출', value:'2,840,000원', delta:'+18%', up:true },
-          { label:'주문 건수', value:'8건', delta:'+4%', up:true },
-          { label:'재고 부족', value:'5개 SKU', delta:'확인 필요', up:false },
-          { label:'미답변 Q&A', value:'3건', delta:'처리 필요', up:false },
-        ]).map(s => (
-          <div key={s.label} className="stat-card">
-            <div style={{fontSize:'12px',color:'#888',marginBottom:'6px'}}>{s.label}</div>
-            <div style={{fontSize:'20px',fontWeight:700,color:'#1a1a2e',marginBottom:'3px'}}>{s.value}</div>
-            <div style={{fontSize:'11px',fontWeight:500,color:s.up?'#10b981':'#e74c3c'}}>
-              {s.up?'▲':'▼'} {s.delta}
+      {/* 핵심 지표 */}
+      <div className="db-stat-grid">
+        {stats.map(s => (
+          <div key={s.label} className="db-stat">
+            <div style={{ fontSize:'12px', color:'#999', fontWeight:500, marginBottom:'10px' }}>{s.label}</div>
+            <div style={{ display:'flex', alignItems:'baseline', gap:'4px', marginBottom:'6px' }}>
+              <span style={{ fontSize:'28px', fontWeight:800, color:s.color, letterSpacing:'-0.5px' }}>{s.value}</span>
+              <span style={{ fontSize:'13px', color:'#aaa' }}>{s.unit}</span>
             </div>
+            <div style={{ fontSize:'12px', color:'#bbb' }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* 피팅박스 현황 — CLYQ 전용 */}
-      {ROLE === 'clyq' && (
-        <>
-          <div className="section-label">📦 피팅박스 실시간 현황 <span style={{color:'#C94E1A',fontSize:'10px',fontWeight:700}}>CLYQ 전용</span></div>
-          <div style={card({marginBottom:'20px'})}>
-            <div style={cardH}>
-              <div style={cardT}>피팅 단계별 현황</div>
-              <div style={{display:'flex',gap:'8px'}}>
-                <a href="/admin/fitting-products/new" style={{...cardL, background:'#C94E1A', color:'#fff', padding:'5px 12px', borderRadius:'4px', textDecoration:'none', fontSize:'12px', fontWeight:600}}>
-                  + 피팅 제품 등록
-                </a>
-                <a href="/admin/fitting-products" style={cardL}>전체 보기 ›</a>
-              </div>
-            </div>
-            <div style={{padding:'16px 20px'}}>
-              <div className="fit-grid">
-                {fittingStatus.map(f => (
-                  <div key={f.label} className="fit-card">
-                    <div style={{fontSize:'26px',fontWeight:700,color:f.color,marginBottom:'4px'}}>{f.count}</div>
-                    <div style={{fontSize:'11px',color:'#888'}}>{f.label}</div>
-                  </div>
+      {/* 2단: 최근 주문 + 피팅 현황 */}
+      <div className="db-two">
+        <div className="db-card">
+          <div className="db-card-head">
+            <span className="db-card-title">최근 주문</span>
+            <button className="db-link">전체 보기</button>
+          </div>
+          <div style={{ overflowX:'auto' }}>
+            <table className="db-table">
+              <thead>
+                <tr>
+                  <th>주문번호</th>
+                  <th>상품</th>
+                  <th>상태</th>
+                  <th style={{ textAlign:'right' }}>금액</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentOrders.map(o => (
+                  <tr key={o.id}>
+                    <td style={{ fontSize:'11px', color:'#aaa' }}>{o.id}</td>
+                    <td>
+                      <div style={{ fontWeight:500, color:'#1a1a2e', maxWidth:'150px', overflow:'hidden', textOverflow:'ellipsis' }}>{o.product}</div>
+                      <div style={{ fontSize:'11px', color:'#bbb' }}>{o.size} · {o.date}</div>
+                    </td>
+                    <td>
+                      <span className="db-badge" style={{ background:statusStyle[o.status]?.bg, color:statusStyle[o.status]?.color }}>
+                        {o.status}
+                      </span>
+                    </td>
+                    <td style={{ textAlign:'right', fontWeight:600, color:'#1a1a2e' }}>{o.amount}원</td>
+                  </tr>
                 ))}
-              </div>
-              <div style={{marginTop:'12px',padding:'10px 14px',background:'#fff5f2',borderRadius:'4px',fontSize:'12px',color:'#C94E1A',fontWeight:500,display:'flex',gap:'12px',flexWrap:'wrap'}}>
-                <span>⚠ 반납 검수 대기 <strong>5건</strong></span>
-                <span>·</span>
-                <span>훼손 패널티 처리 필요 <strong>2건</strong></span>
-                <span>·</span>
-                <span>피팅 기간 초과 예정 <strong>3건</strong> (오늘 23:59)</span>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* 하단 2컬럼 */}
-      <div className="bottom-grid">
-        {/* 최근 활동 */}
-        <div style={card()}>
-          <div style={cardH}>
-            <div style={cardT}>{ROLE==='clyq'?'실시간 활동':'최근 주문·활동'}</div>
-            <a href="/admin/orders" style={cardL}>전체 ›</a>
-          </div>
-          <div style={{padding:'0 4px'}}>
-            {recentActivity.map((a,i) => (
-              <div key={i} style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 16px',borderBottom:'1px solid #f5f5f7',fontSize:'12px'}}>
-                <span className="badge"
-                  style={{background:a.badgeColor+'22',color:a.badgeColor,flexShrink:0}}>
-                  {a.badge}
-                </span>
-                <span style={{flex:1,color:'#333',lineHeight:1.4}}>{a.label}</span>
-                <span style={{fontSize:'11px',color:'#ccc',flexShrink:0}}>{a.time}</span>
-              </div>
-            ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="right-col">
-          {/* 브랜드별 매출 — CLYQ만 */}
-          {ROLE === 'clyq' && (
-            <div style={card()}>
-              <div style={cardH}>
-                <div style={cardT}>브랜드별 이번달 현황</div>
-                <a href="/admin/settlement/brand" style={cardL}>자세히 ›</a>
-              </div>
-              <div style={{overflowX:'auto'}}>
-                <table className="adm-table">
-                  <thead>
-                    <tr>
-                      <th>브랜드</th>
-                      <th>매출</th>
-                      <th>주문</th>
-                      <th>피팅 건수</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {brandSales.map(b => (
-                      <tr key={b.brand}>
-                        <td style={{fontWeight:500,fontFamily:'Georgia,serif',fontSize:'11px'}}>{b.brand}</td>
-                        <td style={{fontWeight:600}}>{b.sales}원</td>
-                        <td>{b.orders}건</td>
-                        <td>
-                          <span style={{color:'#C94E1A',fontWeight:600}}>{b.fit}건</span>
-                          {' '}
-                          <span style={{fontSize:'10px',color:'#ccc'}}>
-                            ({Math.round(b.fit/b.orders*100)}%)
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+        <div className="db-card">
+          <div className="db-card-head">
+            <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+              <span className="db-card-title">피팅 현황</span>
+              <span style={{ fontSize:'11px', color:'#bbb' }}>열람 전용</span>
             </div>
-          )}
-
-          {/* 이번달 정산 요약 */}
-          <div style={card()}>
-            <div style={cardH}>
-              <div style={cardT}>이번달 정산</div>
-              <a href={ROLE==='clyq'?'/admin/settlement':'/admin/settlement/my'} style={cardL}>자세히 ›</a>
-            </div>
-            <div style={{padding:'14px 20px'}}>
-              {(ROLE === 'clyq' ? [
-                {label:'전체 매출', value:'42,680,000원', highlight:false},
-                {label:'피팅박스 수익 (CLYQ)', value:'3,240,000원', highlight:true},
-                {label:'브랜드 정산 예정', value:'29,876,000원', highlight:false},
-                {label:'위디 사용액', value:'1,180,000원', highlight:false},
-                {label:'훼손 패널티 징수', value:'280,000원', highlight:false},
-              ] : [
-                {label:'내 브랜드 매출', value:'12,840,000원', highlight:false},
-                {label:'CLYQ 수수료 (30%)', value:'3,852,000원', highlight:false},
-                {label:'정산 예정액', value:'8,988,000원', highlight:true},
-                {label:'쿠폰 할인 차감', value:'240,000원', highlight:false},
-              ]).map(item => (
-                <div key={item.label}
-                  style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid #f5f5f7',fontSize:'12px',background:item.highlight?'#fff8f5':'transparent',marginLeft:item.highlight?'-20px':'0',marginRight:item.highlight?'-20px':'0',paddingLeft:item.highlight?'20px':'0',paddingRight:item.highlight?'20px':'0'}}>
-                  <span style={{color:'#888'}}>{item.label}</span>
-                  <span style={{fontWeight:700,color:item.highlight?'#C94E1A':'#1a1a2e'}}>{item.value}</span>
-                </div>
-              ))}
-            </div>
+            <button className="db-link">전체 보기</button>
           </div>
-
-          {/* 브랜드: 열람 전용 안내 */}
-          {ROLE === 'brand' && (
-            <div style={{...card(), border:'1px solid rgba(201,78,26,0.2)', background:'#fff8f5'}}>
-              <div style={{padding:'16px 20px'}}>
-                <div style={{fontSize:'13px',fontWeight:700,color:'#C94E1A',marginBottom:'8px'}}>📦 피팅박스 제품 안내</div>
-                <div style={{fontSize:'12px',color:'#555',lineHeight:1.8}}>
-                  내 브랜드의 피팅박스 제품은 CLYQ 본사에서 직접 관리합니다.<br/>
-                  피팅 제품 목록 및 현황은 <strong>열람만</strong> 가능하며, 수정·삭제는 불가합니다.<br/><br/>
-                  피팅 제품 등록·수정 요청은 CLYQ 담당 MD에게 문의해주세요.
-                </div>
-                <a href="/admin/fitting-products/my"
-                  style={{display:'inline-block',marginTop:'12px',padding:'8px 16px',border:'1px solid #C94E1A',color:'#C94E1A',textDecoration:'none',fontSize:'12px',fontWeight:600,borderRadius:'4px'}}>
-                  내 브랜드 피팅 현황 보기 →
-                </a>
-              </div>
-            </div>
-          )}
+          <div style={{ overflowX:'auto' }}>
+            <table className="db-table">
+              <thead>
+                <tr>
+                  <th>피팅 ID</th>
+                  <th>상품</th>
+                  <th>단계</th>
+                  <th style={{ textAlign:'center' }}>D-Day</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fittingList.map(f => (
+                  <tr key={f.id}>
+                    <td style={{ fontSize:'11px', color:'#aaa' }}>{f.id}</td>
+                    <td style={{ fontWeight:500, color:'#1a1a2e', maxWidth:'140px', overflow:'hidden', textOverflow:'ellipsis' }}>{f.product}</td>
+                    <td>
+                      <span className="db-badge" style={{ background:statusStyle[f.stage]?.bg || '#f5f5f7', color:statusStyle[f.stage]?.color || '#666' }}>
+                        {f.stage}
+                      </span>
+                    </td>
+                    <td style={{ textAlign:'center', fontWeight:700, color:f.alert ? '#dc2626' : '#bbb' }}>{f.dDay}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* 내 상품 목록 */}
+      <div className="db-card">
+        <div className="db-card-head">
+          <span className="db-card-title">내 상품 목록</span>
+          <div style={{ display:'flex', gap:'8px' }}>
+            <button className="db-btn-outline" style={{ fontSize:'12px', padding:'6px 12px' }}>전체 보기</button>
+            <button className="db-btn-primary" style={{ fontSize:'12px', padding:'6px 14px' }} onClick={() => location.href='/admin/products/new'}>상품 등록</button>
+          </div>
+        </div>
+        <div style={{ overflowX:'auto' }}>
+          <table className="db-table">
+            <thead>
+              <tr>
+                <th>상품명</th>
+                <th>SKU</th>
+                <th style={{ textAlign:'right' }}>판매가</th>
+                <th style={{ textAlign:'center' }}>재고</th>
+                <th style={{ textAlign:'center' }}>피팅</th>
+                <th style={{ textAlign:'right' }}>주문수</th>
+              </tr>
+            </thead>
+            <tbody>
+              {myProducts.map(p => (
+                <tr key={p.sku} style={{ cursor:'pointer' }}>
+                  <td style={{ fontWeight:600, color:'#1a1a2e' }}>{p.name}</td>
+                  <td style={{ fontSize:'12px', color:'#bbb' }}>{p.sku}</td>
+                  <td style={{ textAlign:'right', fontWeight:500 }}>{p.price}원</td>
+                  <td style={{ textAlign:'center' }}>
+                    <span style={{ color: p.stock === 0 ? '#dc2626' : p.stock <= 3 ? '#C94E1A' : '#333', fontWeight: p.stock <= 3 ? 700 : 400 }}>
+                      {p.stock === 0 ? '품절' : p.stock + '개'}
+                    </span>
+                  </td>
+                  <td style={{ textAlign:'center' }}>
+                    <span className="db-badge" style={{ background: p.fitting ? '#fff7ed' : '#f5f5f7', color: p.fitting ? '#C94E1A' : '#bbb' }}>
+                      {p.fitting ? '가능' : '불가'}
+                    </span>
+                  </td>
+                  <td style={{ textAlign:'right', color:'#666' }}>{p.orders}건</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
