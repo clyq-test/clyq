@@ -10,7 +10,6 @@ const orders = [
     status:'결제완료', shipCompany:'-', trackingNo:'-',
     orderDate:'2026-05-10 10:18', payDate:'2026-05-10 10:19',
     shipDate:'-', deliverDate:'-',
-    fitting:false,
   },
   {
     id:'ORD-0510-023', product:'레더 재킷', sku:'MA-2026-JK-007',
@@ -19,7 +18,6 @@ const orders = [
     status:'배송중', shipCompany:'CJ대한통운', trackingNo:'1234567890',
     orderDate:'2026-05-10 09:22', payDate:'2026-05-10 09:23',
     shipDate:'2026-05-10 14:00', deliverDate:'-',
-    fitting:false,
   },
   {
     id:'ORD-0509-041', product:'울 블레이저 세트업', sku:'MA-2026-ST-003',
@@ -28,7 +26,6 @@ const orders = [
     status:'배송완료', shipCompany:'CJ대한통운', trackingNo:'9876543210',
     orderDate:'2026-05-09 16:44', payDate:'2026-05-09 16:45',
     shipDate:'2026-05-09 18:00', deliverDate:'2026-05-10 11:30',
-    fitting:false,
   },
   {
     id:'ORD-0509-038', product:'캐시미어 니트', sku:'MA-2026-KN-012',
@@ -37,7 +34,6 @@ const orders = [
     status:'배송완료', shipCompany:'롯데택배', trackingNo:'1122334455',
     orderDate:'2026-05-09 14:11', payDate:'2026-05-09 14:12',
     shipDate:'2026-05-09 17:30', deliverDate:'2026-05-10 13:20',
-    fitting:false,
   },
   {
     id:'ORD-0509-031', product:'오버핏 캐시미어 울 코트', sku:'MA-2026-CT-001',
@@ -46,7 +42,6 @@ const orders = [
     status:'반품접수', shipCompany:'CJ대한통운', trackingNo:'5544332211',
     orderDate:'2026-05-09 11:05', payDate:'2026-05-09 11:06',
     shipDate:'2026-05-09 15:00', deliverDate:'2026-05-10 10:00',
-    fitting:false,
   },
   {
     id:'ORD-0508-027', product:'울 블레이저 세트업', sku:'MA-2026-ST-003',
@@ -55,7 +50,6 @@ const orders = [
     status:'교환접수', shipCompany:'롯데택배', trackingNo:'6677889900',
     orderDate:'2026-05-08 15:33', payDate:'2026-05-08 15:34',
     shipDate:'2026-05-08 18:00', deliverDate:'2026-05-09 12:00',
-    fitting:false,
   },
   {
     id:'ORD-0508-019', product:'캐시미어 니트', sku:'MA-2026-KN-012',
@@ -64,7 +58,6 @@ const orders = [
     status:'취소완료', shipCompany:'-', trackingNo:'-',
     orderDate:'2026-05-08 11:20', payDate:'2026-05-08 11:21',
     shipDate:'-', deliverDate:'-',
-    fitting:false,
   },
   {
     id:'ORD-0507-015', product:'오버핏 캐시미어 울 코트', sku:'MA-2026-CT-001',
@@ -73,7 +66,6 @@ const orders = [
     status:'정산완료', shipCompany:'CJ대한통운', trackingNo:'3322114455',
     orderDate:'2026-05-07 09:44', payDate:'2026-05-07 09:45',
     shipDate:'2026-05-07 14:00', deliverDate:'2026-05-08 11:00',
-    fitting:false,
   },
 ]
 
@@ -88,7 +80,6 @@ const statusStyle = {
 }
 
 const statusList = ['전체','결제완료','배송중','배송완료','반품접수','교환접수','취소완료','정산완료']
-
 const periodList = ['오늘','7일','30일','90일','직접입력']
 
 export default function OrdersMyPage() {
@@ -107,8 +98,8 @@ export default function OrdersMyPage() {
     return matchStatus && matchSearch
   })
 
-  const totalAmount  = filtered.reduce((s, o) => s + o.amount, 0)
-  const totalSettle  = filtered.reduce((s, o) => s + o.settle, 0)
+  const totalAmount = filtered.reduce((s, o) => s + o.amount, 0)
+  const totalSettle = filtered.reduce((s, o) => s + o.settle, 0)
 
   return (
     <>
@@ -135,23 +126,36 @@ export default function OrdersMyPage() {
         .od-tbl tbody tr:hover td { background:#fff8f5; }
         .od-tbl tbody tr.selected td { background:#fff3ee; }
         .od-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:11px; font-weight:600; }
-        .od-detail { background:#fff; border:1px solid #e8e8eb; border-radius:8px; margin-top:14px; overflow:hidden; }
-        .od-detail-head { padding:14px 20px; background:#1a1a2e; color:#fff; display:flex; align-items:center; justify-content:space-between; }
-        .od-detail-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
+        .od-sum-bar { display:flex; align-items:center; justify-content:flex-end; gap:24px; padding:12px 20px; background:#fafafa; border-top:1px solid #f0f0f2; font-size:13px; }
+        .od-btn-o { padding:9px 18px; background:#fff; color:#555; border:1px solid #d8d8dc; border-radius:5px; font-size:13px; cursor:pointer; font-family:inherit; }
+
+        /* 모달 */
+        .od-modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .od-modal { background:#fff; border-radius:10px; width:100%; max-width:760px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+        .od-modal-head { padding:20px 24px; background:#1a1a2e; color:#fff; display:flex; align-items:center; justify-content:space-between; border-radius:10px 10px 0 0; position:sticky; top:0; z-index:1; }
+        .od-modal-close { background:rgba(255,255,255,0.12); border:none; color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; font-family:inherit; line-height:1; }
+        .od-modal-close:hover { background:rgba(255,255,255,0.25); }
+        .od-detail-grid { display:grid; grid-template-columns:repeat(4,1fr); }
         .od-detail-cell { padding:16px 20px; border-right:1px solid #f0f0f2; border-bottom:1px solid #f0f0f2; }
         .od-detail-cell:nth-child(4n) { border-right:none; }
         .od-detail-label { font-size:11px; color:#999; font-weight:500; margin-bottom:5px; }
         .od-detail-val { font-size:13px; font-weight:600; color:#1a1a2e; }
-        .od-tracking-btn { display:inline-block; padding:5px 12px; background:#f5f5f7; border-radius:4px; font-size:12px; color:#555; font-weight:500; border:none; cursor:pointer; font-family:inherit; }
+        .od-tracking-btn { padding:6px 14px; background:#f5f5f7; border-radius:4px; font-size:12px; color:#555; font-weight:500; border:none; cursor:pointer; font-family:inherit; }
         .od-tracking-btn:hover { background:#e8e8eb; }
-        .od-sum-bar { display:flex; align-items:center; justify-content:flex-end; gap:24px; padding:12px 20px; background:#fafafa; border-top:1px solid #f0f0f2; font-size:13px; }
+
         @media (max-width:1200px) {
           .od-stat-grid { grid-template-columns:repeat(3,1fr); }
           .od-detail-grid { grid-template-columns:repeat(2,1fr); }
+          .od-detail-cell:nth-child(4n) { border-right:1px solid #f0f0f2; }
+          .od-detail-cell:nth-child(2n) { border-right:none; }
         }
         @media (max-width:768px) {
           .od-stat-grid { grid-template-columns:repeat(2,1fr); }
           .od-search { width:100%; }
+          .od-detail-grid { grid-template-columns:1fr 1fr; }
+        }
+        @media (max-width:480px) {
+          .od-stat-grid { grid-template-columns:1fr 1fr; }
           .od-detail-grid { grid-template-columns:1fr; }
           .od-detail-cell { border-right:none; }
         }
@@ -165,10 +169,7 @@ export default function OrdersMyPage() {
             <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>주문관리 › 주문 조회</div>
             <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>주문 조회</h1>
           </div>
-          <button
-            style={{ padding:'9px 20px', background:'#fff', color:'#555', border:'1px solid #d8d8dc', borderRadius:'5px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}
-            onClick={() => alert('엑셀 다운로드')}
-          >
+          <button className="od-btn-o" onClick={() => alert('엑셀 다운로드')}>
             엑셀 다운로드
           </button>
         </div>
@@ -176,11 +177,11 @@ export default function OrdersMyPage() {
         {/* 요약 지표 */}
         <div className="od-stat-grid">
           {[
-            { label:'전체 주문', value: orders.length, unit:'건', color:'#1a1a2e' },
-            { label:'결제완료', value: orders.filter(o=>o.status==='결제완료').length, unit:'건', color:'#2563eb' },
-            { label:'배송중', value: orders.filter(o=>o.status==='배송중').length, unit:'건', color:'#16a34a' },
-            { label:'클레임', value: orders.filter(o=>['반품접수','교환접수','취소완료'].includes(o.status)).length, unit:'건', color:'#dc2626' },
-            { label:'이달 정산 예정', value: '1,208,900', unit:'원', color:'#C94E1A' },
+            { label:'전체 주문',     value: orders.length,                                                            unit:'건', color:'#1a1a2e' },
+            { label:'결제완료',      value: orders.filter(o => o.status === '결제완료').length,                       unit:'건', color:'#2563eb' },
+            { label:'배송중',        value: orders.filter(o => o.status === '배송중').length,                         unit:'건', color:'#16a34a' },
+            { label:'클레임',        value: orders.filter(o => ['반품접수','교환접수','취소완료'].includes(o.status)).length, unit:'건', color:'#dc2626' },
+            { label:'이달 정산 예정',value: '1,208,900',                                                              unit:'원', color:'#C94E1A' },
           ].map(s => (
             <div key={s.label} className="od-stat">
               <div style={{ fontSize:'11px', color:'#999', marginBottom:'8px' }}>{s.label}</div>
@@ -257,7 +258,7 @@ export default function OrdersMyPage() {
                   <tr
                     key={o.id}
                     className={selected?.id === o.id ? 'selected' : ''}
-                    onClick={() => setSelected(selected?.id === o.id ? null : o)}
+                    onClick={() => setSelected(o)}
                   >
                     <td style={{ fontSize:'12px', color:'#888', fontFamily:'monospace' }}>{o.id}</td>
                     <td>
@@ -288,48 +289,43 @@ export default function OrdersMyPage() {
           {/* 합계 바 */}
           <div className="od-sum-bar">
             <span style={{ color:'#999', fontSize:'12px' }}>조회된 {filtered.length}건 합계</span>
-            <span>
-              결제금액 <strong style={{ color:'#1a1a2e' }}>{totalAmount.toLocaleString()}원</strong>
-            </span>
-            <span>
-              정산금액 <strong style={{ color:'#16a34a' }}>{totalSettle.toLocaleString()}원</strong>
-            </span>
-            <span style={{ color:'#aaa', fontSize:'12px' }}>
-              수수료 {(totalAmount - totalSettle).toLocaleString()}원
-            </span>
+            <span>결제금액 <strong style={{ color:'#1a1a2e' }}>{totalAmount.toLocaleString()}원</strong></span>
+            <span>정산금액 <strong style={{ color:'#16a34a' }}>{totalSettle.toLocaleString()}원</strong></span>
+            <span style={{ color:'#aaa', fontSize:'12px' }}>수수료 {(totalAmount - totalSettle).toLocaleString()}원</span>
           </div>
         </div>
 
-        {/* 주문 상세 — 클릭 시 펼침 */}
-        {selected && (
-          <div className="od-detail">
-            <div className="od-detail-head">
+      </div>
+
+      {/* 주문 상세 모달 */}
+      {selected && (
+        <div className="od-modal-bg" onClick={() => setSelected(null)}>
+          <div className="od-modal" onClick={e => e.stopPropagation()}>
+
+            {/* 모달 헤더 */}
+            <div className="od-modal-head">
               <div>
-                <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.5)', marginBottom:'3px' }}>주문 상세</div>
+                <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.45)', marginBottom:'3px' }}>주문 상세</div>
                 <div style={{ fontWeight:700, fontSize:'15px' }}>{selected.id}</div>
               </div>
-              <button
-                onClick={() => setSelected(null)}
-                style={{ background:'rgba(255,255,255,0.1)', border:'none', color:'#fff', padding:'5px 12px', borderRadius:'4px', cursor:'pointer', fontSize:'12px', fontFamily:'inherit' }}
-              >
-                닫기
-              </button>
+              <button className="od-modal-close" onClick={() => setSelected(null)}>✕</button>
             </div>
 
+            {/* 상세 그리드 */}
             <div className="od-detail-grid">
               {[
-                { label:'상품명',   val: selected.product },
-                { label:'옵션',     val: selected.option },
-                { label:'SKU',      val: selected.sku },
-                { label:'고객',     val: selected.customer + '  ' + selected.phone },
-                { label:'결제금액', val: selected.amount.toLocaleString() + '원' },
+                { label:'상품명',            val: selected.product },
+                { label:'옵션',              val: selected.option },
+                { label:'SKU',               val: selected.sku },
+                { label:'고객',              val: selected.customer + '  ' + selected.phone },
+                { label:'결제금액',          val: selected.amount.toLocaleString() + '원' },
                 { label:'CLYQ 수수료 (30%)', val: selected.commission.toLocaleString() + '원' },
-                { label:'정산금액', val: selected.settle.toLocaleString() + '원' },
-                { label:'주문 상태', val: selected.status },
-                { label:'주문일시', val: selected.orderDate },
-                { label:'결제일시', val: selected.payDate },
-                { label:'출고일시', val: selected.shipDate },
-                { label:'배송완료', val: selected.deliverDate },
+                { label:'정산금액',          val: selected.settle.toLocaleString() + '원' },
+                { label:'주문 상태',         val: selected.status },
+                { label:'주문일시',          val: selected.orderDate },
+                { label:'결제일시',          val: selected.payDate },
+                { label:'출고일시',          val: selected.shipDate },
+                { label:'배송완료',          val: selected.deliverDate },
               ].map(cell => (
                 <div key={cell.label} className="od-detail-cell">
                   <div className="od-detail-label">{cell.label}</div>
@@ -339,7 +335,7 @@ export default function OrdersMyPage() {
             </div>
 
             {/* 배송 추적 */}
-            <div style={{ padding:'16px 20px', borderTop:'1px solid #f0f0f2', display:'flex', alignItems:'center', gap:'16px' }}>
+            <div style={{ padding:'16px 24px', borderTop:'1px solid #f0f0f2', display:'flex', alignItems:'center', gap:'16px' }}>
               <div>
                 <div style={{ fontSize:'11px', color:'#999', marginBottom:'4px' }}>배송사 / 운송장번호</div>
                 <div style={{ fontWeight:600, color:'#1a1a2e', fontSize:'14px' }}>
@@ -355,10 +351,11 @@ export default function OrdersMyPage() {
                 </button>
               )}
             </div>
-          </div>
-        )}
 
-      </div>
+          </div>
+        </div>
+      )}
+
     </>
   )
 }
