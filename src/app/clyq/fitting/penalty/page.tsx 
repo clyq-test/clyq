@@ -1,0 +1,202 @@
+// @ts-nocheck
+'use client'
+import { useState } from 'react'
+
+const penalties = [
+  { id:'PEN-2026-001', fitId:'FIT-2026-0507-024', brand:'MATIN KIM', product:'레더 재킷', customer:'한**', phone:'010-****-5678', damageType:'훼손', detail:'소매 부분 스크래치', basePrice:456000, rate:30, amount:136800, status:'청구 대기', claimedAt:'', paidAt:'', inspDate:'2026-05-10' },
+  { id:'PEN-2026-002', fitId:'FIT-2026-0505-011', brand:'MARCIA', product:'캐시미어 니트', customer:'정**', phone:'010-****-1122', damageType:'오염', detail:'전체적 오염 (세탁 불가)', basePrice:178000, rate:70, amount:124600, status:'청구 완료', claimedAt:'2026-05-09', paidAt:'', inspDate:'2026-05-08' },
+  { id:'PEN-2026-003', fitId:'FIT-2026-0503-007', brand:'EENK', product:'더블 브레스트 코트', customer:'이**', phone:'010-****-3344', damageType:'분실', detail:'제품 미반납', basePrice:528000, rate:100, amount:528000, status:'납부 완료', claimedAt:'2026-05-05', paidAt:'2026-05-08', inspDate:'2026-05-05' },
+  { id:'PEN-2026-004', fitId:'FIT-2026-0501-003', brand:'ADER ERROR', product:'그래픽 후드집업', customer:'최**', phone:'010-****-5566', damageType:'훼손', detail:'지퍼 파손', basePrice:198000, rate:30, amount:59400, status:'분쟁 중', claimedAt:'2026-05-03', paidAt:'', inspDate:'2026-05-02' },
+]
+
+const statusStyle = {
+  '청구 대기': { bg:'#fff7ed', color:'#C94E1A' },
+  '청구 완료': { bg:'#eff6ff', color:'#2563eb' },
+  '납부 완료': { bg:'#f0fdf4', color:'#16a34a' },
+  '분쟁 중':   { bg:'#fff1f0', color:'#dc2626' },
+}
+
+const damageStyle = {
+  '훼손': { bg:'#fff1f0', color:'#dc2626' },
+  '오염': { bg:'#fefce8', color:'#ca8a04' },
+  '분실': { bg:'#faf5ff', color:'#7c3aed' },
+}
+
+export default function PenaltyPage() {
+  const [items, setItems] = useState(penalties)
+  const [filter, setFilter] = useState('전체')
+  const [selected, setSelected] = useState(null)
+
+  const filtered = filter === '전체' ? items : items.filter(i => i.status === filter)
+  const totalAmt = items.reduce((s, i) => s + i.amount, 0)
+  const paidAmt  = items.filter(i => i.status === '납부 완료').reduce((s, i) => s + i.amount, 0)
+  const pendAmt  = items.filter(i => i.status !== '납부 완료').reduce((s, i) => s + i.amount, 0)
+
+  function claim(id) {
+    setItems(prev => prev.map(i =>
+      i.id === id ? { ...i, status:'청구 완료', claimedAt: new Date().toLocaleDateString('ko-KR') } : i
+    ))
+  }
+  function confirmPaid(id) {
+    setItems(prev => prev.map(i =>
+      i.id === id ? { ...i, status:'납부 완료', paidAt: new Date().toLocaleDateString('ko-KR') } : i
+    ))
+  }
+
+  return (
+    <>
+      <style>{`
+        .pen-wrap { width:100%; }
+        .pen-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+        .pen-stat { background:#fff; border:1px solid #e8e8eb; border-radius:8px; padding:16px 20px; }
+        .pen-card { background:#fff; border:1px solid #e8e8eb; border-radius:8px; overflow:hidden; }
+        .pen-filter-bar { display:flex; gap:6px; padding:12px 20px; border-bottom:1px solid #f0f0f2; flex-wrap:wrap; }
+        .pen-fb { padding:5px 14px; border-radius:20px; border:1px solid #d8d8dc; background:#fff; font-size:12px; cursor:pointer; color:#666; font-family:inherit; }
+        .pen-fb.on { background:#1a1a2e; border-color:#1a1a2e; color:#fff; font-weight:600; }
+        .pen-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+        .pen-tbl th { padding:10px 14px; text-align:left; font-size:11px; font-weight:600; color:#999; background:#fafafa; border-bottom:1px solid #f0f0f2; white-space:nowrap; }
+        .pen-tbl td { padding:13px 14px; border-bottom:1px solid #f5f5f7; color:#333; vertical-align:middle; white-space:nowrap; }
+        .pen-tbl tr:last-child td { border-bottom:none; }
+        .pen-tbl tbody tr:hover td { background:#fafafa; }
+        .pen-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:11px; font-weight:600; }
+        .pen-btn-red { padding:5px 12px; background:#dc2626; color:#fff; border:none; border-radius:3px; font-size:11px; cursor:pointer; font-family:inherit; font-weight:600; }
+        .pen-btn-green { padding:5px 12px; background:#16a34a; color:#fff; border:none; border-radius:3px; font-size:11px; cursor:pointer; font-family:inherit; font-weight:600; }
+        .pen-btn-gray { padding:5px 12px; background:#f5f5f7; color:'#555'; border:1px solid #e0e0e0; border-radius:3px; font-size:11px; cursor:pointer; font-family:inherit; }
+
+        /* 상세 모달 */
+        .pen-modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .pen-modal { background:#fff; border-radius:8px; width:100%; max-width:560px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+        .pen-modal-head { padding:18px 24px; background:#1a1a2e; color:#fff; display:flex; align-items:center; justify-content:space-between; }
+        .pen-modal-body { padding:0; }
+        .pen-info-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+        .pen-info-tbl th { padding:12px 18px; background:#fafafa; font-weight:600; color:#555; font-size:12px; border:1px solid #f0f0f2; text-align:left; width:130px; }
+        .pen-info-tbl td { padding:12px 18px; color:#1a1a2e; border:1px solid #f0f0f2; }
+
+        @media (max-width:768px) { .pen-stat-grid { grid-template-columns:repeat(2,1fr); } }
+      `}</style>
+
+      <div className="pen-wrap">
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'20px', flexWrap:'wrap', gap:'10px' }}>
+          <div>
+            <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>피팅박스 관리 › 훼손 패널티</div>
+            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>훼손 패널티 관리</h1>
+          </div>
+        </div>
+
+        {/* 요약 */}
+        <div className="pen-stat-grid">
+          {[
+            { label:'전체 패널티 건수', value: items.length + '건', color:'#1a1a2e' },
+            { label:'총 청구 금액', value: totalAmt.toLocaleString() + '원', color:'#dc2626' },
+            { label:'납부 완료', value: paidAmt.toLocaleString() + '원', color:'#16a34a' },
+            { label:'미납 금액', value: pendAmt.toLocaleString() + '원', color:'#C94E1A' },
+          ].map(s => (
+            <div key={s.label} className="pen-stat">
+              <div style={{ fontSize:'11px', color:'#999', marginBottom:'8px' }}>{s.label}</div>
+              <div style={{ fontSize:'20px', fontWeight:800, color:s.color }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* 테이블 */}
+        <div className="pen-card">
+          <div className="pen-filter-bar">
+            {['전체','청구 대기','청구 완료','납부 완료','분쟁 중'].map(f => (
+              <button key={f} className={filter === f ? 'pen-fb on' : 'pen-fb'} onClick={() => setFilter(f)}>{f}</button>
+            ))}
+          </div>
+          <div style={{ overflowX:'auto' }}>
+            <table className="pen-tbl">
+              <thead>
+                <tr>
+                  <th>패널티 ID</th>
+                  <th>브랜드</th>
+                  <th>제품명</th>
+                  <th>고객</th>
+                  <th style={{ textAlign:'center' }}>훼손 유형</th>
+                  <th>훼손 내용</th>
+                  <th style={{ textAlign:'right' }}>청구 금액</th>
+                  <th style={{ textAlign:'center' }}>상태</th>
+                  <th style={{ textAlign:'center' }}>처리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(item => {
+                  const ss = statusStyle[item.status] || { bg:'#f5f5f7', color:'#666' }
+                  const ds = damageStyle[item.damageType] || { bg:'#f5f5f7', color:'#666' }
+                  return (
+                    <tr key={item.id}>
+                      <td style={{ fontSize:'12px', color:'#888', fontFamily:'monospace', cursor:'pointer' }} onClick={() => setSelected(item)}>
+                        {item.id}
+                      </td>
+                      <td style={{ fontWeight:600 }}>{item.brand}</td>
+                      <td style={{ fontWeight:500, color:'#1a1a2e' }}>{item.product}</td>
+                      <td>{item.customer}</td>
+                      <td style={{ textAlign:'center' }}>
+                        <span className="pen-badge" style={{ background:ds.bg, color:ds.color }}>{item.damageType}</span>
+                      </td>
+                      <td style={{ color:'#666', fontSize:'12px' }}>{item.detail}</td>
+                      <td style={{ textAlign:'right', fontWeight:700, color:'#dc2626' }}>
+                        {item.amount.toLocaleString()}원
+                      </td>
+                      <td style={{ textAlign:'center' }}>
+                        <span className="pen-badge" style={{ background:ss.bg, color:ss.color }}>{item.status}</span>
+                      </td>
+                      <td style={{ textAlign:'center' }}>
+                        <div style={{ display:'flex', gap:'4px', justifyContent:'center' }}>
+                          {item.status === '청구 대기' && (
+                            <button className="pen-btn-red" onClick={() => claim(item.id)}>청구</button>
+                          )}
+                          {item.status === '청구 완료' && (
+                            <button className="pen-btn-green" onClick={() => confirmPaid(item.id)}>납부확인</button>
+                          )}
+                          <button className="pen-btn-gray" onClick={() => setSelected(item)}>상세</button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* 상세 모달 */}
+      {selected && (
+        <div className="pen-modal-bg" onClick={() => setSelected(null)}>
+          <div className="pen-modal" onClick={e => e.stopPropagation()}>
+            <div className="pen-modal-head">
+              <div>
+                <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.45)', marginBottom:'3px' }}>패널티 상세</div>
+                <div style={{ fontWeight:700, fontSize:'15px' }}>{selected.id}</div>
+              </div>
+              <button onClick={() => setSelected(null)} style={{ background:'rgba(255,255,255,0.12)', border:'none', color:'#fff', width:'30px', height:'30px', borderRadius:'50%', cursor:'pointer', fontSize:'16px', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'inherit' }}>
+                ✕
+              </button>
+            </div>
+            <div className="pen-modal-body">
+              <table className="pen-info-tbl">
+                <tbody>
+                  <tr><th>피팅 ID</th><td style={{ fontFamily:'monospace', fontSize:'12px' }}>{selected.fitId}</td></tr>
+                  <tr><th>브랜드</th><td>{selected.brand}</td></tr>
+                  <tr><th>제품명</th><td style={{ fontWeight:600 }}>{selected.product}</td></tr>
+                  <tr><th>고객</th><td>{selected.customer}  {selected.phone}</td></tr>
+                  <tr><th>훼손 유형</th><td>{selected.damageType}</td></tr>
+                  <tr><th>훼손 내용</th><td>{selected.detail}</td></tr>
+                  <tr><th>기준 가격</th><td>{selected.basePrice.toLocaleString()}원</td></tr>
+                  <tr><th>배상률</th><td>{selected.rate}%</td></tr>
+                  <tr><th>청구 금액</th><td style={{ fontWeight:700, color:'#dc2626', fontSize:'15px' }}>{selected.amount.toLocaleString()}원</td></tr>
+                  <tr><th>검수일</th><td>{selected.inspDate}</td></tr>
+                  <tr><th>청구일</th><td>{selected.claimedAt || '-'}</td></tr>
+                  <tr><th>납부일</th><td>{selected.paidAt || '-'}</td></tr>
+                  <tr><th>현재 상태</th><td><span className="pen-badge" style={{ background:statusStyle[selected.status]?.bg, color:statusStyle[selected.status]?.color }}>{selected.status}</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
