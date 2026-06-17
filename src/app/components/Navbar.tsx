@@ -72,6 +72,7 @@ export default function Navbar() {
           .nav-top { padding:0 16px !important; }
         }
 
+        /* ── Login Modal ── */
         .lm-bg { position:fixed; inset:0; background:rgba(28,24,20,.5); z-index:2000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
         .lm-box { background:#fff; width:min(420px,92vw); position:relative; }
         .lm-hd { padding:32px 36px 0; text-align:center; }
@@ -94,38 +95,47 @@ export default function Navbar() {
         .lm-signup { text-align:center; margin-top:12px; font-size:12px; color:#6A6460; padding-top:12px; border-top:1px solid #F0EBE4; }
         .lm-signup a { color:#3D6A4F; font-weight:500; text-decoration:none; }
 
+        /* ── Mega Menu ── */
         .mega-wrap { position:absolute; top:100%; left:0; right:0; background:#fff; border-top:1px solid #E4DFDA; border-bottom:1px solid #E4DFDA; box-shadow:0 8px 32px rgba(28,24,20,.07); z-index:400; padding:28px 40px; display:flex; gap:40px; }
         .mega-col { min-width:120px; }
         .mega-col-title { font-size:12px; font-weight:500; color:#1C1C1C; letter-spacing:0.04em; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #F0EBE4; }
         .mega-sub-link { display:block; font-size:12px; color:#6A6460; text-decoration:none; padding:5px 0; font-weight:300; transition:color .15s; }
         .mega-sub-link:hover { color:#3D6A4F; }
 
+        /* ── Category Tab ── */
         .cat-link { padding:0 14px; height:42px; display:flex; align-items:center; gap:4px; font-size:12.5px; color:#6A6460; text-decoration:none; font-weight:400; letter-spacing:0.02em; white-space:nowrap; border-bottom:2px solid transparent; cursor:pointer; transition:all 0.15s; background:none; border-top:none; border-left:none; border-right:none; font-family:inherit; }
         .cat-link:hover { color:#1C1C1C; }
         .cat-link.active { border-bottom-color:#1C1C1C; color:#1C1C1C; }
 
+        /* ── User Dropdown ── */
         .ud-drop { position:absolute; top:calc(100% + 8px); right:0; background:#fff; border:1px solid #E4DFDA; box-shadow:0 4px 20px rgba(28,24,20,.08); min-width:160px; z-index:600; }
         .udi { display:flex; align-items:center; gap:8px; padding:12px 16px; font-size:13px; color:#3A3835; cursor:pointer; text-decoration:none; border-bottom:1px solid #F7F4F0; transition:background .12s; }
         .udi:last-child { border-bottom:none; }
         .udi:hover { background:#F7F4F0; }
         .udi.red { color:#C04B4B; }
 
+        /* ── Withy Pill ── */
         .withy-pill { display:flex; align-items:center; gap:5px; padding:6px 12px; background:#F0EBE4; color:#A07A4E; font-size:11px; font-weight:500; border-radius:20px; transition:background .15s; }
         .withy-pill:hover { background:#E8DFD4; }
       `}</style>
 
-      {/* 공지 바 */}
+      {/* ── 공지 바 ── */}
       <div style={{ background: '#1C1C1C', color: 'rgba(247,244,240,0.6)', fontSize: '11px', textAlign: 'center', padding: '9px 0', letterSpacing: '0.03em' }}>
         <strong style={{ color: '#F7F4F0' }}>피팅박스 서비스</strong> — 입어보고 마음에 드는 것만 구매하세요 ·{' '}
         <a href="/community" style={{ color: '#C49A6C', textDecoration: 'none', fontWeight: 500 }}>커뮤니티 활동으로 위디 적립 ›</a>
       </div>
 
-      {/* Nav */}
+      {/* ── Nav ── */}
       <nav
         style={{ position: 'sticky', top: 0, zIndex: 500, background: '#fff', borderBottom: '1px solid #E4DFDA' }}
         onMouseLeave={() => setMegaOpen(null)}
       >
-        <div className="nav-top" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '60px', borderBottom: '1px solid #E4DFDA' }}>
+        {/* 상단 바 */}
+        <div
+          className="nav-top"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '60px', borderBottom: '1px solid #E4DFDA' }}
+        >
+          {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
             <a href="/" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '25px', fontWeight: 600, letterSpacing: '0.12em', color: '#1C1C1C', textDecoration: 'none' }}>
               CLYQ
@@ -140,16 +150,20 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* 검색 */}
           <div className="nav-ds" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #E4DFDA', padding: '8px 14px', width: '240px', background: '#FAFAF8' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A09B97" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /></svg>
             <input type="text" placeholder="브랜드, 상품명 검색" style={{ border: 'none', outline: 'none', fontSize: '12px', width: '100%', background: 'transparent', fontFamily: 'inherit', color: '#1C1C1C' }} />
           </div>
 
+          {/* 아이콘 영역 */}
           <div className="nav-di" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <a href="/withy" className="withy-pill">
               <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#C49A6C' }} />
               위디 2,400P
             </a>
+
+            {/* 찜 */}
             <div onClick={() => !isLoggedIn && openLogin()}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
@@ -157,6 +171,8 @@ export default function Navbar() {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
               찜
             </div>
+
+            {/* 장바구니 */}
             <div onClick={() => !isLoggedIn && openLogin()}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
@@ -164,6 +180,8 @@ export default function Navbar() {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
               장바구니
             </div>
+
+            {/* 유저 */}
             {isLoggedIn ? (
               <div style={{ position: 'relative' }}>
                 <button onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -181,14 +199,14 @@ export default function Navbar() {
                     <div style={{ position: 'fixed', inset: 0, zIndex: 590 }} onClick={() => setUserMenuOpen(false)} />
                     <div className="ud-drop">
                       {[
-                        { icon: '👤', label: '마이페이지', href: '/mypage' },
-                        { icon: '📦', label: '피팅 현황', href: '/mypage' },
-                        { icon: '🛍️', label: '주문 내역', href: '/mypage' },
-                        { icon: '💛', label: '위디 2,400P', href: '/withy' },
-                        { icon: '✨', label: 'AI 취향 설정', href: '/mypage' },
+                        { label: '마이페이지', href: '/mypage' },
+                        { label: '피팅 현황', href: '/mypage' },
+                        { label: '주문 내역', href: '/mypage' },
+                        { label: '위디 2,400P', href: '/withy' },
+                        { label: 'AI 취향 설정', href: '/mypage' },
                       ].map(item => (
                         <a key={item.label} href={item.href} className="udi" onClick={() => setUserMenuOpen(false)}>
-                          <span>{item.icon}</span>{item.label}
+                          {item.label}
                         </a>
                       ))}
                       <div className="udi red" onClick={() => { setUserMenuOpen(false); handleLogout() }}>
@@ -229,7 +247,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* 카테고리 탭 */}
+        {/* ── 카테고리 탭 ── */}
         <div className="nav-cats" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '42px', position: 'relative', background: '#fff' }}>
           {catItems.map(item => (
             <button key={item.label}
@@ -243,6 +261,7 @@ export default function Navbar() {
             </button>
           ))}
 
+          {/* 피팅박스관 탭 */}
           <a href="/fitting"
             style={{ padding: '0 16px', height: '42px', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#fff', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap', background: '#3D6A4F', marginLeft: '8px', letterSpacing: '0.03em', transition: 'background .15s' }}
             onMouseEnter={e => (e.currentTarget.style.background = '#2F5540')}
@@ -250,6 +269,7 @@ export default function Navbar() {
             피팅박스관
           </a>
 
+          {/* 메가메뉴 — 카테고리 */}
           {megaOpen === '카테고리' && (
             <div className="mega-wrap">
               {megaData['카테고리'].map((pair, pi) => (
@@ -267,6 +287,7 @@ export default function Navbar() {
             </div>
           )}
 
+          {/* 메가메뉴 — 브랜드 */}
           {megaOpen === '브랜드' && (
             <div className="mega-wrap">
               {megaData['브랜드'].map((col, ci) => (
@@ -283,7 +304,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* 모바일 드로어 */}
+        {/* ── 모바일 드로어 ── */}
         {menuOpen && (
           <div style={{ position: 'fixed', top: '95px', left: 0, right: 0, bottom: 0, background: '#fff', zIndex: 999, overflowY: 'auto', borderTop: '1px solid #E4DFDA' }}>
             <div style={{ padding: '12px 16px', borderBottom: '1px solid #E4DFDA', background: '#FAFAF8' }}>
@@ -346,7 +367,7 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* 로그인 모달 */}
+      {/* ── 로그인 모달 ── */}
       {loginOpen && (
         <div className="lm-bg" onClick={closeLogin}>
           <div className="lm-box" onClick={e => e.stopPropagation()}>
