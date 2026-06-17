@@ -3,47 +3,52 @@
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 
+/* ── Fallback image (이미지 로드 실패시 대체) ── */
+const FB_PRODUCT = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80&auto=format&fit=crop&crop=center'
+const FB_BANNER  = 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80&auto=format&fit=crop&crop=center'
+const FB_COMM    = 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=200&q=80&auto=format&fit=crop&crop=center'
+
 const banners = [
-  { title:'입어보고\n확실한 것만\n담아가세요', sub:'AI가 취향을 읽고 피팅 박스를 보내드려요.\n집에서 입어보고, 마음에 드는 것만 구매하면 됩니다.', image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&auto=format&fit=crop', tag:'2026 F/W NEW COLLECTION', cta:'피팅박스 신청', ctaLink:'/fitting' },
-  { title:'AI가 분석한\n나만의\n스타일 추천', sub:'5가지 질문으로 AI가 취향을 분석하고\n딱 맞는 제품을 골라드려요.', image:'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1200&auto=format&fit=crop', tag:'AI CURATION SERVICE', cta:'취향 분석 시작', ctaLink:'/mypage' },
-  { title:'위디 포인트로\n더 알차게\n쇼핑하세요', sub:'피팅하고 구매할 때마다 위디가 쌓여요.\n쌓인 위디로 다음 쇼핑이 더 저렴해집니다.', image:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&auto=format&fit=crop', tag:'WITHY POINT EVENT', cta:'위디 알아보기', ctaLink:'/withy' },
-  { title:'커뮤니티에서\n함께 나누는\n패션 이야기', sub:'피팅 후기, 스타일 공유, Q&A\n활동할수록 위디가 쌓여요.', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&auto=format&fit=crop', tag:'COMMUNITY OPEN', cta:'커뮤니티 가기', ctaLink:'/community' },
+  { title:'입어보고\n확실한 것만\n담아가세요', sub:'AI가 취향을 읽고 피팅 박스를 보내드려요.\n집에서 입어보고, 마음에 드는 것만 구매하면 됩니다.', image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80&auto=format&fit=crop&crop=center', tag:'2026 F/W NEW COLLECTION', cta:'피팅박스 신청', ctaLink:'/fitting' },
+  { title:'AI가 분석한\n나만의\n스타일 추천', sub:'5가지 질문으로 AI가 취향을 분석하고\n딱 맞는 제품을 골라드려요.', image:'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1200&q=80&auto=format&fit=crop&crop=center', tag:'AI CURATION SERVICE', cta:'취향 분석 시작', ctaLink:'/mypage' },
+  { title:'위디 포인트로\n더 알차게\n쇼핑하세요', sub:'피팅하고 구매할 때마다 위디가 쌓여요.\n쌓인 위디로 다음 쇼핑이 더 저렴해집니다.', image:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80&auto=format&fit=crop&crop=center', tag:'WITHY POINT EVENT', cta:'위디 알아보기', ctaLink:'/withy' },
+  { title:'커뮤니티에서\n함께 나누는\n패션 이야기', sub:'피팅 후기, 스타일 공유, Q&A\n활동할수록 위디가 쌓여요.', image:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80&auto=format&fit=crop&crop=center', tag:'COMMUNITY OPEN', cta:'커뮤니티 가기', ctaLink:'/community' },
 ]
 
 const bestProducts = [
-  { id:1, brand:'MARCIA', name:'오버핏 캐시미어 울 코트', price:428000, original:520000, points:428, fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&auto=format&fit=crop', rank:1 },
-  { id:2, brand:'EIGHT', name:'셔링 디테일 미디 드레스', price:198000, original:240000, points:198, fit:true, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&auto=format&fit=crop', rank:2 },
-  { id:3, brand:'MATIN KIM', name:'오버핏 레더 재킷', price:578000, original:578000, points:578, fit:true, image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop', rank:3 },
-  { id:4, brand:'SORRY TOO MUCH LOVE', name:'메리노 울 니트 세트업', price:245000, original:245000, points:245, fit:false, image:'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&auto=format&fit=crop', rank:4 },
-  { id:5, brand:'ANDERSSONBELL', name:'테일러드 수트 재킷', price:318000, original:318000, points:318, fit:true, image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop', rank:5 },
+  { id:1, brand:'MARCIA', name:'오버핏 캐시미어 울 코트', price:428000, original:520000, points:428, fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&q=80&auto=format&fit=crop&crop=center', rank:1 },
+  { id:2, brand:'EIGHT', name:'셔링 디테일 미디 드레스', price:198000, original:240000, points:198, fit:true, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80&auto=format&fit=crop&crop=center', rank:2 },
+  { id:3, brand:'MATIN KIM', name:'오버핏 레더 재킷', price:578000, original:578000, points:578, fit:true, image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80&auto=format&fit=crop&crop=center', rank:3 },
+  { id:4, brand:'SORRY TOO MUCH LOVE', name:'메리노 울 니트 세트업', price:245000, original:245000, points:245, fit:false, image:'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80&auto=format&fit=crop&crop=center', rank:4 },
+  { id:5, brand:'ANDERSSONBELL', name:'테일러드 수트 재킷', price:318000, original:318000, points:318, fit:true, image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80&auto=format&fit=crop&crop=center', rank:5 },
 ]
 
 const newProducts = [
-  { id:6, brand:'EENK', name:'셔링 미디 스커트', price:148000, original:148000, points:148, fit:true, image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=600&auto=format&fit=crop' },
-  { id:7, brand:'D.POUND', name:'라운드넥 실크 블라우스', price:158000, original:198000, points:158, fit:true, image:'https://images.unsplash.com/photo-1594938298603-c8148f4851b8?w=600&auto=format&fit=crop' },
-  { id:8, brand:'ANOTHER A', name:'캐시미어 터틀넥 니트', price:218000, original:218000, points:218, fit:false, image:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&auto=format&fit=crop' },
-  { id:9, brand:'ADER ERROR', name:'오버핏 후드 스웨트셔츠', price:198000, original:198000, points:198, fit:true, image:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&auto=format&fit=crop' },
-  { id:10, brand:'MATIN KIM', name:'퀼팅 미니 숄더백', price:368000, original:368000, points:368, fit:false, image:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop' },
-  { id:11, brand:'MARCIA', name:'울 플리츠 와이드 팬츠', price:248000, original:298000, points:248, fit:true, image:'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&auto=format&fit=crop' },
-  { id:12, brand:'EENK', name:'오프숄더 리본 블라우스', price:168000, original:168000, points:168, fit:true, image:'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&auto=format&fit=crop' },
-  { id:13, brand:'D.POUND', name:'울 롱 스커트', price:228000, original:268000, points:228, fit:true, image:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop' },
-  { id:14, brand:'ANDERSSONBELL', name:'플리츠 와이드 슬랙스', price:238000, original:238000, points:238, fit:false, image:'https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&auto=format&fit=crop' },
-  { id:15, brand:'ANOTHER A', name:'패딩 숏 재킷', price:398000, original:398000, points:398, fit:true, image:'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop' },
-  { id:16, brand:'SORRY TOO MUCH LOVE', name:'벨벳 미니 원피스', price:188000, original:228000, points:188, fit:true, image:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&auto=format&fit=crop' },
-  { id:17, brand:'MARCIA', name:'캐시미어 브이넥 가디건', price:268000, original:268000, points:268, fit:true, image:'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&auto=format&fit=crop' },
+  { id:6,  brand:'EENK',              name:'셔링 미디 스커트',       price:148000, original:148000, points:148, fit:true,  image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:7,  brand:'D.POUND',           name:'라운드넥 실크 블라우스',  price:158000, original:198000, points:158, fit:true,  image:'https://images.unsplash.com/photo-1594938298603-c8148f4851b8?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:8,  brand:'ANOTHER A',         name:'캐시미어 터틀넥 니트',   price:218000, original:218000, points:218, fit:false, image:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:9,  brand:'ADER ERROR',        name:'오버핏 후드 스웨트셔츠', price:198000, original:198000, points:198, fit:true,  image:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:10, brand:'MATIN KIM',         name:'퀼팅 미니 숄더백',       price:368000, original:368000, points:368, fit:false, image:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:11, brand:'MARCIA',            name:'울 플리츠 와이드 팬츠',   price:248000, original:298000, points:248, fit:true,  image:'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:12, brand:'EENK',              name:'오프숄더 리본 블라우스', price:168000, original:168000, points:168, fit:true,  image:'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:13, brand:'D.POUND',           name:'울 롱 스커트',           price:228000, original:268000, points:228, fit:true,  image:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:14, brand:'ANDERSSONBELL',     name:'플리츠 와이드 슬랙스',   price:238000, original:238000, points:238, fit:false, image:'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:15, brand:'ANOTHER A',         name:'패딩 숏 재킷',           price:398000, original:398000, points:398, fit:true,  image:'https://images.unsplash.com/photo-1470309864661-68328b2cd0a5?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:16, brand:'SORRY TOO MUCH LOVE', name:'벨벳 미니 원피스',    price:188000, original:228000, points:188, fit:true,  image:'https://images.unsplash.com/photo-1479064555552-3ef4d0d2ada1?w=600&q=80&auto=format&fit=crop&crop=center' },
+  { id:17, brand:'MARCIA',            name:'캐시미어 브이넥 가디건', price:268000, original:268000, points:268, fit:true,  image:'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80&auto=format&fit=crop&crop=center' },
 ]
 
 const aiProducts = [
-  { id:1, brand:'MARCIA', name:'캐시미어 울 코트', price:428000, points:428, fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&auto=format&fit=crop', rank:1 },
-  { id:2, brand:'EENK', name:'셔링 미디 스커트', price:148000, points:148, fit:true, image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=400&auto=format&fit=crop', rank:2 },
-  { id:5, brand:'ANDERSSONBELL', name:'테일러드 재킷', price:318000, points:318, fit:true, image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&auto=format&fit=crop', rank:3 },
-  { id:7, brand:'D.POUND', name:'실크 블라우스', price:158000, points:158, fit:true, image:'https://images.unsplash.com/photo-1594938298603-c8148f4851b8?w=400&auto=format&fit=crop', rank:4 },
-  { id:12, brand:'EENK', name:'오프숄더 블라우스', price:168000, points:168, fit:true, image:'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&auto=format&fit=crop', rank:5 },
+  { id:1, brand:'MARCIA',        name:'캐시미어 울 코트',  price:428000, points:428, fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&q=80&auto=format&fit=crop&crop=center', rank:1 },
+  { id:2, brand:'EENK',          name:'셔링 미디 스커트',  price:148000, points:148, fit:true, image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=400&q=80&auto=format&fit=crop&crop=center', rank:2 },
+  { id:5, brand:'ANDERSSONBELL', name:'테일러드 재킷',     price:318000, points:318, fit:true, image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80&auto=format&fit=crop&crop=center', rank:3 },
+  { id:7, brand:'D.POUND',       name:'실크 블라우스',     price:158000, points:158, fit:true, image:'https://images.unsplash.com/photo-1594938298603-c8148f4851b8?w=400&q=80&auto=format&fit=crop&crop=center', rank:4 },
+  { id:12, brand:'EENK',         name:'오프숄더 블라우스', price:168000, points:168, fit:true, image:'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80&auto=format&fit=crop&crop=center', rank:5 },
 ]
 
 const communityPosts = [
-  { title:'마르시아 코트 S/M 비교 피팅 후기', author:'김지연', likes:48, comments:12, tag:'피팅 후기', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=200&auto=format&fit=crop' },
-  { title:'CLYQ 피팅박스로 건진 가을 코디', author:'박소연', likes:72, comments:24, tag:'스타일 공유', image:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&auto=format&fit=crop' },
+  { title:'마르시아 코트 S/M 비교 피팅 후기', author:'김지연', likes:48, comments:12, tag:'피팅 후기', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=200&q=80&auto=format&fit=crop&crop=center' },
+  { title:'CLYQ 피팅박스로 건진 가을 코디', author:'박소연', likes:72, comments:24, tag:'스타일 공유', image:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&q=80&auto=format&fit=crop&crop=center' },
   { title:'위디 골드 달성 후기 — 혜택 총정리', author:'강민수', likes:134, comments:45, tag:'자유게시판', image:null },
 ]
 
@@ -54,8 +59,13 @@ function ProductCard({ p }) {
     <a href={'/products/' + p.id} style={{display:'block',textDecoration:'none',color:'inherit'}}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <div style={{position:'relative',aspectRatio:'3/4',background:'#F0EBE4',overflow:'hidden',marginBottom:'10px'}}>
-        <img src={p.image} alt={p.name}
-          style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s ease',transform:hovered?'scale(1.04)':'scale(1)'}}/>
+        <img
+          src={p.image}
+          alt={p.name}
+          loading="lazy"
+          onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB_PRODUCT }}
+          style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.5s ease',transform:hovered?'scale(1.04)':'scale(1)'}}
+        />
         <div style={{position:'absolute',top:'10px',left:'10px',display:'flex',flexDirection:'column',gap:'4px'}}>
           {p.rank && p.rank <= 5 && (
             <span style={{background:'rgba(0,0,0,0.5)',color:'#fff',fontSize:'10px',fontWeight:400,padding:'3px 9px',fontFamily:"'Cormorant Garamond',Georgia,serif",letterSpacing:'1px'}}>
@@ -65,7 +75,7 @@ function ProductCard({ p }) {
           {p.fit && <span style={{background:'#3D6A4F',color:'#fff',fontSize:'8px',fontWeight:500,padding:'2px 6px',letterSpacing:'0.5px'}}>피팅</span>}
         </div>
         <button
-          style={{position:'absolute',top:'10px',right:'10px',width:'32px',height:'32px',borderRadius:'50%',background:'rgba(255,255,255,0.9)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}
+          style={{position:'absolute',top:'10px',right:'10px',width:'32px',height:'32px',borderRadius:'50%',background:'rgba(255,255,255,0.9)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',touchAction:'manipulation'}}
           onClick={e => e.preventDefault()}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6A6460" strokeWidth="1.5">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -73,9 +83,9 @@ function ProductCard({ p }) {
         </button>
         {hovered && (
           <div style={{position:'absolute',bottom:0,left:0,right:0,display:'flex'}}>
-            <button style={{flex:1,padding:'11px',background:'#3D6A4F',color:'#fff',fontSize:'11px',fontWeight:400,border:'none',cursor:'pointer',letterSpacing:'0.5px'}}
+            <button style={{flex:1,padding:'11px',background:'#3D6A4F',color:'#fff',fontSize:'11px',fontWeight:400,border:'none',cursor:'pointer',letterSpacing:'0.5px',touchAction:'manipulation'}}
               onClick={e => e.preventDefault()}>피팅박스 담기</button>
-            <button style={{width:'44px',padding:'11px',background:'#1C1C1C',color:'#fff',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}
+            <button style={{width:'44px',padding:'11px',background:'#1C1C1C',color:'#fff',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',touchAction:'manipulation'}}
               onClick={e => e.preventDefault()}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -124,6 +134,15 @@ export default function Home() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
+        /* ── 전역 터치 최적화 ── */
+        *, *::before, *::after {
+          -webkit-tap-highlight-color: transparent;
+          box-sizing: border-box;
+        }
+        button, a { touch-action: manipulation; }
+        img { display: block; }
+
+        /* ── 히어로 ── */
         .hero { position:relative; height:580px; overflow:hidden; background:#EDE8E0; }
         .hero-img { position:absolute; right:0; top:0; width:58%; height:100%; object-fit:cover; opacity:0.6; }
         .hero-inner { position:relative; z-index:2; padding:0 80px; height:100%; display:flex; align-items:center; }
@@ -131,76 +150,135 @@ export default function Home() {
         .hero-title { font-family:'Cormorant Garamond',Georgia,serif; font-size:56px; font-weight:300; color:#1C1C1C; line-height:1.12; margin-bottom:18px; white-space:pre-line; }
         .hero-desc { font-size:12.5px; color:#6A6460; font-weight:300; line-height:1.9; margin-bottom:32px; white-space:pre-line; }
         .hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
-        .hero-btn-p { padding:13px 28px; background:#3D6A4F; color:#fff; font-size:12px; font-weight:400; text-decoration:none; letter-spacing:0.5px; transition:background .2s; }
+        .hero-btn-p { padding:14px 28px; background:#3D6A4F; color:#fff; font-size:12px; font-weight:400; text-decoration:none; letter-spacing:0.5px; transition:background .2s; min-height:44px; display:flex; align-items:center; justify-content:center; }
         .hero-btn-p:hover { background:#2F5540; }
-        .hero-btn-s { padding:12px 22px; border:1px solid #6A6460; color:#6A6460; font-size:12px; text-decoration:none; transition:all .2s; }
+        .hero-btn-s { padding:13px 22px; border:1px solid #6A6460; color:#6A6460; font-size:12px; text-decoration:none; transition:all .2s; min-height:44px; display:flex; align-items:center; justify-content:center; }
         .hero-btn-s:hover { border-color:#1C1C1C; color:#1C1C1C; }
 
+        /* ── 카테고리 텍스트 탭 ── */
         .cat-text-strip { display:flex; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid #E4DFDA; background:#fff; }
         .cat-text-strip::-webkit-scrollbar { display:none; }
-        .cat-tab { flex-shrink:0; padding:0 18px; height:42px; display:flex; align-items:center; font-size:12px; color:#A09B97; text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent; transition:all .15s; font-weight:300; letter-spacing:0.3px; }
+        .cat-tab { flex-shrink:0; padding:0 18px; height:44px; display:flex; align-items:center; font-size:12px; color:#A09B97; text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent; transition:all .15s; font-weight:300; letter-spacing:0.3px; }
         .cat-tab:hover { color:#1C1C1C; }
         .cat-tab.fit { background:#3D6A4F; color:#fff !important; font-weight:400; border-bottom:2px solid #3D6A4F; }
         .cat-tab.sale { color:#C04B4B !important; }
 
+        /* ── AI 추천 바 ── */
         .ai-rec-bar { padding:11px 40px; background:#F7F4F0; border-bottom:1px solid #E4DFDA; display:flex; align-items:center; gap:12px; overflow-x:auto; scrollbar-width:none; }
         .ai-rec-bar::-webkit-scrollbar { display:none; }
         .ai-rec-label { font-size:9px; letter-spacing:2.5px; color:#A09B97; white-space:nowrap; flex-shrink:0; }
         .ai-rec-div { width:1px; height:12px; background:#E4DFDA; flex-shrink:0; }
-        .ai-rec-chip { font-size:11px; color:#3A3835; background:#fff; border:1px solid #E4DFDA; padding:5px 13px; white-space:nowrap; flex-shrink:0; text-decoration:none; transition:border-color .15s; }
+        .ai-rec-chip { font-size:11px; color:#3A3835; background:#fff; border:1px solid #E4DFDA; padding:7px 13px; white-space:nowrap; flex-shrink:0; text-decoration:none; transition:border-color .15s; min-height:32px; display:flex; align-items:center; }
         .ai-rec-chip:hover { border-color:#A09B97; }
         .ai-rec-more { font-size:11px; color:#3D6A4F; white-space:nowrap; flex-shrink:0; text-decoration:none; margin-left:4px; }
 
+        /* ── 섹션 공통 ── */
         .sec-pad { padding:52px 40px; }
-        .sec-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+        .sec-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; flex-wrap:wrap; gap:8px; }
         .sec-label { font-size:9px; letter-spacing:3px; color:#A09B97; margin-bottom:7px; }
         .sec-title { font-family:'Cormorant Garamond',Georgia,serif; font-size:26px; font-weight:400; color:#1C1C1C; }
-        .sec-more { font-size:11px; color:#A09B97; text-decoration:none; }
+        .sec-more { font-size:11px; color:#A09B97; text-decoration:none; min-height:44px; display:flex; align-items:center; }
         .sec-more:hover { color:#1C1C1C; }
 
+        /* ── 그리드 ── */
         .grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:28px 16px; }
         .grid-6 { display:grid; grid-template-columns:repeat(6,1fr); gap:28px 16px; }
 
+        /* ── 피팅박스 스트립 ── */
         .fit-strip { background:#1C1C1C; padding:16px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
         .fit-strip-right { display:flex; gap:36px; align-items:center; flex-wrap:wrap; }
 
+        /* ── 기획전 ── */
         .ed-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:0 40px 52px; }
         .ed-card { position:relative; overflow:hidden; display:block; text-decoration:none; aspect-ratio:4/5; }
         .ed-img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s ease; }
         .ed-card:hover .ed-img { transform:scale(1.03); }
 
+        /* ── 커뮤니티 + 매거진 ── */
         .comm-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; padding:0 40px 52px; }
         .cm-post { display:flex; gap:14px; padding:14px 0; border-bottom:1px solid #F0EBE4; text-decoration:none; color:inherit; }
         .cm-post:last-child { border-bottom:none; }
 
+        /* ── 위디 박스 ── */
         .withy-box { margin:0 40px 52px; border:1px solid #E4DFDA; padding:28px 32px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; background:#fff; }
 
-        .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.08); }
+        /* ── 파트너 브랜드 ── */
+        .brand-strip { padding:32px 40px; border-top:1px solid #E4DFDA; border-bottom:1px solid #E4DFDA; }
+        .brand-list { display:flex; gap:32px; align-items:center; justify-content:center; flex-wrap:wrap; }
 
+        /* ── 푸터 ── */
+        .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.08); }
+        .footer-bottom { display:flex; justify-content:space-between; font-size:10px; color:rgba(255,255,255,0.18); flex-wrap:wrap; gap:8px; }
+
+        /* ══════════════════════════════════════════
+           모바일 (≤ 768px)
+        ══════════════════════════════════════════ */
         @media (max-width:768px) {
-          .hero { height:auto; min-height:440px; }
-          .hero-img { width:100%; opacity:0.2; }
-          .hero-inner { padding:48px 20px; align-items:flex-start; }
-          .hero-title { font-size:32px; }
-          .hero-desc { font-size:12px; margin-bottom:20px; }
-          .hero-btns { flex-direction:column; gap:8px; }
+          /* 히어로 */
+          .hero { height:auto; min-height:420px; }
+          .hero-img { width:100%; height:100%; opacity:0.18; }
+          .hero-inner { padding:52px 20px; align-items:flex-start; }
+          .hero-eyebrow { font-size:8px; letter-spacing:3px; }
+          .hero-title { font-size:34px; }
+          .hero-desc { font-size:12px; margin-bottom:24px; }
+          .hero-btns { flex-direction:column; gap:8px; width:100%; max-width:280px; }
+          .hero-btn-p { display:block; text-align:center; }
+          .hero-btn-s { display:block; text-align:center; }
+
+          /* 카테고리 탭 */
+          .cat-tab { padding:0 14px; font-size:11px; }
+
+          /* AI 바 */
           .ai-rec-bar { padding:10px 16px; }
+          .ai-rec-label { display:none; }
+          .ai-rec-div { display:none; }
+
+          /* 섹션 */
+          .sec-pad { padding:28px 16px; }
+          .sec-title { font-size:22px; }
+          .sec-row { margin-bottom:20px; }
+
+          /* 그리드 */
           .grid-5 { grid-template-columns:repeat(2,1fr); gap:20px 10px; }
           .grid-6 { grid-template-columns:repeat(2,1fr); gap:20px 10px; }
-          .sec-pad { padding:32px 16px; }
-          .fit-strip { padding:14px 16px; }
-          .fit-strip-right { gap:16px; }
-          .ed-grid { grid-template-columns:1fr; padding:0 16px 36px; }
+
+          /* 피팅박스 스트립 */
+          .fit-strip { padding:16px; flex-direction:column; align-items:flex-start; gap:16px; }
+          .fit-strip-right { width:100%; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+          .fit-strip-right a { grid-column:1/-1; text-align:center; }
+
+          /* 기획전 */
+          .ed-grid { grid-template-columns:1fr; padding:0 16px 36px; gap:10px; }
+          .ed-card { aspect-ratio:16/9; }
+
+          /* 커뮤니티 */
           .comm-grid { grid-template-columns:1fr; padding:0 16px 36px; gap:0; }
-          .withy-box { margin:0 16px 36px; padding:20px; }
+          .cm-post img { width:52px !important; height:52px !important; min-width:52px; }
+
+          /* 위디 박스 */
+          .withy-box { margin:0 16px 36px; padding:20px; flex-direction:column; align-items:flex-start; gap:20px; }
+
+          /* 파트너 브랜드 */
+          .brand-strip { padding:24px 16px; }
+          .brand-list { gap:16px; }
+
+          /* 푸터 */
           .footer-grid { grid-template-columns:1fr 1fr; gap:24px; }
+          .footer-bottom { flex-direction:column; gap:4px; }
         }
+
+        /* 태블릿 (769–1024px) */
         @media (max-width:1024px) and (min-width:769px) {
           .grid-5 { grid-template-columns:repeat(3,1fr); }
           .grid-6 { grid-template-columns:repeat(3,1fr); }
           .hero-inner { padding:0 48px; }
           .hero-title { font-size:46px; }
           .footer-grid { grid-template-columns:1fr 1fr 1fr; }
+          .sec-pad { padding:40px 24px; }
+          .ed-grid { padding:0 24px 40px; }
+          .comm-grid { padding:0 24px 40px; gap:24px; }
+          .withy-box { margin:0 24px 40px; }
+          .brand-strip { padding:28px 24px; }
         }
       `}</style>
 
@@ -208,7 +286,12 @@ export default function Home() {
 
       {/* ── 히어로 ── */}
       <div className="hero">
-        <img className="hero-img" src={b.image} alt="banner"/>
+        <img
+          className="hero-img"
+          src={b.image}
+          alt="banner"
+          onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB_BANNER }}
+        />
         <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,rgba(237,232,224,0.97) 42%,rgba(237,232,224,0.55) 68%,transparent 100%)',zIndex:1}}/>
         <div className="hero-inner">
           <div style={{maxWidth:'440px'}}>
@@ -290,7 +373,7 @@ export default function Home() {
       {/* ── 피팅박스 서비스 스트립 ── */}
       <div className="fit-strip">
         <div style={{display:'flex',alignItems:'center',gap:'16px'}}>
-          <span style={{background:'#3D6A4F',color:'#fff',fontSize:'9px',fontWeight:500,padding:'5px 10px',letterSpacing:'1.5px'}}>FITTING BOX</span>
+          <span style={{background:'#3D6A4F',color:'#fff',fontSize:'9px',fontWeight:500,padding:'5px 10px',letterSpacing:'1.5px',whiteSpace:'nowrap'}}>FITTING BOX</span>
           <span style={{fontSize:'13px',color:'rgba(255,255,255,0.7)',fontWeight:300}}>
             <strong style={{fontWeight:500,color:'#fff'}}>집에서 먼저 입어보고</strong>, 마음에 드는 옷만 구매하세요
           </span>
@@ -303,7 +386,7 @@ export default function Home() {
             </div>
           ))}
           <a href="/fitting"
-            style={{fontSize:'11px',color:'rgba(255,255,255,0.6)',border:'1px solid rgba(255,255,255,0.2)',padding:'9px 18px',textDecoration:'none',transition:'all .2s'}}
+            style={{fontSize:'11px',color:'rgba(255,255,255,0.6)',border:'1px solid rgba(255,255,255,0.2)',padding:'10px 18px',textDecoration:'none',transition:'all .2s',minHeight:'40px',display:'flex',alignItems:'center',justifyContent:'center',whiteSpace:'nowrap'}}
             onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.5)';e.currentTarget.style.color='#fff'}}
             onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.2)';e.currentTarget.style.color='rgba(255,255,255,0.6)'}}>
             신청하기 →
@@ -328,12 +411,18 @@ export default function Home() {
       {/* ── 기획전 ── */}
       <div className="ed-grid">
         {[
-          {title:'F/W 코트 피팅박스', sub:'이번 시즌 베스트 코트 7선', badge:'FITTING', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=700&auto=format&fit=crop', link:'/fitting'},
-          {title:'출근룩 스타일 가이드', sub:'데이터로 본 오피스 베스트', badge:'STYLING', image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&auto=format&fit=crop', link:'/magazine'},
-          {title:'순환유통 특별전', sub:'피팅 후 반납 제품의 새 여정', badge:'ECO', image:'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=700&auto=format&fit=crop', link:'/fitting'},
+          {title:'F/W 코트 피팅박스', sub:'이번 시즌 베스트 코트 7선', badge:'FITTING', image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=700&q=80&auto=format&fit=crop&crop=center', link:'/fitting'},
+          {title:'출근룩 스타일 가이드', sub:'데이터로 본 오피스 베스트', badge:'STYLING', image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&q=80&auto=format&fit=crop&crop=center', link:'/magazine'},
+          {title:'순환유통 특별전', sub:'피팅 후 반납 제품의 새 여정', badge:'ECO', image:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=80&auto=format&fit=crop&crop=center', link:'/fitting'},
         ].map((ed,i) => (
           <a key={i} href={ed.link} className="ed-card">
-            <img className="ed-img" src={ed.image} alt={ed.title}/>
+            <img
+              className="ed-img"
+              src={ed.image}
+              alt={ed.title}
+              loading="lazy"
+              onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB_BANNER }}
+            />
             <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(0,0,0,0.65) 0%,transparent 50%)'}}/>
             <div style={{position:'absolute',top:'16px',left:'16px',fontSize:'9px',letterSpacing:'2.5px',color:'rgba(255,255,255,0.65)',fontWeight:400}}>{ed.badge}</div>
             <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'20px'}}>
@@ -357,7 +446,13 @@ export default function Home() {
           {communityPosts.map((post,i) => (
             <a key={i} href="/community" className="cm-post">
               {post.image
-                ? <img src={post.image} alt={post.title} style={{width:'60px',height:'60px',objectFit:'cover',flexShrink:0}}/>
+                ? <img
+                    src={post.image}
+                    alt={post.title}
+                    loading="lazy"
+                    onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB_COMM }}
+                    style={{width:'60px',height:'60px',objectFit:'cover',flexShrink:0}}
+                  />
                 : <div style={{width:'60px',height:'60px',flexShrink:0,background:'#F0EBE4',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A09B97" strokeWidth="1.5">
                       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -375,7 +470,7 @@ export default function Home() {
               </div>
             </a>
           ))}
-          <a href="/community" style={{display:'block',marginTop:'14px',padding:'12px',border:'1px solid #E4DFDA',textAlign:'center',fontSize:'12px',color:'#6A6460',textDecoration:'none',fontWeight:300,letterSpacing:'0.3px'}}>
+          <a href="/community" style={{display:'block',marginTop:'14px',padding:'14px',border:'1px solid #E4DFDA',textAlign:'center',fontSize:'12px',color:'#6A6460',textDecoration:'none',fontWeight:300,letterSpacing:'0.3px',minHeight:'44px',display:'flex',alignItems:'center',justifyContent:'center'}}>
             피팅 후기 작성하기 — 위디 50P 적립
           </a>
         </div>
@@ -390,8 +485,13 @@ export default function Home() {
           </div>
           <a href="/magazine" style={{textDecoration:'none',color:'inherit',display:'block'}}>
             <div style={{position:'relative',height:'180px',overflow:'hidden',background:'#EDE8E0',marginBottom:'14px'}}>
-              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&auto=format&fit=crop" alt="매거진"
-                style={{width:'100%',height:'100%',objectFit:'cover',opacity:0.7,display:'block'}}/>
+              <img
+                src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&q=80&auto=format&fit=crop&crop=center"
+                alt="매거진"
+                loading="lazy"
+                onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB_BANNER }}
+                style={{width:'100%',height:'100%',objectFit:'cover',opacity:0.7,display:'block'}}
+              />
               <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(28,24,20,0.7) 0%,transparent 50%)'}}/>
               <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'16px'}}>
                 <div style={{fontSize:'9px',letterSpacing:'2px',color:'#C49A6C',fontWeight:500,marginBottom:'5px'}}>TREND</div>
@@ -405,12 +505,12 @@ export default function Home() {
             {title:'40대 여성이 가장 많이 선택한 스타일', tag:'STYLING', date:'2026.04.20'},
           ].map((art,i) => (
             <a key={i} href="/magazine"
-              style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'11px 0',borderBottom:'1px solid #F0EBE4',textDecoration:'none',color:'inherit'}}>
+              style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'12px 0',borderBottom:'1px solid #F0EBE4',textDecoration:'none',color:'inherit',minHeight:'44px'}}>
               <div style={{flex:1,paddingRight:'10px'}}>
                 <div style={{fontSize:'9px',color:'#3D6A4F',fontWeight:500,marginBottom:'3px',letterSpacing:'0.5px'}}>{art.tag}</div>
                 <div style={{fontSize:'12px',color:'#3A3835',lineHeight:1.45,fontWeight:300}}>{art.title}</div>
               </div>
-              <div style={{fontSize:'10px',color:'#D4CFC9',flexShrink:0}}>{art.date}</div>
+              <div style={{fontSize:'10px',color:'#D4CFC9',flexShrink:0,paddingTop:'2px'}}>{art.date}</div>
             </a>
           ))}
         </div>
@@ -430,14 +530,14 @@ export default function Home() {
               <div style={{fontSize:'10px',color:'#A09B97',marginTop:'3px'}}>{s.label}</div>
             </div>
           ))}
-          <a href="/withy" style={{padding:'12px 22px',background:'#1C1C1C',color:'#fff',fontSize:'12px',fontWeight:400,textDecoration:'none',letterSpacing:'0.3px'}}>위디 알아보기</a>
+          <a href="/withy" style={{padding:'13px 22px',background:'#1C1C1C',color:'#fff',fontSize:'12px',fontWeight:400,textDecoration:'none',letterSpacing:'0.3px',minHeight:'44px',display:'flex',alignItems:'center'}}>위디 알아보기</a>
         </div>
       </div>
 
       {/* ── 파트너 브랜드 ── */}
-      <div style={{padding:'32px 40px',borderTop:'1px solid #E4DFDA',borderBottom:'1px solid #E4DFDA'}}>
+      <div className="brand-strip">
         <div style={{fontSize:'9px',letterSpacing:'3px',color:'#A09B97',textAlign:'center',marginBottom:'22px'}}>CLYQ PARTNER BRANDS</div>
-        <div style={{display:'flex',gap:'32px',alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
+        <div className="brand-list">
           {['MARCIA','MATIN KIM','EENK','D.POUND','ANOTHER A','EIGHT','ANDERSSONBELL','ADER ERROR'].map(br => (
             <div key={br}
               style={{fontFamily:"'Cormorant Garamond',Georgia,serif",fontSize:'13px',fontWeight:300,color:'#A09B97',letterSpacing:'2px',cursor:'pointer',transition:'color 0.2s'}}
@@ -470,7 +570,7 @@ export default function Home() {
               <div style={{display:'flex',flexDirection:'column',gap:'11px'}}>
                 {col.links.map(l => (
                   <a key={l.t} href={l.h}
-                    style={{fontSize:'12px',color:'rgba(255,255,255,0.25)',textDecoration:'none',fontWeight:300,transition:'color .15s'}}
+                    style={{fontSize:'12px',color:'rgba(255,255,255,0.25)',textDecoration:'none',fontWeight:300,transition:'color .15s',minHeight:'28px',display:'flex',alignItems:'center'}}
                     onMouseEnter={e=>(e.currentTarget.style.color='rgba(255,255,255,0.65)')}
                     onMouseLeave={e=>(e.currentTarget.style.color='rgba(255,255,255,0.25)')}>
                     {l.t}
@@ -480,12 +580,13 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'rgba(255,255,255,0.18)',flexWrap:'wrap',gap:'8px'}}>
+        <div className="footer-bottom">
           <span>© 2026 CLYQ Inc. exyai company. 통신판매업신고: 2026-서울강남-0000 대표: 학선</span>
           <span>사업자등록번호: 000-00-00000</span>
         </div>
       </footer>
 
+      {/* ── 토스트 ── */}
       <div style={{
         position:'fixed', bottom:'24px', left:'50%',
         transform: toast ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(60px)',

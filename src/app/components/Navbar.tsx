@@ -63,13 +63,23 @@ export default function Navbar() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
+        /* ── 전역 터치 최적화 ── */
+        *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+        button, a { touch-action: manipulation; }
+
         @media (max-width:768px) {
           .nav-dm { display:none !important; }
           .nav-ds { display:none !important; }
           .nav-di { display:none !important; }
           .nav-hb { display:flex !important; }
           .nav-cats { display:none !important; }
-          .nav-top { padding:0 16px !important; }
+          .nav-top { padding:0 16px !important; height:52px !important; }
+          .withy-pill { display:none !important; }
+        }
+        @media (max-width:360px) {
+          .lm-box { width:96vw; }
+          .lm-hd { padding:24px 20px 0; }
+          .lm-body { padding:20px; }
         }
 
         /* ── Login Modal ── */
