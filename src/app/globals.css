@@ -1,17 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --orange: #C94E1A;
-  --orange2: #f9ede6;
-  --gold: #B08D57;
-  --green: #2a7a50;
-  --black: #111111;
-  --gray1: #333333;
-  --gray2: #666666;
-  --gray3: #999999;
-  --gray4: #cccccc;
-  --gray5: #e8e8e8;
-  --gray6: #f5f5f5;
+  --bg:         #F7F4F0;
+  --bg-warm:    #EDE8E0;
+  --bg-white:   #FFFFFF;
+  --line:       #E4DFDA;
+
+  --text-1:     #1C1C1C;
+  --text-2:     #6A6460;
+  --text-3:     #A09B97;
+
+  --accent:     #C49A6C;
+  --accent-dk:  #A07A4E;
+  --tag-bg:     #F0EBE4;
+
+  --fitting:    #3D6A4F;
+  --fitting-dk: #2F5540;
+  --fitting-lt: #EDF4EF;
+
+  --orange:     #C49A6C;
+  --gold:       #A07A4E;
+  --green:      #3D6A4F;
+  --black:      #1C1C1C;
+  --gray1:      #3A3835;
+  --gray2:      #6A6460;
+  --gray3:      #A09B97;
+  --gray4:      #D4CFC9;
+  --gray5:      #E4DFDA;
+  --gray6:      #F0EBE4;
 }
 
 * {
@@ -20,21 +36,17 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: #ffffff;
-  color: var(--black);
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
   font-size: 13px;
+  -webkit-font-smoothing: antialiased;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: inherit;
-}
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
