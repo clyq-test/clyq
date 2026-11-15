@@ -61,7 +61,7 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap');
 
         /* ── 전역 터치 최적화 ── */
         *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
@@ -86,7 +86,7 @@ export default function Navbar() {
         .lm-bg { position:fixed; inset:0; background:rgba(28,24,20,.5); z-index:2000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
         .lm-box { background:#fff; width:min(420px,92vw); position:relative; }
         .lm-hd { padding:32px 36px 0; text-align:center; }
-        .lm-logo { font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:500; letter-spacing:0.14em; color:#1C1C1C; margin-bottom:24px; }
+        .lm-logo { font-size:26px; font-weight:800; letter-spacing:-0.02em; color:#111; margin-bottom:24px; }
         .lm-tabs { display:flex; border-bottom:1px solid #E4DFDA; margin:0 -36px; }
         .lm-tab { flex:1; padding:13px; font-size:13px; border:none; background:none; cursor:pointer; color:#A09B97; border-bottom:2px solid transparent; font-family:inherit; }
         .lm-tab.on { color:#1C1C1C; border-bottom-color:#1C1C1C; font-weight:500; }
@@ -125,29 +125,23 @@ export default function Navbar() {
         .udi.red { color:#C04B4B; }
 
         /* ── Withy Pill ── */
-        .withy-pill { display:flex; align-items:center; gap:5px; padding:6px 12px; background:#F0EBE4; color:#A07A4E; font-size:11px; font-weight:500; border-radius:20px; transition:background .15s; }
-        .withy-pill:hover { background:#E8DFD4; }
+        .withy-pill { display:flex; align-items:center; gap:5px; padding:6px 12px; background:#F4F4F2; color:#444; font-size:12px; font-weight:500; border-radius:20px; transition:background .15s; }
+        .withy-pill:hover { background:#EBEBE8; }
       `}</style>
-
-      {/* ── 공지 바 ── */}
-      <div style={{ background: '#1C1C1C', color: 'rgba(247,244,240,0.6)', fontSize: '11px', textAlign: 'center', padding: '9px 0', letterSpacing: '0.03em' }}>
-        <strong style={{ color: '#F7F4F0' }}>피팅박스 서비스</strong> — 입어보고 마음에 드는 것만 구매하세요 ·{' '}
-        <a href="/community" style={{ color: '#C49A6C', textDecoration: 'none', fontWeight: 500 }}>커뮤니티 활동으로 위디 적립 ›</a>
-      </div>
 
       {/* ── Nav ── */}
       <nav
-        style={{ position: 'sticky', top: 0, zIndex: 500, background: '#fff', borderBottom: '1px solid #E4DFDA' }}
+        style={{ position: 'sticky', top: 0, zIndex: 500, background: '#fff', borderBottom: '1px solid #EEE' }}
         onMouseLeave={() => setMegaOpen(null)}
       >
         {/* 상단 바 */}
         <div
           className="nav-top"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '60px', borderBottom: '1px solid #E4DFDA' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '64px', borderBottom: 'none' }}
         >
           {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
-            <a href="/" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '25px', fontWeight: 600, letterSpacing: '0.12em', color: '#1C1C1C', textDecoration: 'none' }}>
+            <a href="/" style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', color: '#111', textDecoration: 'none' }}>
               CLYQ
             </a>
             <div className="nav-dm" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -161,7 +155,7 @@ export default function Navbar() {
           </div>
 
           {/* 검색 */}
-          <div className="nav-ds" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #E4DFDA', padding: '8px 14px', width: '240px', background: '#FAFAF8' }}>
+          <div className="nav-ds" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', borderRadius: '999px', padding: '9px 16px', width: '260px', background: '#F4F4F2' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A09B97" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /></svg>
             <input type="text" placeholder="브랜드, 상품명 검색" style={{ border: 'none', outline: 'none', fontSize: '12px', width: '100%', background: 'transparent', fontFamily: 'inherit', color: '#1C1C1C' }} />
           </div>
@@ -273,9 +267,9 @@ export default function Navbar() {
 
           {/* 피팅박스관 탭 */}
           <a href="/fitting"
-            style={{ padding: '0 16px', height: '42px', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#fff', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap', background: '#3D6A4F', marginLeft: '8px', letterSpacing: '0.03em', transition: 'background .15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#2F5540')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#3D6A4F')}>
+            style={{ padding: '0 16px', height: '42px', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: '#3D6A4F', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap', transition: 'color .15s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#2F5540')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#3D6A4F')}>
             피팅박스관
           </a>
 
@@ -304,7 +298,7 @@ export default function Navbar() {
                 <div key={ci} className="mega-col">
                   {col.map(b => (
                     <a key={b} href="/" className="mega-sub-link"
-                      style={{ fontFamily: b === '전체 브랜드 보기' ? 'inherit' : "'Cormorant Garamond',Georgia,serif", fontSize: b === '전체 브랜드 보기' ? '12px' : '13px', letterSpacing: b === '전체 브랜드 보기' ? '0' : '0.06em' }}>
+                      style={{ fontSize: '13px', letterSpacing: '0' }}>
                       {b}
                     </a>
                   ))}
@@ -316,7 +310,7 @@ export default function Navbar() {
 
         {/* ── 모바일 드로어 ── */}
         {menuOpen && (
-          <div style={{ position: 'fixed', top: '95px', left: 0, right: 0, bottom: 0, background: '#fff', zIndex: 999, overflowY: 'auto', borderTop: '1px solid #E4DFDA' }}>
+          <div style={{ position: 'fixed', top: '52px', left: 0, right: 0, bottom: 0, background: '#fff', zIndex: 999, overflowY: 'auto', borderTop: '1px solid #E4DFDA' }}>
             <div style={{ padding: '12px 16px', borderBottom: '1px solid #E4DFDA', background: '#FAFAF8' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #E4DFDA', padding: '10px 14px' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A09B97" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /></svg>
