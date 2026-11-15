@@ -102,3 +102,35 @@ export const dt = s => { if (!s) return '-'; const d = new Date(s); return `${d.
 export const ym = s => { const d = new Date(s); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}` }
 export const phoneKey = p => (p || '').replace(/\D/g, '')
 export const tone = s => ['배송완료', '구매확정', '반납완료', '완료', '정산완료'].includes(s) ? 'g' : ['취소', '반품완료', '거절'].includes(s) ? 'r' : ['주문접수', '신청접수', '접수'].includes(s) ? 'n' : 'b'
+
+/* ── 브랜드 파트너용 ── */
+export const brandOrders = (orders, brand) => orders.filter(o => o.items.some(i => i.brand === brand)).map(o => {
+  const mine = o.items.filter(i => i.brand === brand)
+  return { ...o, mine, myTotal: mine.reduce((n, i) => n + i.price * i.qty, 0) }
+})
+export function brandStatus(o, brand) {
+  if (['취소', '반품완료'].includes(o.status)) return o.status
+  if (o.kind === 'fitting') return o.status
+  const s = o.ship && o.ship[brand]
+  if (s && s.status) return s.status
+  if (o.status === '배송중' || o.status === '배송완료') return o.status
+  return '출고대기'
+}
+export function brandShip(id, brand, status, tracking) {
+  patchOrder(id, o => {
+    const prev = (o.ship || {})[brand] || {}
+    o.ship = { ...(o.ship || {}), [brand]: { ...prev, status, tracking: tracking || prev.tracking, at: now() } }
+    if (tracking && !o.tracking) o.tracking = tracking
+    const sts = [...new Set(o.items.map(i => i.brand))].map(b => o.ship[b] && o.ship[b].status)
+    if (sts.every(x => x === '배송완료')) { o.status = '배송완료'; o.doneAt = now() } else if (sts.some(x => x)) { o.status = '배송중' }
+    return o
+  }, `${brand} ${status}${tracking ? ` (${tracking.carrier} ${tracking.no})` : ''}`, brand)
+}
+export function addInquiry({ type, brand, pid, orderId, who, text }) {
+  const l = kvRead('clyq_inq', [])
+  kvWrite('clyq_inq', [{ id: 'Q' + Date.now().toString(36), type, brand, pid, orderId, who, text, at: now(), answer: '', answeredAt: '' }, ...l])
+}
+export function answerInquiry(id, answer) {
+  kvWrite('clyq_inq', kvRead('clyq_inq', []).map(q => q.id === id ? { ...q, answer, answeredAt: now() } : q))
+  logAct(`문의 답변 ${id}`, '브랜드')
+}

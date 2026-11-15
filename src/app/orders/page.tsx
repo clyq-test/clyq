@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import { SharedStyle, Footer } from '../components/ui'
-import { useOrders, clientId, addClaim, setStatus, patchOrder, dt, won } from '../lib/orders'
+import { useOrders, useKV, addInquiry, clientId, addClaim, setStatus, patchOrder, dt, won } from '../lib/orders'
 
 export default function MyOrders() {
   const [orders] = useOrders()
   const [cid, setCid] = useState('')
   const [claim, setClaim] = useState(null)
   const [reason, setReason] = useState('')
+  const [inq] = useKV('clyq_inq', [])
+  const [ask, setAsk] = useState(null)
+  const [atext, setAtext] = useState('')
   useEffect(() => { setCid(clientId()) }, [])
   const mine = orders.filter(o => o.owner === cid)
   const canCancel = o => ['주문접수', '상품준비', '신청접수', '발송준비'].includes(o.status) && !(o.claims || []).some(c => c.type === '취소' && c.status !== '거절')
@@ -43,6 +46,7 @@ export default function MyOrders() {
                 {o.tracking && <> · 송장 {o.tracking.carrier} {o.tracking.no}</>}
                 {o.fitStartAt && o.status === '피팅중' && <> · 반납/구매 결정 기한 {dt(new Date(new Date(o.fitStartAt).getTime() + 48 * 3600 * 1000).toISOString())}</>}
               </div>
+              {inq.filter(q => q.orderId === o.id).map(q => <div key={q.id} style={{ fontSize: 13, color: '#555' }}>문의: {q.text} → {q.answer ? '답변: ' + q.answer : '답변 대기 중'}</div>)}
               {(o.claims || []).map(c => <div key={c.id} style={{ fontSize: 13, color: '#555' }}>{c.type} 요청: {c.status}{c.note ? ` (${c.note})` : ''}</div>)}
             </div>
             <div className="mo-act">
@@ -50,12 +54,22 @@ export default function MyOrders() {
                 <button className="p" onClick={() => { setStatus(o.id, '구매확정', '고객') }}>구매 확정</button>
                 <button onClick={() => { setStatus(o.id, '반납수거중', '고객') }}>반납 신청</button>
               </>}
+              <button onClick={() => { setAsk(o); setAtext('') }}>문의하기</button>
               {canCancel(o) && <button onClick={() => { setClaim({ o, type: '취소' }); setReason('') }}>주문 취소 요청</button>}
               {canReturn(o) && <button onClick={() => { setClaim({ o, type: '반품' }); setReason('') }}>반품 요청</button>}
             </div>
           </div>
         ))}
       </div>
+      {ask && (
+        <div className="mo-bg" onClick={() => setAsk(null)}>
+          <div className="mo-m" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+            <b>주문 문의 — {ask.id}</b>
+            <textarea placeholder="문의 내용을 적어 주세요" value={atext} onChange={e => setAtext(e.target.value)} />
+            <button className="btn-p" style={{ width: '100%' }} onClick={() => { if (!atext.trim()) return; [...new Set(ask.items.map(i => i.brand))].forEach(b => addInquiry({ type: 'inquiry', brand: b, orderId: ask.id, who: ask.customer.name, text: atext.trim() })); setAsk(null) }}>문의 보내기</button>
+          </div>
+        </div>
+      )}
       {claim && (
         <div className="mo-bg" onClick={() => setClaim(null)}>
           <div className="mo-m" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">

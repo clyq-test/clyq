@@ -84,13 +84,13 @@ const fittings = [
 ]
 
 const stageStyle = {
-  '피팅 신청': { bg:'#eff6ff', color:'#2563eb' },
-  '배송중':    { bg:'#f0fdf4', color:'#16a34a' },
-  '피팅중':    { bg:'#fff7ed', color:'#C94E1A' },
-  '반납 수거중':{ bg:'#fefce8', color:'#ca8a04' },
-  '검수 완료': { bg:'#f5f5f7', color:'#666' },
-  '구매 전환': { bg:'#f0fdf4', color:'#16a34a' },
-  '훼손 패널티':{ bg:'#fff1f0', color:'#dc2626' },
+  '피팅 신청': { bg:'#f4f4f2', color:'#555' },
+  '배송중':    { bg:'#eef4f0', color:'#3D6A4F' },
+  '피팅중':    { bg:'#f4f4f2', color:'#111' },
+  '반납 수거중':{ bg:'#f4f4f2', color:'#8a6d1f' },
+  '검수 완료': { bg:'#f2f2f0', color:'#555' },
+  '구매 전환': { bg:'#eef4f0', color:'#3D6A4F' },
+  '훼손 패널티':{ bg:'#fbeeed', color:'#b3261e' },
 }
 
 const stages = ['전체', '배송중', '피팅중', '검수 완료', '구매 전환', '훼손 패널티']
@@ -110,32 +110,32 @@ export default function FittingStatusPage() {
       <style>{`
         .fs-wrap { width:100%; }
         .fs-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
-        .fs-notice { background:#f8f8fb; border:1px solid #e8e8eb; border-left:3px solid #6b7280; border-radius:6px; padding:12px 16px; font-size:12px; color:#666; margin-bottom:20px; line-height:1.7; }
+        .fs-notice { background:#f8f8fb; border:1px solid #e6e6e3; border-left:3px solid #6b7280; border-radius:6px; padding:12px 16px; font-size:13px; color:#555; margin-bottom:20px; line-height:1.7; }
         .fs-filter-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
-        .fs-filter-btn { padding:6px 14px; border-radius:20px; border:1px solid #d8d8dc; background:#fff; font-size:12px; font-weight:500; cursor:pointer; color:#666; font-family:inherit; transition:all 0.15s; }
-        .fs-filter-btn.on { background:#1a1a2e; border-color:#1a1a2e; color:#fff; font-weight:600; }
-        .fs-search { padding:7px 14px; border:1px solid #d8d8dc; border-radius:5px; font-size:13px; width:240px; outline:none; font-family:inherit; }
-        .fs-search:focus { border-color:#C94E1A; }
-        .fs-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:11px; font-weight:600; }
-        .fs-row-card { background:#fff; border:1px solid #e8e8eb; border-radius:8px; margin-bottom:10px; overflow:hidden; }
-        .fs-row-top { display:grid; grid-template-columns:2fr 1.2fr 1fr 1fr 1fr; gap:0; align-items:center; padding:16px 20px; border-bottom:1px solid #f0f0f2; }
-        .fs-row-bottom { padding:14px 20px; background:#fafafa; }
+        .fs-filter-btn { padding:6px 14px; border-radius:20px; border:1px solid #d6d6d2; background:#fff; font-size:13px; font-weight:500; cursor:pointer; color:#555; font-family:inherit; transition:all 0.15s; }
+        .fs-filter-btn.on { background:#111; border-color:#111; color:#fff; font-weight:600; }
+        .fs-search { padding:7px 14px; border:1px solid #d6d6d2; border-radius:5px; font-size:14px; width:240px; outline:none; font-family:inherit; }
+        .fs-search:focus { border-color:#111; }
+        .fs-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:12px; font-weight:600; }
+        .fs-row-card { background:#fff; border:1px solid #e6e6e3; border-radius:8px; margin-bottom:10px; overflow:hidden; }
+        .fs-row-top { display:grid; grid-template-columns:2fr 1.2fr 1fr 1fr 1fr; gap:0; align-items:center; padding:16px 20px; border-bottom:1px solid #eeeeec; }
+        .fs-row-bottom { padding:14px 20px; background:#f9f9f7; }
         .fs-tl { display:flex; align-items:center; gap:0; }
         .fs-tl-step { display:flex; flex-direction:column; align-items:center; flex:1; position:relative; }
         .fs-tl-step:not(:last-child)::after {
           content:''; position:absolute; top:10px; left:50%; width:100%;
-          height:2px; background:#e8e8eb; z-index:0;
+          height:2px; background:#e6e6e3; z-index:0;
         }
-        .fs-tl-step.done::after { background:#C94E1A; }
-        .fs-tl-dot { width:20px; height:20px; border-radius:50%; border:2px solid #e8e8eb; background:#fff; z-index:1; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .fs-tl-step.done .fs-tl-dot { border-color:#C94E1A; background:#C94E1A; }
-        .fs-tl-step.alert .fs-tl-dot { border-color:#dc2626; background:#fff; }
-        .fs-tl-label { font-size:10px; color:#aaa; margin-top:5px; text-align:center; white-space:nowrap; }
-        .fs-tl-step.done .fs-tl-label { color:#C94E1A; font-weight:600; }
-        .fs-tl-step.alert .fs-tl-label { color:#dc2626; font-weight:700; }
-        .fs-tl-date { font-size:10px; color:#ccc; margin-top:2px; text-align:center; white-space:nowrap; }
-        .fs-tl-step.alert .fs-tl-date { color:#dc2626; }
-        .ro-label { display:inline-flex; align-items:center; gap:4px; font-size:10px; color:#6b7280; background:#f0f0f2; padding:3px 8px; border-radius:3px; font-weight:600; }
+        .fs-tl-step.done::after { background:#111; }
+        .fs-tl-dot { width:20px; height:20px; border-radius:50%; border:2px solid #e6e6e3; background:#fff; z-index:1; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .fs-tl-step.done .fs-tl-dot { border-color:#111; background:#111; }
+        .fs-tl-step.alert .fs-tl-dot { border-color:#b3261e; background:#fff; }
+        .fs-tl-label { font-size:12px; color:#767676; margin-top:5px; text-align:center; white-space:nowrap; }
+        .fs-tl-step.done .fs-tl-label { color:#111; font-weight:600; }
+        .fs-tl-step.alert .fs-tl-label { color:#b3261e; font-weight:700; }
+        .fs-tl-date { font-size:12px; color:#ccc; margin-top:2px; text-align:center; white-space:nowrap; }
+        .fs-tl-step.alert .fs-tl-date { color:#b3261e; }
+        .ro-label { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#6b7280; background:#eeeeec; padding:3px 8px; border-radius:3px; font-weight:600; }
         @media (max-width:900px) {
           .fs-row-top { grid-template-columns:1fr 1fr; gap:10px; }
           .fs-search { width:100%; }
@@ -150,8 +150,8 @@ export default function FittingStatusPage() {
         {/* 헤더 */}
         <div className="fs-head">
           <div>
-            <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>피팅박스 현황 › 피팅 진행 현황</div>
-            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>피팅 진행 현황</h1>
+            <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>피팅박스 현황 › 피팅 진행 현황</div>
+            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#111', margin:0 }}>피팅 진행 현황</h1>
           </div>
           <span className="ro-label">열람 전용 — 수정은 CLYQ 본사에 문의</span>
         </div>
@@ -165,15 +165,15 @@ export default function FittingStatusPage() {
         {/* 요약 */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:'12px', marginBottom:'20px' }}>
           {[
-            { label:'전체', value: fittings.length, color:'#1a1a2e' },
-            { label:'배송중', value: fittings.filter(f=>f.stage==='배송중').length, color:'#16a34a' },
-            { label:'피팅중', value: fittings.filter(f=>f.stage==='피팅중').length, color:'#C94E1A' },
-            { label:'구매 전환', value: fittings.filter(f=>f.converted).length, color:'#2563eb' },
-            { label:'훼손 패널티', value: fittings.filter(f=>f.penalty).length, color:'#dc2626' },
+            { label:'전체', value: fittings.length, color:'#111' },
+            { label:'배송중', value: fittings.filter(f=>f.stage==='배송중').length, color:'#3D6A4F' },
+            { label:'피팅중', value: fittings.filter(f=>f.stage==='피팅중').length, color:'#111' },
+            { label:'구매 전환', value: fittings.filter(f=>f.converted).length, color:'#555' },
+            { label:'훼손 패널티', value: fittings.filter(f=>f.penalty).length, color:'#b3261e' },
           ].map(s => (
-            <div key={s.label} style={{ background:'#fff', border:'1px solid #e8e8eb', borderRadius:'8px', padding:'16px 18px' }}>
-              <div style={{ fontSize:'11px', color:'#999', marginBottom:'8px' }}>{s.label}</div>
-              <div style={{ fontSize:'24px', fontWeight:800, color:s.color }}>{s.value}<span style={{ fontSize:'12px', color:'#aaa', fontWeight:400, marginLeft:'3px' }}>건</span></div>
+            <div key={s.label} style={{ background:'#fff', border:'1px solid #e6e6e3', borderRadius:'8px', padding:'16px 18px' }}>
+              <div style={{ fontSize:'12px', color:'#767676', marginBottom:'8px' }}>{s.label}</div>
+              <div style={{ fontSize:'24px', fontWeight:800, color:s.color }}>{s.value}<span style={{ fontSize:'13px', color:'#767676', fontWeight:400, marginLeft:'3px' }}>건</span></div>
             </div>
           ))}
         </div>
@@ -200,42 +200,42 @@ export default function FittingStatusPage() {
           </div>
         </div>
 
-        <div style={{ fontSize:'12px', color:'#aaa', marginBottom:'12px' }}>총 {filtered.length}건</div>
+        <div style={{ fontSize:'13px', color:'#767676', marginBottom:'12px' }}>총 {filtered.length}건</div>
 
         {/* 피팅 카드 목록 */}
         {filtered.map(f => {
-          const stageS = stageStyle[f.stage] || { bg:'#f5f5f7', color:'#666' }
+          const stageS = stageStyle[f.stage] || { bg:'#f2f2f0', color:'#555' }
           return (
             <div key={f.id} className="fs-row-card">
               <div className="fs-row-top">
 
                 {/* 제품 */}
                 <div>
-                  <div style={{ fontWeight:700, color:'#1a1a2e', fontSize:'14px', marginBottom:'3px' }}>{f.product}</div>
-                  <div style={{ fontSize:'11px', color:'#aaa' }}>{f.sku} · 사이즈 {f.size}</div>
-                  <div style={{ fontSize:'11px', color:'#aaa', marginTop:'2px' }}>{f.id}</div>
+                  <div style={{ fontWeight:700, color:'#111', fontSize:'14px', marginBottom:'3px' }}>{f.product}</div>
+                  <div style={{ fontSize:'12px', color:'#767676' }}>{f.sku} · 사이즈 {f.size}</div>
+                  <div style={{ fontSize:'12px', color:'#767676', marginTop:'2px' }}>{f.id}</div>
                 </div>
 
                 {/* 고객 */}
                 <div>
-                  <div style={{ fontSize:'11px', color:'#999', marginBottom:'3px' }}>고객</div>
-                  <div style={{ fontWeight:600, color:'#1a1a2e' }}>{f.customer}</div>
-                  <div style={{ fontSize:'11px', color:'#aaa', marginTop:'2px' }}>신청 {f.requestDate}</div>
+                  <div style={{ fontSize:'12px', color:'#767676', marginBottom:'3px' }}>고객</div>
+                  <div style={{ fontWeight:600, color:'#111' }}>{f.customer}</div>
+                  <div style={{ fontSize:'12px', color:'#767676', marginTop:'2px' }}>신청 {f.requestDate}</div>
                 </div>
 
                 {/* 반납 기한 */}
                 <div>
-                  <div style={{ fontSize:'11px', color:'#999', marginBottom:'3px' }}>반납 기한</div>
-                  <div style={{ fontWeight:700, color:'#1a1a2e' }}>{f.returnDue}</div>
+                  <div style={{ fontSize:'12px', color:'#767676', marginBottom:'3px' }}>반납 기한</div>
+                  <div style={{ fontWeight:700, color:'#111' }}>{f.returnDue}</div>
                   {f.returnDate && (
-                    <div style={{ fontSize:'11px', color:'#16a34a', marginTop:'2px' }}>반납 완료 {f.returnDate}</div>
+                    <div style={{ fontSize:'12px', color:'#3D6A4F', marginTop:'2px' }}>반납 완료 {f.returnDate}</div>
                   )}
                 </div>
 
                 {/* 전환 여부 */}
                 <div>
-                  <div style={{ fontSize:'11px', color:'#999', marginBottom:'3px' }}>구매 전환</div>
-                  <span className="fs-badge" style={{ background: f.converted ? '#f0fdf4' : '#f5f5f7', color: f.converted ? '#16a34a' : '#aaa' }}>
+                  <div style={{ fontSize:'12px', color:'#767676', marginBottom:'3px' }}>구매 전환</div>
+                  <span className="fs-badge" style={{ background: f.converted ? '#eef4f0' : '#f2f2f0', color: f.converted ? '#3D6A4F' : '#767676' }}>
                     {f.converted ? '전환 완료' : '미전환'}
                   </span>
                 </div>
@@ -246,14 +246,14 @@ export default function FittingStatusPage() {
                     {f.stage}
                   </span>
                   {f.penalty && (
-                    <div style={{ fontSize:'11px', color:'#dc2626', fontWeight:600, marginTop:'4px' }}>패널티 청구 중</div>
+                    <div style={{ fontSize:'12px', color:'#b3261e', fontWeight:600, marginTop:'4px' }}>패널티 청구 중</div>
                   )}
                 </div>
               </div>
 
               {/* 타임라인 */}
               <div className="fs-row-bottom">
-                <div style={{ fontSize:'11px', color:'#999', marginBottom:'10px', fontWeight:600 }}>진행 단계</div>
+                <div style={{ fontSize:'12px', color:'#767676', marginBottom:'10px', fontWeight:600 }}>진행 단계</div>
                 <div className="fs-tl">
                   {f.timeline.map((step, idx) => {
                     const stepClass = step.done
@@ -280,7 +280,7 @@ export default function FittingStatusPage() {
         })}
 
         {filtered.length === 0 && (
-          <div style={{ background:'#fff', border:'1px solid #e8e8eb', borderRadius:'8px', padding:'60px', textAlign:'center', color:'#aaa', fontSize:'14px' }}>
+          <div style={{ background:'#fff', border:'1px solid #e6e6e3', borderRadius:'8px', padding:'60px', textAlign:'center', color:'#767676', fontSize:'14px' }}>
             해당 조건의 피팅 내역이 없습니다.
           </div>
         )}

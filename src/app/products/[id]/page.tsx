@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client'
-import { createOrder } from '../../lib/orders'
+import { createOrder, addInquiry, useKV } from '../../lib/orders'
 import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useShop } from '../../lib/store'
@@ -59,6 +59,8 @@ export default function ProductDetail() {
   const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
   const [oid, setOid] = useState('')
   const [ferr, setFerr] = useState('')
+  const [inq] = useKV('clyq_inq', [])
+  const [qtxt, setQtxt] = useState('')
   const [toast, setToast] = useState('')
   const [zoom, setZoom] = useState({ on: false, x: 50, y: 50 })
   const touchX = useRef(0)
@@ -251,6 +253,17 @@ export default function ProductDetail() {
           </div>
         </div>
         <div className="pd-sec"><h2>배송·반납</h2><div><p style={{ fontSize: 14, color: '#444', lineHeight: 1.8, margin: 0 }}>배송, 교환, 반품, 피팅박스 반납 조건은 서비스 오픈 전에 확정해 안내합니다.</p><p className="pd-note">이 페이지의 제품 정보는 화면 구성을 위한 샘플입니다.</p></div></div>
+
+        <div className="pd-sec"><h2>상품 문의</h2>
+          <div>
+            <textarea value={qtxt} onChange={e => setQtxt(e.target.value)} placeholder="사이즈, 소재, 배송 등 궁금한 점을 남겨 주세요" style={{ width: '100%', minHeight: 80, border: '1px solid #e5e5e5', padding: 12, fontFamily: 'inherit', fontSize: 13 }} />
+            <button className="btn-p" style={{ marginTop: 8, minHeight: 40, padding: '0 20px' }} onClick={() => { if (!qtxt.trim()) return; addInquiry({ type: 'qna', brand: product.brand, pid: cp ? cp.id : 0, who: '고객', text: qtxt.trim() }); setQtxt(''); say('문의가 등록됐어요') }}>문의 등록</button>
+            <div style={{ marginTop: 20 }}>{inq.filter(q => q.type === 'qna' && cp && q.pid === cp.id).map(q => (
+              <div key={q.id} style={{ padding: '12px 0', borderTop: '1px solid #eee', fontSize: 13, lineHeight: 1.7 }}>
+                <div>Q. {q.text}</div>{q.answer ? <div style={{ color: '#3D6A4F' }}>A. {q.answer}</div> : <div style={{ color: '#8a8a8a' }}>답변 대기 중</div>}
+              </div>))}</div>
+          </div>
+        </div>
 
       </div>
 

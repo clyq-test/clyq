@@ -2,13 +2,15 @@
 'use client'
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { AD_CSS } from '../lib/adminCss'
+import { BRAND } from './_brand'
 
 const ROLE = 'brand' // 'clyq' | 'brand'
 
 const clyqMenus = [
   { id:'dashboard', label:'대시보드', href:'/admin', children:[] },
   {
-    id:'fitting', label:'피팅박스 제품', badge:'CLYQ 전용', badgeColor:'#C94E1A',
+    id:'fitting', label:'피팅박스 제품', badge:'CLYQ 전용', badgeColor:'#111',
     children:[{ group:'', items:[
       { label:'피팅 제품 목록', href:'/admin/fitting-products' },
       { label:'피팅 현황 관리', href:'/admin/fitting-products/status' },
@@ -96,7 +98,7 @@ const brandMenus = [
     ]}],
   },
   {
-    id:'fitting', label:'피팅박스 현황', badge:'열람만', badgeColor:'#6b7280', readOnly:true,
+    id:'fitting', label:'피팅박스 현황', badge:'열람만', badgeColor:'#767676', readOnly:true,
     children:[{ group:'', items:[
       { label:'피팅 제품 (내 브랜드)', href:'/admin/fitting-products/my' },
       { label:'피팅 진행 현황', href:'/admin/fitting-products/status' },
@@ -132,229 +134,89 @@ const menus = ROLE === 'clyq' ? clyqMenus : brandMenus
 export default function AdminLayout({ children }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [openMenus, setOpenMenus] = useState(['dashboard'])
+  const [openMenus, setOpenMenus] = useState(['my_product', 'order'])
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  function toggle(id) {
-    setOpenMenus(prev =>
-      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
-    )
-  }
-
-  const isActive = (href) => !!(href && pathname === href)
-
-  // 클래스명을 변수로 미리 계산 — JSX 내 삼항연산 복잡도 제거
-  const sideClass    = mobileOpen ? 'adm-side mob-open' : 'adm-side'
-  const overlayClass = mobileOpen ? 'adm-overlay show'  : 'adm-overlay'
-  const roleClass    = ROLE === 'clyq' ? 'adm-role role-clyq' : 'adm-role role-brand'
-  const roleLabel    = ROLE === 'clyq' ? 'CLYQ 관리자' : 'MARCIA 브랜드 파트너'
-  const userLabel    = ROLE === 'clyq' ? 'CLYQ 관리자' : 'MARCIA 담당자'
-  const avatarBg     = ROLE === 'clyq' ? '#C94E1A' : '#1a1a2e'
-  const avatarLetter = ROLE === 'clyq' ? '관' : 'M'
-  const today = new Date().toLocaleDateString('ko-KR', {
-    year:'numeric', month:'long', day:'numeric', weekday:'short',
-  })
+  const toggle = id => setOpenMenus(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id])
+  const isActive = href => !!(href && pathname === href)
+  const today = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' })
 
   return (
-    <div style={{ display:'flex', minHeight:'100vh', background:'#f4f5f7', fontFamily:"'Pretendard','Noto Sans KR',sans-serif" }}>
+    <div style={{ display:'flex', minHeight:'100vh', background:'#f7f7f5', color:'#111', fontFamily:"'Pretendard','Noto Sans KR',sans-serif" }}>
       <style>{`
         * { box-sizing:border-box; }
-        .adm-side {
-          width:210px; background:#1a1a2e; display:flex; flex-direction:column;
-          position:fixed; top:0; left:0; height:100vh; overflow-y:auto;
-          scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
-          z-index:300; transition:transform 0.25s;
-        }
-        .adm-side::-webkit-scrollbar { width:3px; }
-        .adm-side::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
-        .adm-logo { padding:18px 18px 14px; border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0; }
-        .adm-logo-con { font-size:9px; letter-spacing:2px; color:rgba(255,255,255,0.35); font-weight:500; margin-bottom:4px; }
-        .adm-logo-name { font-size:22px; font-weight:800; letter-spacing:4px; color:#fff; }
-        .adm-logo-q { color:#C94E1A; }
-        .adm-role { display:inline-block; font-size:9px; font-weight:700; padding:3px 8px; border-radius:3px; margin-top:8px; letter-spacing:0.5px; }
-        .role-clyq { background:rgba(201,78,26,0.25); color:#ff8c5a; }
-        .role-brand { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.55); }
-        .menu-item { border-bottom:1px solid rgba(255,255,255,0.04); }
-        .menu-header {
-          display:flex; align-items:center; justify-content:space-between;
-          padding:11px 16px; cursor:pointer; font-size:12px; font-weight:600;
-          color:rgba(255,255,255,0.6); transition:all 0.15s; user-select:none;
-        }
-        .menu-header:hover { background:rgba(255,255,255,0.06); color:#fff; }
-        .menu-header.active-parent { color:#ff8c5a; }
-        .menu-badge { font-size:9px; font-weight:700; padding:2px 6px; border-radius:3px; margin-left:6px; }
-        .menu-arrow { font-size:9px; color:rgba(255,255,255,0.25); transition:transform 0.2s; display:inline-block; }
-        .menu-arrow.open { transform:rotate(180deg); }
-        .menu-sub { background:rgba(0,0,0,0.15); }
-        .menu-group-label { font-size:9px; color:rgba(255,255,255,0.25); font-weight:600; letter-spacing:1px; padding:10px 16px 3px 20px; }
-        .menu-link {
-          display:flex; align-items:center; justify-content:space-between;
-          padding:8px 16px 8px 24px; font-size:12px; color:rgba(255,255,255,0.45);
-          text-decoration:none; transition:all 0.12s; cursor:pointer;
-        }
-        .menu-link:hover { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.8); }
-        .menu-link.active { color:#C94E1A; background:rgba(201,78,26,0.1); font-weight:600; }
-        .menu-link.readonly { color:rgba(255,255,255,0.3); }
-        .menu-link.readonly:hover { color:rgba(255,255,255,0.45); }
-        .ro-tag { font-size:9px; color:rgba(255,255,255,0.25); background:rgba(255,255,255,0.07); padding:1px 5px; border-radius:2px; }
-        .menu-single {
-          display:flex; align-items:center; padding:11px 16px;
-          cursor:pointer; font-size:12px; font-weight:600;
-          color:rgba(255,255,255,0.6); transition:all 0.15s;
-        }
-        .menu-single:hover { background:rgba(255,255,255,0.06); color:#fff; }
-        .menu-single.active { color:#C94E1A; background:rgba(201,78,26,0.1); }
-        .adm-header {
-          position:fixed; top:0; left:210px; right:0; height:50px;
-          background:#fff; border-bottom:1px solid #e8e8eb;
-          display:flex; align-items:center; justify-content:space-between;
-          padding:0 24px; z-index:200;
-        }
-        .adm-body { margin-left:210px; margin-top:50px; padding:28px; min-height:calc(100vh - 50px); }
-        .adm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:299; }
-        .adm-overlay.show { display:block; }
-        .adm-hamb { display:none; background:none; border:none; cursor:pointer; padding:4px; }
-        .ham-bar { display:block; width:18px; height:2px; background:#666; border-radius:1px; margin-bottom:4px; }
-        .ham-bar:last-child { margin-bottom:0; }
-        @media (max-width:768px) {
-          .adm-side { transform:translateX(-210px); }
-          .adm-side.mob-open { transform:translateX(0); }
-          .adm-header { left:0; }
-          .adm-body { margin-left:0; padding:16px; }
-          .adm-overlay.show { display:block; }
-          .adm-hamb { display:block; }
-        }
+        .cq-side { width:224px; background:#fff; border-right:1px solid #e6e6e3; display:flex; flex-direction:column; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:300; transition:transform .25s; }
+        .cq-logo { padding:24px 24px 20px; flex-shrink:0; }
+        .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#111; }
+        .cq-logo-con { font-size:13px; color:#555; margin-top:4px; }
+        .cq-menu-header, .cq-menu-single { display:flex; align-items:center; justify-content:space-between; padding:11px 24px; cursor:pointer; font-size:14px; font-weight:500; color:#111; user-select:none; }
+        .cq-menu-header:hover, .cq-menu-single:hover { background:#f7f7f5; }
+        .cq-menu-single.active { font-weight:700; background:#f4f4f2; }
+        .cq-menu-arrow { font-size:11px; color:#767676; transition:transform .2s; } .cq-menu-arrow.open { transform:rotate(180deg); }
+        .cq-menu-link { display:flex; align-items:center; justify-content:space-between; padding:8px 24px 8px 36px; font-size:13px; color:#555; text-decoration:none; }
+        .cq-menu-link:hover { color:#111; background:#f7f7f5; } .cq-menu-link.active { color:#111; font-weight:700; background:#f4f4f2; }
+        .cq-tag { font-size:11px; color:#767676; border:1px solid #e6e6e3; padding:1px 6px; border-radius:3px; margin-left:6px; }
+        .cq-header { position:fixed; top:0; left:224px; right:0; height:56px; background:#fff; border-bottom:1px solid #e6e6e3; display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:200; }
+        .cq-body { flex:1; min-width:0; margin-left:224px; margin-top:56px; padding:32px; min-height:calc(100vh - 56px); }
+        ${AD_CSS}
+        .cq-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:299; } .cq-overlay.show { display:block; }
+        .cq-hamb { display:none; background:none; border:none; cursor:pointer; padding:8px; }
+        .cq-ham-bar { display:block; width:18px; height:2px; background:#111; margin-bottom:4px; } .cq-ham-bar:last-child { margin-bottom:0; }
+        @media (max-width:768px) { .cq-side { transform:translateX(-224px); } .cq-side.mob-open { transform:translateX(0); } .cq-header { left:0; padding:0 16px; } .cq-body { margin-left:0; padding:16px; } .cq-hamb { display:block; } }
       `}</style>
 
-      {/* ── 사이드바 ── */}
-      <aside className={sideClass}>
-
-        <div className="adm-logo">
-          <div className="adm-logo-con">CLYQ ADMIN CONSOLE</div>
-          <div className="adm-logo-name">
-            CLY<span className="adm-logo-q">Q</span>
-          </div>
-          <div className={roleClass}>{roleLabel}</div>
+      <aside className={mobileOpen ? 'cq-side mob-open' : 'cq-side'}>
+        <div className="cq-logo">
+          <div className="cq-logo-name">CLYQ</div>
+          <div className="cq-logo-con">{ROLE === 'clyq' ? '본사 관리자' : BRAND + ' 브랜드 파트너'}</div>
         </div>
-
         <div style={{ flex:1 }}>
           {menus.map(menu => {
-            const hasChildren = menu.children && menu.children.length > 0
-            const isOpen = openMenus.includes(menu.id)
-            const hasActiveChild = hasChildren &&
-              menu.children.some(g => g.items.some(i => isActive(i.href)))
-            const headerClass = hasActiveChild
-              ? 'menu-header active-parent'
-              : 'menu-header'
-            const singleClass = isActive(menu.href)
-              ? 'menu-single active'
-              : 'menu-single'
-            const arrowClass = isOpen ? 'menu-arrow open' : 'menu-arrow'
-
+            const has = menu.children && menu.children.length > 0
+            const open = openMenus.includes(menu.id)
             return (
-              <div key={menu.id} className="menu-item">
-                {!hasChildren ? (
-                  <div
-                    className={singleClass}
-                    onClick={() => { router.push(menu.href); setMobileOpen(false) }}
-                  >
-                    {menu.label}
-                  </div>
+              <div key={menu.id}>
+                {!has ? (
+                  <div className={isActive(menu.href) ? 'cq-menu-single active' : 'cq-menu-single'} onClick={() => { router.push(menu.href); setMobileOpen(false) }}>{menu.label}</div>
                 ) : (
                   <div>
-                    <div className={headerClass} onClick={() => toggle(menu.id)}>
-                      <div style={{ display:'flex', alignItems:'center' }}>
-                        {menu.label}
-                        {menu.badge && (
-                          <span
-                            className="menu-badge"
-                            style={{ background: menu.badgeColor + '28', color: menu.badgeColor }}
-                          >
-                            {menu.badge}
-                          </span>
-                        )}
-                      </div>
-                      <span className={arrowClass}>▾</span>
+                    <div className="cq-menu-header" onClick={() => toggle(menu.id)}>
+                      <span>{menu.label}{menu.badge && <span className="cq-tag">{menu.badge}</span>}</span>
+                      <span className={open ? 'cq-menu-arrow open' : 'cq-menu-arrow'}>▾</span>
                     </div>
-
-                    {isOpen && (
-                      <div className="menu-sub">
-                        {menu.readOnly && (
-                          <div style={{ padding:'7px 16px 3px 24px', fontSize:'10px', color:'rgba(255,255,255,0.25)' }}>
-                            열람 전용
-                          </div>
-                        )}
-                        {menu.children.map((group, gi) => (
-                          <div key={gi}>
-                            {group.group && (
-                              <div className="menu-group-label">{group.group}</div>
-                            )}
-                            {group.items.map(item => {
-                              const parts = ['menu-link']
-                              if (isActive(item.href)) parts.push('active')
-                              if (menu.readOnly) parts.push('readonly')
-                              const linkClass = parts.join(' ')
-                              return (
-                                <a
-                                  key={item.href}
-                                  href={item.href}
-                                  className={linkClass}
-                                  onClick={() => setMobileOpen(false)}
-                                >
-                                  {item.label}
-                                  {menu.readOnly && (
-                                    <span className="ro-tag">열람</span>
-                                  )}
-                                </a>
-                              )
-                            })}
-                          </div>
+                    {open && menu.children.map((g, gi) => (
+                      <div key={gi}>
+                        {g.group && <div style={{ padding:'8px 24px 2px 36px', fontSize:'12px', color:'#767676' }}>{g.group}</div>}
+                        {g.items.map(item => (
+                          <a key={item.href} href={item.href} className={isActive(item.href) ? 'cq-menu-link active' : 'cq-menu-link'} onClick={() => setMobileOpen(false)}>{item.label}</a>
                         ))}
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
               </div>
             )
           })}
         </div>
-
-        <div
-          style={{ padding:'14px 16px', borderTop:'1px solid rgba(255,255,255,0.06)', fontSize:'12px', color:'rgba(255,255,255,0.3)', cursor:'pointer', flexShrink:0 }}
-          onClick={() => router.push('/')}
-        >
-          로그아웃
-        </div>
-
+        <div style={{ padding:'16px 24px', borderTop:'1px solid #e6e6e3', fontSize:'13px', color:'#555', cursor:'pointer', flexShrink:0 }} onClick={() => router.push('/')}>로그아웃</div>
       </aside>
 
-      {/* ── 모바일 오버레이 ── */}
-      <div className={overlayClass} onClick={() => setMobileOpen(false)}></div>
+      <div className={mobileOpen ? 'cq-overlay show' : 'cq-overlay'} onClick={() => setMobileOpen(false)}></div>
 
-      {/* ── 상단 헤더 ── */}
-      <header className="adm-header">
+      <header className="cq-header">
         <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
-          <button className="adm-hamb" onClick={() => setMobileOpen(v => !v)}>
-            <span className="ham-bar"></span>
-            <span className="ham-bar"></span>
-            <span className="ham-bar"></span>
-          </button>
-          <span style={{ fontSize:'12px', color:'#aaa' }}>{today}</span>
+          <button className="cq-hamb" onClick={() => setMobileOpen(v => !v)} aria-label="메뉴"><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span></button>
+          <span style={{ fontSize:'13px', color:'#555' }}>{today}</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
-          <span style={{ fontSize:'12px', color:'#888', cursor:'pointer' }}>알림</span>
+          <span style={{ fontSize:'13px', color:'#555' }}>알림</span>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div style={{ width:'28px', height:'28px', borderRadius:'50%', background:avatarBg, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'11px', fontWeight:700 }}>
-              {avatarLetter}
-            </div>
-            <span style={{ fontSize:'13px', color:'#333', fontWeight:600 }}>{userLabel}</span>
+            <div style={{ width:'28px', height:'28px', borderRadius:'50%', background:'#111', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:700 }}>{ROLE === 'clyq' ? '관' : BRAND[0]}</div>
+            <span style={{ fontSize:'14px', fontWeight:500 }}>{ROLE === 'clyq' ? 'CLYQ 관리자' : BRAND + ' 담당자'}</span>
           </div>
         </div>
       </header>
 
-      {/* ── 본문 ── */}
-      <main className="adm-body">{children}</main>
-
+      <main className="cq-body">{children}</main>
     </div>
   )
 }

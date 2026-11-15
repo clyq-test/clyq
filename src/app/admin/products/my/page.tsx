@@ -67,72 +67,72 @@ export default function ProductsMyPage() {
   return (
     <>
       <style>{`
-        .pm-wrap { width:100%; font-size:13px; }
+        .pm-wrap { width:100%; font-size:14px; }
         .pm-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
 
         /* 검색 영역 */
-        .pm-search-box { background:#fff; border:1px solid #e0e0e0; border-radius:6px; margin-bottom:14px; overflow:hidden; }
+        .pm-search-box { background:#fff; border:1px solid #d6d6d2; border-radius:6px; margin-bottom:14px; overflow:hidden; }
         .pm-search-row { display:flex; align-items:center; border-bottom:1px solid #f0f0f0; min-height:46px; }
         .pm-search-row:last-child { border-bottom:none; }
-        .pm-search-label { width:110px; min-width:110px; padding:10px 16px; font-size:12px; font-weight:600; color:#555; background:#fafafa; border-right:1px solid #f0f0f0; align-self:stretch; display:flex; align-items:center; }
+        .pm-search-label { width:110px; min-width:110px; padding:10px 16px; font-size:13px; font-weight:600; color:#555; background:#f9f9f7; border-right:1px solid #f0f0f0; align-self:stretch; display:flex; align-items:center; }
         .pm-search-body { padding:8px 16px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1; }
-        .pm-period-btn { padding:4px 12px; border:1px solid #d0d0d8; border-radius:3px; background:#fff; font-size:12px; cursor:pointer; color:#555; font-family:inherit; }
-        .pm-period-btn.on { background:#1a1a2e; border-color:#1a1a2e; color:#fff; font-weight:600; }
-        .pm-select { padding:6px 10px; border:1px solid #d0d0d8; border-radius:3px; font-size:12px; font-family:inherit; outline:none; color:#333; background:#fff; cursor:pointer; }
-        .pm-select:focus { border-color:#C94E1A; }
-        .pm-input { padding:6px 12px; border:1px solid #d0d0d8; border-radius:3px; font-size:12px; font-family:inherit; outline:none; color:#333; }
-        .pm-input:focus { border-color:#C94E1A; }
-        .pm-btn-primary { padding:7px 24px; background:#1a1a2e; color:#fff; border:none; border-radius:3px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+        .pm-period-btn { padding:4px 12px; border:1px solid #d6d6d2; border-radius:3px; background:#fff; font-size:13px; cursor:pointer; color:#555; font-family:inherit; }
+        .pm-period-btn.on { background:#111; border-color:#111; color:#fff; font-weight:600; }
+        .pm-select { padding:6px 10px; border:1px solid #d6d6d2; border-radius:3px; font-size:13px; font-family:inherit; outline:none; color:#222; background:#fff; cursor:pointer; }
+        .pm-select:focus { border-color:#111; }
+        .pm-input { padding:6px 12px; border:1px solid #d6d6d2; border-radius:3px; font-size:13px; font-family:inherit; outline:none; color:#222; }
+        .pm-input:focus { border-color:#111; }
+        .pm-btn-primary { padding:7px 24px; background:#111; color:#fff; border:none; border-radius:3px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
         .pm-btn-primary:hover { background:#2d2d44; }
-        .pm-btn-reset { padding:7px 20px; background:#fff; color:#555; border:1px solid #d0d0d8; border-radius:3px; font-size:13px; cursor:pointer; font-family:inherit; }
-        .pm-btn-reset:hover { background:#f5f5f7; }
-        .pm-btn-sm { padding:5px 12px; background:#fff; color:#555; border:1px solid #d0d0d8; border-radius:3px; font-size:12px; cursor:pointer; font-family:inherit; }
-        .pm-btn-sm:hover { background:#f5f5f7; }
+        .pm-btn-reset { padding:7px 20px; background:#fff; color:#555; border:1px solid #d6d6d2; border-radius:3px; font-size:14px; cursor:pointer; font-family:inherit; }
+        .pm-btn-reset:hover { background:#f2f2f0; }
+        .pm-btn-sm { padding:5px 12px; background:#fff; color:#555; border:1px solid #d6d6d2; border-radius:3px; font-size:13px; cursor:pointer; font-family:inherit; }
+        .pm-btn-sm:hover { background:#f2f2f0; }
 
         /* 엑셀 섹션 */
-        .pm-excel-section { background:#fff; border:1px solid #e0e0e0; border-radius:6px; margin-bottom:14px; }
+        .pm-excel-section { background:#fff; border:1px solid #d6d6d2; border-radius:6px; margin-bottom:14px; }
         .pm-excel-header { padding:13px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
-        .pm-excel-title { font-size:14px; font-weight:700; color:#1a1a2e; }
+        .pm-excel-title { font-size:14px; font-weight:700; color:#111; }
 
         /* 결과 바 */
         .pm-result-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
-        .pm-result-count { font-size:14px; font-weight:700; color:#1a1a2e; }
-        .pm-result-note { font-size:11px; color:#999; margin-top:2px; }
+        .pm-result-count { font-size:14px; font-weight:700; color:#111; }
+        .pm-result-note { font-size:12px; color:#767676; margin-top:2px; }
         .pm-result-right { display:flex; align-items:center; gap:8px; }
 
         /* 테이블 */
-        .pm-card { background:#fff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
-        .pm-tbl { width:100%; border-collapse:collapse; font-size:12px; }
-        .pm-tbl th { padding:10px 10px; text-align:center; font-size:11px; font-weight:600; color:#555; background:#fafafa; border-bottom:1px solid #e0e0e0; border-right:1px solid #f0f0f0; white-space:nowrap; }
+        .pm-card { background:#fff; border:1px solid #d6d6d2; border-radius:6px; overflow:hidden; }
+        .pm-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+        .pm-tbl th { padding:10px 10px; text-align:center; font-size:12px; font-weight:600; color:#555; background:#f9f9f7; border-bottom:1px solid #d6d6d2; border-right:1px solid #f0f0f0; white-space:nowrap; }
         .pm-tbl th:last-child { border-right:none; }
-        .pm-tbl td { padding:10px 10px; border-bottom:1px solid #f0f0f0; border-right:1px solid #f5f5f5; color:#333; vertical-align:middle; text-align:center; white-space:nowrap; }
+        .pm-tbl td { padding:10px 10px; border-bottom:1px solid #f0f0f0; border-right:1px solid #f5f5f5; color:#222; vertical-align:middle; text-align:center; white-space:nowrap; }
         .pm-tbl td:last-child { border-right:none; }
         .pm-tbl tr:last-child td { border-bottom:none; }
-        .pm-tbl tbody tr:hover td { background:#fff8f5; }
-        .pm-prod-code { color:#C94E1A; font-weight:600; cursor:pointer; font-size:12px; }
+        .pm-tbl tbody tr:hover td { background:#f7f7f5; }
+        .pm-prod-code { color:#111; font-weight:600; cursor:pointer; font-size:13px; }
         .pm-prod-code:hover { text-decoration:underline; }
         .pm-prod-name { text-align:left; }
-        .pm-prod-name-en { color:#C94E1A; font-weight:500; cursor:pointer; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; display:block; }
+        .pm-prod-name-en { color:#111; font-weight:500; cursor:pointer; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; display:block; }
         .pm-prod-name-en:hover { text-decoration:underline; }
-        .pm-prod-name-ko { font-size:11px; color:#888; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; display:block; }
-        .pm-thumb { width:36px; height:36px; border-radius:3px; background:#f0f0f2; object-fit:cover; flex-shrink:0; }
+        .pm-prod-name-ko { font-size:12px; color:#6b6b6b; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; display:block; }
+        .pm-thumb { width:36px; height:36px; border-radius:3px; background:#eeeeec; object-fit:cover; flex-shrink:0; }
         .pm-thumb-wrap { display:flex; align-items:center; gap:8px; }
-        .pm-badge-fit { display:inline-block; padding:2px 6px; border-radius:3px; font-size:10px; font-weight:700; background:#fff7ed; color:#C94E1A; }
-        .pm-sell-on { color:#16a34a; font-weight:600; }
-        .pm-sell-out { color:#aaa; }
-        .pm-sell-stop { color:#dc2626; }
-        .pm-stock-warn { color:#C94E1A; font-weight:700; }
+        .pm-badge-fit { display:inline-block; padding:2px 6px; border-radius:3px; font-size:12px; font-weight:700; background:#f4f4f2; color:#111; }
+        .pm-sell-on { color:#3D6A4F; font-weight:600; }
+        .pm-sell-out { color:#767676; }
+        .pm-sell-stop { color:#b3261e; }
+        .pm-stock-warn { color:#111; font-weight:700; }
 
         /* 페이지네이션 */
         .pm-pagination { display:flex; align-items:center; justify-content:center; gap:4px; padding:24px 0; }
-        .pm-page-btn { width:32px; height:32px; border:1px solid #d0d0d8; background:#fff; border-radius:3px; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#555; font-family:inherit; }
-        .pm-page-btn:hover { background:#f5f5f7; }
-        .pm-page-btn.on { background:#1a1a2e; border-color:#1a1a2e; color:#fff; font-weight:700; }
-        .pm-page-btn:disabled { color:#ccc; cursor:default; background:#fafafa; }
+        .pm-page-btn { width:32px; height:32px; border:1px solid #d6d6d2; background:#fff; border-radius:3px; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#555; font-family:inherit; }
+        .pm-page-btn:hover { background:#f2f2f0; }
+        .pm-page-btn.on { background:#111; border-color:#111; color:#fff; font-weight:700; }
+        .pm-page-btn:disabled { color:#ccc; cursor:default; background:#f9f9f7; }
 
-        @media (max-width:1100px) { .pm-tbl { font-size:11px; } }
+        @media (max-width:1100px) { .pm-tbl { font-size:12px; } }
         @media (max-width:768px) {
-          .pm-search-label { width:80px; min-width:80px; font-size:11px; }
+          .pm-search-label { width:80px; min-width:80px; font-size:12px; }
           .pm-result-bar { flex-direction:column; align-items:flex-start; }
         }
       `}</style>
@@ -142,8 +142,8 @@ export default function ProductsMyPage() {
         {/* 헤더 */}
         <div className="pm-head">
           <div>
-            <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>내 상품 관리 › 내 상품 목록</div>
-            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>내 상품 목록</h1>
+            <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>내 상품 관리 › 내 상품 목록</div>
+            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#111', margin:0 }}>내 상품 목록</h1>
           </div>
           <button className="pm-btn-primary" onClick={() => location.href='/admin/products/new'}>
             상품 등록
@@ -157,7 +157,7 @@ export default function ProductsMyPage() {
             <div className="pm-search-label">등록일자</div>
             <div className="pm-search-body">
               <input className="pm-input" type="date" style={{ width:'130px' }}/>
-              <span style={{ color:'#aaa' }}>~</span>
+              <span style={{ color:'#767676' }}>~</span>
               <input className="pm-input" type="date" style={{ width:'130px' }}/>
               <div style={{ display:'flex', gap:'4px', marginLeft:'4px' }}>
                 {periodButtons.map(p => (
@@ -210,14 +210,14 @@ export default function ProductsMyPage() {
         <div className="pm-excel-section">
           <div className="pm-excel-header" onClick={() => setExcelOpen(v => !v)}>
             <span className="pm-excel-title">상품 가격/정보 수정 (엑셀)</span>
-            <span style={{ fontSize:'16px', color:'#888', transform: excelOpen ? 'rotate(180deg)' : 'none', display:'inline-block', transition:'transform 0.2s' }}>▾</span>
+            <span style={{ fontSize:'16px', color:'#6b6b6b', transform: excelOpen ? 'rotate(180deg)' : 'none', display:'inline-block', transition:'transform 0.2s' }}>▾</span>
           </div>
           {excelOpen && (
             <div style={{ padding:'14px 18px', borderTop:'1px solid #f0f0f0', display:'flex', gap:'10px', flexWrap:'wrap' }}>
               <button className="pm-btn-sm">엑셀 양식 다운로드</button>
               <button className="pm-btn-sm">가격 일괄 수정 업로드</button>
               <button className="pm-btn-sm">재고 일괄 수정 업로드</button>
-              <span style={{ fontSize:'11px', color:'#C94E1A', alignSelf:'center' }}>
+              <span style={{ fontSize:'12px', color:'#111', alignSelf:'center' }}>
                 엑셀 업로드는 최대 1,000개 상품까지 일괄 수정 가능합니다.
               </span>
             </div>
@@ -259,7 +259,7 @@ export default function ProductsMyPage() {
                       type="checkbox"
                       checked={paginated.length > 0 && paginated.every(p => checked.includes(p.id))}
                       onChange={toggleAll}
-                      style={{ cursor:'pointer', accentColor:'#C94E1A' }}
+                      style={{ cursor:'pointer', accentColor:'#111' }}
                     />
                   </th>
                   <th>상품등록일</th>
@@ -289,10 +289,10 @@ export default function ProductsMyPage() {
                           type="checkbox"
                           checked={checked.includes(p.id)}
                           onChange={() => toggleCheck(p.id)}
-                          style={{ cursor:'pointer', accentColor:'#C94E1A' }}
+                          style={{ cursor:'pointer', accentColor:'#111' }}
                         />
                       </td>
-                      <td style={{ color:'#888', fontSize:'11px' }}>{p.regDate}</td>
+                      <td style={{ color:'#6b6b6b', fontSize:'12px' }}>{p.regDate}</td>
                       <td>
                         <span className="pm-prod-code" onClick={() => location.href='/admin/products/new'}>
                           {p.id}
@@ -300,7 +300,7 @@ export default function ProductsMyPage() {
                       </td>
                       <td className="pm-prod-name">
                         <div className="pm-thumb-wrap">
-                          <div className="pm-thumb" style={{ background: p.fitting ? '#fff7ed' : '#f0f0f2', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px' }}>
+                          <div className="pm-thumb" style={{ background: p.fitting ? '#f4f4f2' : '#eeeeec', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px' }}>
                             {p.fitting ? '' : ''}
                           </div>
                           <div>
@@ -324,14 +324,14 @@ export default function ProductsMyPage() {
                       <td>
                         {p.fitting
                           ? <span className="pm-badge-fit">가능</span>
-                          : <span style={{ color:'#ccc', fontSize:'11px' }}>-</span>
+                          : <span style={{ color:'#ccc', fontSize:'12px' }}>-</span>
                         }
                       </td>
-                      <td style={{ fontWeight:600, color: p.display === 'Y' ? '#333' : '#ccc' }}>
+                      <td style={{ fontWeight:600, color: p.display === 'Y' ? '#222' : '#ccc' }}>
                         {p.display}
                       </td>
-                      <td style={{ color:'#666', fontSize:'11px' }}>{p.season}</td>
-                      <td style={{ color:'#666', fontSize:'11px', textAlign:'left' }}>{p.category}</td>
+                      <td style={{ color:'#555', fontSize:'12px' }}>{p.season}</td>
+                      <td style={{ color:'#555', fontSize:'12px', textAlign:'left' }}>{p.category}</td>
                     </tr>
                   )
                 })}
