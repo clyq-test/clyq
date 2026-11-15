@@ -43,8 +43,7 @@ export default function ProductDetail() {
     const rest = allProducts.filter(x => x.id !== cur && !same.includes(x))
     return [...same, ...rest].slice(0, 3)
   })()
-  const [relOpen, setRelOpen] = useState(true)
-  useEffect(() => { if (window.matchMedia('(max-width: 768px)').matches) setRelOpen(false) }, [])
+  const [relOpen, setRelOpen] = useState(false)
   const sizeNames = det ? det.table.map(r => r[0]) : null
   async function share() {
     const url = window.location.href
@@ -131,7 +130,7 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 11px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
-        .rel { position: fixed; right: 0; bottom: 20px; width: 232px; background: rgba(255,255,255,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.6); border-right: 0; border-radius: 20px 0 0 20px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; overflow: hidden; }
+        .rel { position: fixed; right: 0; bottom: 20px; width: 232px; transform: translateX(0); transition: transform .35s ease; background: rgba(255,255,255,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.6); border-right: 0; border-radius: 20px 0 0 20px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; overflow: hidden; }
         .rel-h { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; min-height: 44px; font-size: 12px; font-weight: 600; }
         .rel ul { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0 14px 10px 8px; list-style: none; max-height: calc(100vh - 150px); overflow-y: auto; }
         .rel li a { display: flex; gap: 10px; padding: 6px; align-items: center; color: inherit; }
@@ -142,8 +141,15 @@ export default function ProductDetail() {
         .rel em { font-style: normal; font-size: 10px; color: #8a8a8a; }
         .rel b { font-size: 11px; font-weight: 500; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 10; line-clamp: 10; overflow-wrap: anywhere; }
         .rel li a { align-items: flex-start; } .rel li img { width: 56px; height: 72px; }
-        @media (min-width: 1100px) { .pd-shell { padding-right: 264px; } .pd-sec { width: 100%; } }
+        
         .rel i { font-style: normal; font-size: 11px; font-weight: 600; }
+        .rel.shut { transform: translateX(calc(100% - 44px)); }
+        .rel-h { justify-content: flex-start; gap: 10px; padding-left: 14px; }
+        .rel-h .arr { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+        .rel.shut .rel-t { opacity: 0; }
+        .rel-t { transition: opacity .2s; white-space: nowrap; }
+        .rel ul { transition: opacity .2s; } .rel.shut ul { opacity: 0; pointer-events: none; }
+        @media (prefers-reduced-motion: reduce) { .rel, .rel-t, .rel ul { transition: none; } }
         @media (max-width: 768px) { .rel { bottom: 12px; width: min(232px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
@@ -173,7 +179,7 @@ export default function ProductDetail() {
         }
       `}</style>
       <Navbar />
-      <div className="wrap-full pd-shell">
+      <div className="wrap-full">
         <div className="crumb"><a href="/">홈</a> / <a href="/products/new">신상품</a> / {product.name}</div>
         <div className="pd">
           <div>
@@ -275,22 +281,20 @@ export default function ProductDetail() {
 
       </div>
 
-      <aside className={'rel' + (relOpen ? ' open' : '')} aria-label="함께 보면 좋은 제품">
-        <button className="rel-h" onClick={() => setRelOpen(!relOpen)} aria-expanded={relOpen}>
-          <span>함께 보면 좋은 제품</span><span aria-hidden>{relOpen ? '−' : '+'}</span>
+      <aside className={'rel' + (relOpen ? '' : ' shut')} aria-label="함께 보면 좋은 제품">
+        <button className="rel-h" onClick={() => setRelOpen(!relOpen)} aria-expanded={relOpen} aria-label={relOpen ? '함께 보면 좋은 제품 접기' : '함께 보면 좋은 제품 펼치기'}>
+          <span className="arr" aria-hidden>{relOpen ? '›' : '‹'}</span><span className="rel-t">함께 보면 좋은 제품</span>
         </button>
-        {relOpen && (
-          <ul>
-            {related.map(r => (
-              <li key={r.id}>
-                <a href={'/products/' + r.id}>
-                  <Img src={r.image.replace('w=600', 'w=160')} alt="" />
-                  <span><em>{r.brand}</em><b>{r.name}</b><i>{r.price.toLocaleString()}원</i></span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul aria-hidden={!relOpen}>
+          {related.map(r => (
+            <li key={r.id}>
+              <a href={'/products/' + r.id} tabIndex={relOpen ? 0 : -1}>
+                <Img src={r.image.replace('w=600', 'w=160')} alt="" />
+                <span><em>{r.brand}</em><b>{r.name}</b><i>{r.price.toLocaleString()}원</i></span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </aside>
 
       {drawer && (

@@ -6,7 +6,7 @@ import Navbar from './components/Navbar'
 import { FitDrawer, Footer } from './components/ui'
 import { useShop } from './lib/store'
 import { allProducts, CATEGORIES, BRAND_INFO } from './lib/catalog'
-import { MOODS, EXHIBITIONS, exhibitionItems, moodItems, mix, categoryCover, recommend } from './lib/curation'
+import { MOODS, EXHIBITIONS, exhibitionItems, moodItems, mix, recommend } from './lib/curation'
 
 /* ── 이미지 (Unsplash, 전부 로드 확인된 ID만 사용) ── */
 const U = (id, w = 600) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop&crop=center`
@@ -141,11 +141,9 @@ export default function Home() {
 
         .sec-sub { margin: -14px 0 24px; font-size: 13px; color: #8a8a8a; line-height: 1.6; }
         .cat-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-        .cat-tile { color: inherit; display: block; }
-        .cat-img { aspect-ratio: 4/3; background: #f4f4f2; overflow: hidden; margin-bottom: 10px; }
-        .cat-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform .5s ease; }
-        .cat-tile:hover .cat-img img { transform: scale(1.04); }
-        .cat-tile b { font-size: 15px; font-weight: 600; margin-right: 8px; } .cat-tile span { font-size: 12px; color: #8a8a8a; }
+        .cat-tile { color: inherit; display: flex; justify-content: space-between; align-items: baseline; padding: 22px 20px; border: 1px solid #e5e5e5; min-height: 72px; transition: border-color .2s; }
+        .cat-tile:hover { border-color: #111; }
+        .cat-tile b { font-size: 17px; font-weight: 600; margin-right: 8px; } .cat-tile span { font-size: 12px; color: #8a8a8a; }
         .mood-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
         .mood-tabs::-webkit-scrollbar { display: none; }
         .mood-tab { flex-shrink: 0; padding: 0 20px; min-height: 42px; border: 1px solid #e0e0e0; background: #fff; font-size: 14px; color: #555; border-radius: 21px; }
@@ -262,23 +260,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 카테고리 ── */}
-      <section className="sec" style={{ paddingBottom: 24 }}>
-        <div className="wrap-full">
-          <div className="sec-row"><h2 className="sec-title">카테고리별 쇼핑</h2><a href="/products/new" className="sec-more">전체보기</a></div>
-          <div className="cat-tiles">
-            {CATEGORIES.map(c => (
-              <a key={c} href={'/products/new?c=' + encodeURIComponent(c)} className="cat-tile">
-                <div className="cat-img"><img src={categoryCover(c)} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} /></div>
-                <b>{c}</b><span>{allProducts.filter(p => p.category === c).length}개</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── 추천 ── */}
-      <section id="best" className="sec" style={{ paddingTop: 40 }}>
+      <section id="best" className="sec" style={{ paddingTop: 56 }}>
         <div className="wrap-full">
           <div className="sec-row">
             <h2 className="sec-title">{personal && personal.length ? `${userName}님 취향 기반 추천` : '에디터 픽'}</h2>
@@ -287,6 +270,20 @@ export default function Home() {
           {!(personal && personal.length) && <p className="sec-sub">{isLoggedIn ? '마이페이지에서 취향 분석을 입력하면 취향에 맞는 제품을 골라 드려요.' : '피팅박스로 먼저 입어볼 수 있는 제품이에요. 로그인 후 취향 분석을 입력하면 맞춤 추천을 받을 수 있어요.'}</p>}
           <div className="grid-5">
             {(personal && personal.length ? personal : editorPicks).map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 카테고리 ── */}
+      <section className="sec" style={{ paddingTop: 8, paddingBottom: 56 }}>
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">카테고리별 쇼핑</h2><a href="/products/new" className="sec-more">전체보기</a></div>
+          <div className="cat-tiles">
+            {CATEGORIES.map(c => (
+              <a key={c} href={'/products/new?c=' + encodeURIComponent(c)} className="cat-tile">
+                <b>{c}</b><span>{allProducts.filter(p => p.category === c).length}개</span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
