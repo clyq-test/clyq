@@ -67,40 +67,40 @@ export default function FittingProductNewPage() {
   return (
     <>
       <style>{`
-        .np-sec { background:#fff; border:1px solid #e8e8eb; border-radius:8px; margin-bottom:16px; overflow:hidden; }
-        .np-head { padding:13px 20px; background:#0f1623; color:#fff; font-size:13px; font-weight:700; }
-        .np-row { display:grid; grid-template-columns:160px 1fr; border-bottom:1px solid #f0f0f2; }
+        .np-sec { background:#fff; border:1px solid #e6e6e3; border-radius:8px; margin-bottom:16px; overflow:hidden; }
+        .np-head { padding:13px 20px; background:#111; color:#fff; font-size:14px; font-weight:700; }
+        .np-row { display:grid; grid-template-columns:160px 1fr; border-bottom:1px solid #eeeeec; }
         .np-row:last-child { border-bottom:none; }
-        .np-label { padding:13px 16px; font-size:12px; color:#555; font-weight:600; background:#fafafa; border-right:1px solid #f0f0f2; display:flex; align-items:center; }
+        .np-label { padding:13px 16px; font-size:13px; color:#555; font-weight:600; background:#f9f9f7; border-right:1px solid #eeeeec; display:flex; align-items:center; }
         .np-cell { padding:10px 16px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-        .np-inp { padding:8px 12px; border:1px solid #d0d0d8; border-radius:4px; font-size:13px; outline:none; font-family:inherit; background:#fff; }
-        .np-inp:focus { border-color:#C94E1A; }
-        .np-sel { padding:8px 12px; border:1px solid #d0d0d8; border-radius:4px; font-size:13px; outline:none; font-family:inherit; background:#fff; cursor:pointer; }
-        .np-sel:focus { border-color:#C94E1A; }
-        .np-ta { padding:8px 12px; border:1px solid #d0d0d8; border-radius:4px; font-size:13px; outline:none; font-family:inherit; background:#fff; width:100%; height:72px; resize:vertical; line-height:1.6; }
-        .np-ta:focus { border-color:#C94E1A; }
-        .np-prod-list { max-height:260px; overflow-y:auto; border:1px solid #e8e8eb; border-radius:6px; }
-        .np-prod-row { padding:11px 14px; border-bottom:1px solid #f5f5f7; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+        .np-inp { padding:8px 12px; border:1px solid #d6d6d2; border-radius:4px; font-size:14px; outline:none; font-family:inherit; background:#fff; }
+        .np-inp:focus { border-color:#111; }
+        .np-sel { padding:8px 12px; border:1px solid #d6d6d2; border-radius:4px; font-size:14px; outline:none; font-family:inherit; background:#fff; cursor:pointer; }
+        .np-sel:focus { border-color:#111; }
+        .np-ta { padding:8px 12px; border:1px solid #d6d6d2; border-radius:4px; font-size:14px; outline:none; font-family:inherit; background:#fff; width:100%; height:72px; resize:vertical; line-height:1.6; }
+        .np-ta:focus { border-color:#111; }
+        .np-prod-list { max-height:260px; overflow-y:auto; border:1px solid #e6e6e3; border-radius:6px; }
+        .np-prod-row { padding:11px 14px; border-bottom:1px solid #f2f2f0; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
         .np-prod-row:last-child { border-bottom:none; }
-        .np-prod-row:hover { background:#fff8f5; }
-        .np-prod-row.on { background:#fff3ee; border-left:3px solid #C94E1A; }
-        .np-sz { padding:5px 12px; border-radius:4px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid #d0d0d8; background:#fff; color:#555; }
-        .np-sz.on { background:#C94E1A; border-color:#C94E1A; color:#fff; }
+        .np-prod-row:hover { background:#f7f7f5; }
+        .np-prod-row.on { background:#f0f0ee; border-left:3px solid #111; }
+        .np-sz { padding:5px 12px; border-radius:4px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid #d6d6d2; background:#fff; color:#555; }
+        .np-sz.on { background:#111; border-color:#111; color:#fff; }
         .np-toggle { width:40px; height:22px; border-radius:11px; border:none; cursor:pointer; position:relative; transition:background 0.2s; flex-shrink:0; }
         .np-toggle-knob { position:absolute; top:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.2); transition:left 0.2s; }
-        .np-btn-save { padding:11px 32px; background:#C94E1A; color:#fff; border:none; border-radius:5px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
-        .np-btn-save:hover { background:#a83d14; }
-        .np-btn-out { padding:11px 20px; background:#fff; color:#555; border:1px solid #d0d0d8; border-radius:5px; font-size:13px; cursor:pointer; font-family:inherit; }
-        .np-ok { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px 16px; font-size:12px; color:#16a34a; font-weight:600; margin-top:12px; }
+        .np-btn-save { padding:11px 32px; background:#111; color:#fff; border:none; border-radius:5px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+        .np-btn-save:hover { background:#333; }
+        .np-btn-out { padding:11px 20px; background:#fff; color:#555; border:1px solid #d6d6d2; border-radius:5px; font-size:14px; cursor:pointer; font-family:inherit; }
+        .np-ok { background:#eef4f0; border:1px solid #bbf7d0; border-radius:6px; padding:12px 16px; font-size:13px; color:#3D6A4F; font-weight:600; margin-top:12px; }
         .np-success { background:#10b981; color:#fff; padding:13px 18px; border-radius:8px; font-size:14px; font-weight:600; margin-bottom:16px; }
-        .np-note { font-size:11px; color:#C94E1A; margin-top:4px; }
+        .np-note { font-size:12px; color:#111; margin-top:4px; }
       `}</style>
 
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'20px', flexWrap:'wrap', gap:'10px' }}>
         <div>
-          <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>피팅박스 관리 › 피팅 제품 등록</div>
-          <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>피팅 제품 등록</h1>
-          <div style={{ fontSize:'12px', color:'#aaa', marginTop:'4px' }}>브랜드 등록 상품에서 선택 후 피팅 전용 설정을 추가합니다.</div>
+          <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>피팅박스 관리 › 피팅 제품 등록</div>
+          <h1 style={{ fontSize:'22px', fontWeight:800, color:'#111', margin:0 }}>피팅 제품 등록</h1>
+          <div style={{ fontSize:'13px', color:'#767676', marginTop:'4px' }}>브랜드 등록 상품에서 선택 후 피팅 전용 설정을 추가합니다.</div>
         </div>
         <div style={{ display:'flex', gap:'8px' }}>
           <button className="np-btn-out" onClick={() => history.back()}>취소</button>
@@ -114,7 +114,7 @@ export default function FittingProductNewPage() {
       <div className="np-sec">
         <div className="np-head">① 브랜드 선택</div>
         <div className="np-row">
-          <div className="np-label">브랜드 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">브랜드 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             <select
               className="np-sel"
@@ -143,7 +143,7 @@ export default function FittingProductNewPage() {
           />
           <div className="np-prod-list">
             {list.length === 0 ? (
-              <div style={{ padding:'24px', textAlign:'center', color:'#aaa', fontSize:'13px' }}>
+              <div style={{ padding:'24px', textAlign:'center', color:'#767676', fontSize:'14px' }}>
                 {brand ? '등록된 상품이 없습니다.' : '브랜드를 먼저 선택하세요.'}
               </div>
             ) : list.map(p => (
@@ -153,12 +153,12 @@ export default function FittingProductNewPage() {
                 onClick={() => pickProduct(p)}
               >
                 <div>
-                  <div style={{ fontWeight:600, color:'#1a1a2e', fontSize:'13px' }}>{p.name}</div>
-                  <div style={{ fontSize:'11px', color:'#aaa', marginTop:'2px' }}>
+                  <div style={{ fontWeight:600, color:'#111', fontSize:'14px' }}>{p.name}</div>
+                  <div style={{ fontSize:'12px', color:'#767676', marginTop:'2px' }}>
                     {p.id} · {p.brand} · {p.category} · {p.season}
                   </div>
                 </div>
-                <div style={{ fontSize:'13px', fontWeight:700, color:'#C94E1A', flexShrink:0 }}>
+                <div style={{ fontSize:'14px', fontWeight:700, color:'#111', flexShrink:0 }}>
                   {p.price.toLocaleString()}원
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function FittingProductNewPage() {
       <div className="np-sec">
         <div className="np-head">③ 피팅 재고 설정</div>
         <div className="np-row">
-          <div className="np-label">보유 수량 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">보유 수량 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             <input
               className="np-inp"
@@ -183,11 +183,11 @@ export default function FittingProductNewPage() {
               value={quantity}
               onChange={e => setQuantity(e.target.value)}
             />
-            <span style={{ fontSize:'12px', color:'#888' }}>개</span>
+            <span style={{ fontSize:'13px', color:'#6b6b6b' }}>개</span>
           </div>
         </div>
         <div className="np-row">
-          <div className="np-label">피팅 사이즈 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">피팅 사이즈 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             {sizeList.map(s => (
               <div
@@ -219,7 +219,7 @@ export default function FittingProductNewPage() {
       <div className="np-sec">
         <div className="np-head">④ 피팅 규정 설정</div>
         <div className="np-row">
-          <div className="np-label">피팅 기간 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">피팅 기간 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             <select
               className="np-sel"
@@ -238,7 +238,7 @@ export default function FittingProductNewPage() {
           <div className="np-cell">
             <button
               className="np-toggle"
-              style={{ background: multiSize ? '#C94E1A' : '#d0d0d8' }}
+              style={{ background: multiSize ? '#111' : '#d6d6d2' }}
               onClick={() => setMultiSize(v => !v)}
             >
               <div
@@ -246,13 +246,13 @@ export default function FittingProductNewPage() {
                 style={{ left: multiSize ? '20px' : '2px' }}
               />
             </button>
-            <span style={{ fontSize:'13px', color: multiSize ? '#C94E1A' : '#999' }}>
+            <span style={{ fontSize:'14px', color: multiSize ? '#111' : '#767676' }}>
               {multiSize ? '최대 2가지 사이즈 동시 신청 허용' : '1가지 사이즈만 신청 가능'}
             </span>
           </div>
         </div>
         <div className="np-row">
-          <div className="np-label">배상 기준가 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">배상 기준가 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             <input
               className="np-inp"
@@ -262,7 +262,7 @@ export default function FittingProductNewPage() {
               value={penalty}
               onChange={e => setPenalty(e.target.value)}
             />
-            <span style={{ fontSize:'12px', color:'#888' }}>원 (훼손 시 배상 기준)</span>
+            <span style={{ fontSize:'13px', color:'#6b6b6b' }}>원 (훼손 시 배상 기준)</span>
           </div>
         </div>
         <div className="np-row">
@@ -282,7 +282,7 @@ export default function FittingProductNewPage() {
       <div className="np-sec">
         <div className="np-head">⑤ 입수 정보 (내부용)</div>
         <div className="np-row">
-          <div className="np-label">입수 유형 <span style={{ color:'#dc2626', marginLeft:'2px' }}>*</span></div>
+          <div className="np-label">입수 유형 <span style={{ color:'#b3261e', marginLeft:'2px' }}>*</span></div>
           <div className="np-cell">
             <select
               className="np-sel"
@@ -298,13 +298,13 @@ export default function FittingProductNewPage() {
           <div className="np-label">제품 상태</div>
           <div className="np-cell">
             {CONDITIONS.map(c => (
-              <label key={c} style={{ display:'flex', alignItems:'center', gap:'6px', cursor:'pointer', fontSize:'13px', color:'#333' }}>
+              <label key={c} style={{ display:'flex', alignItems:'center', gap:'6px', cursor:'pointer', fontSize:'14px', color:'#222' }}>
                 <input
                   type="radio"
                   name="cond"
                   checked={condition === c}
                   onChange={() => setCondition(c)}
-                  style={{ accentColor:'#C94E1A' }}
+                  style={{ accentColor:'#111' }}
                 />
                 {c}
               </label>

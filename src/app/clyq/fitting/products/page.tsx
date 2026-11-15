@@ -13,10 +13,10 @@ const products = [
 ]
 
 const statusStyle = {
-  '운영중':   { bg:'#f0fdf4', color:'#16a34a' },
-  '재고부족': { bg:'#fff7ed', color:'#C94E1A' },
-  '일시중단': { bg:'#f5f5f7', color:'#999' },
-  '종료':     { bg:'#f5f5f7', color:'#ccc' },
+  '운영중':   { bg:'#eef4f0', color:'#3D6A4F' },
+  '재고부족': { bg:'#f4f4f2', color:'#111' },
+  '일시중단': { bg:'#f2f2f0', color:'#767676' },
+  '종료':     { bg:'#f2f2f0', color:'#ccc' },
 }
 
 const brands = ['전체','MARCIA','MATIN KIM','EENK','D.POUND','ANDERSSONBELL']
@@ -45,40 +45,40 @@ export default function FittingProductsPage() {
       <style>{`
         .fp-wrap { width:100%; }
         .fp-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
-        .fp-stat { background:#fff; border:1px solid #e8e8eb; border-radius:8px; padding:16px 20px; }
-        .fp-toolbar { background:#fff; border:1px solid #e8e8eb; border-radius:8px; padding:14px 20px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px; }
+        .fp-stat { background:#fff; border:1px solid #e6e6e3; border-radius:8px; padding:16px 20px; }
+        .fp-toolbar { background:#fff; border:1px solid #e6e6e3; border-radius:8px; padding:14px 20px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px; }
         .fp-filter-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-        .fp-filter-label { font-size:11px; font-weight:600; color:#999; width:44px; flex-shrink:0; }
-        .fp-btn { padding:5px 14px; border-radius:20px; border:1px solid #d8d8dc; background:#fff; font-size:12px; cursor:pointer; color:#666; font-family:inherit; }
-        .fp-btn.on { background:#1a1a2e; border-color:#1a1a2e; color:#fff; font-weight:600; }
-        .fp-s-btn { padding:5px 14px; border-radius:20px; border:1px solid #d8d8dc; background:#fff; font-size:12px; cursor:pointer; color:#666; font-family:inherit; }
-        .fp-s-btn.on { background:#C94E1A; border-color:#C94E1A; color:#fff; font-weight:600; }
-        .fp-search { padding:7px 12px; border:1px solid #d8d8dc; border-radius:5px; font-size:13px; width:240px; outline:none; font-family:inherit; }
-        .fp-search:focus { border-color:#C94E1A; }
-        .fp-card { background:#fff; border:1px solid #e8e8eb; border-radius:8px; overflow:hidden; }
-        .fp-tbl { width:100%; border-collapse:collapse; font-size:13px; }
-        .fp-tbl th { padding:10px 14px; text-align:left; font-size:11px; font-weight:600; color:#999; background:#fafafa; border-bottom:1px solid #f0f0f2; white-space:nowrap; }
-        .fp-tbl td { padding:13px 14px; border-bottom:1px solid #f5f5f7; color:#333; vertical-align:middle; white-space:nowrap; }
+        .fp-filter-label { font-size:12px; font-weight:600; color:#767676; width:44px; flex-shrink:0; }
+        .fp-btn { padding:5px 14px; border-radius:20px; border:1px solid #d6d6d2; background:#fff; font-size:13px; cursor:pointer; color:#555; font-family:inherit; }
+        .fp-btn.on { background:#111; border-color:#111; color:#fff; font-weight:600; }
+        .fp-s-btn { padding:5px 14px; border-radius:20px; border:1px solid #d6d6d2; background:#fff; font-size:13px; cursor:pointer; color:#555; font-family:inherit; }
+        .fp-s-btn.on { background:#111; border-color:#111; color:#fff; font-weight:600; }
+        .fp-search { padding:7px 12px; border:1px solid #d6d6d2; border-radius:5px; font-size:14px; width:240px; outline:none; font-family:inherit; }
+        .fp-search:focus { border-color:#111; }
+        .fp-card { background:#fff; border:1px solid #e6e6e3; border-radius:8px; overflow:hidden; }
+        .fp-tbl { width:100%; border-collapse:collapse; font-size:14px; }
+        .fp-tbl th { padding:10px 14px; text-align:left; font-size:12px; font-weight:600; color:#767676; background:#f9f9f7; border-bottom:1px solid #eeeeec; white-space:nowrap; }
+        .fp-tbl td { padding:13px 14px; border-bottom:1px solid #f2f2f0; color:#222; vertical-align:middle; white-space:nowrap; }
         .fp-tbl tr:last-child td { border-bottom:none; }
         .fp-tbl tbody tr { cursor:pointer; }
-        .fp-tbl tbody tr:hover td { background:#fff8f5; }
-        .fp-tbl tbody tr.sel td { background:#fff3ee; }
-        .fp-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:11px; font-weight:600; }
-        .fp-size-tag { display:inline-block; padding:2px 6px; background:#f0f0f2; border-radius:3px; font-size:10px; color:#555; margin-right:3px; }
-        .fp-bar-bg { width:64px; height:5px; background:#f0f0f2; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:5px; }
-        .fp-bar-fill { height:5px; border-radius:3px; background:#C94E1A; }
+        .fp-tbl tbody tr:hover td { background:#f7f7f5; }
+        .fp-tbl tbody tr.sel td { background:#f0f0ee; }
+        .fp-badge { display:inline-block; padding:3px 9px; border-radius:4px; font-size:12px; font-weight:600; }
+        .fp-size-tag { display:inline-block; padding:2px 6px; background:#eeeeec; border-radius:3px; font-size:12px; color:#555; margin-right:3px; }
+        .fp-bar-bg { width:64px; height:5px; background:#eeeeec; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:5px; }
+        .fp-bar-fill { height:5px; border-radius:3px; background:#111; }
 
         /* 상세 패널 */
-        .fp-detail { background:#fff; border:1px solid #e8e8eb; border-radius:8px; margin-top:12px; overflow:hidden; }
-        .fp-detail-head { padding:14px 20px; background:#1a1a2e; color:#fff; display:flex; align-items:center; justify-content:space-between; }
+        .fp-detail { background:#fff; border:1px solid #e6e6e3; border-radius:8px; margin-top:12px; overflow:hidden; }
+        .fp-detail-head { padding:14px 20px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between; }
         .fp-detail-grid { display:grid; grid-template-columns:repeat(4,1fr); }
-        .fp-detail-cell { padding:16px 20px; border-right:1px solid #f0f0f2; border-bottom:1px solid #f0f0f2; }
+        .fp-detail-cell { padding:16px 20px; border-right:1px solid #eeeeec; border-bottom:1px solid #eeeeec; }
         .fp-detail-cell:nth-child(4n) { border-right:none; }
 
         @media (max-width:1100px) {
           .fp-stat-grid { grid-template-columns:repeat(2,1fr); }
           .fp-detail-grid { grid-template-columns:repeat(2,1fr); }
-          .fp-detail-cell:nth-child(4n) { border-right:1px solid #f0f0f2; }
+          .fp-detail-cell:nth-child(4n) { border-right:1px solid #eeeeec; }
           .fp-detail-cell:nth-child(2n) { border-right:none; }
         }
         @media (max-width:768px) { .fp-search { width:100%; } }
@@ -87,11 +87,11 @@ export default function FittingProductsPage() {
       <div className="fp-wrap">
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'20px', flexWrap:'wrap', gap:'10px' }}>
           <div>
-            <div style={{ fontSize:'11px', color:'#aaa', marginBottom:'4px' }}>피팅박스 관리 › 피팅 제품 목록</div>
-            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1a1a2e', margin:0 }}>피팅 제품 목록</h1>
+            <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>피팅박스 관리 › 피팅 제품 목록</div>
+            <h1 style={{ fontSize:'22px', fontWeight:800, color:'#111', margin:0 }}>피팅 제품 목록</h1>
           </div>
           <button
-            style={{ padding:'9px 20px', background:'#C94E1A', color:'#fff', border:'none', borderRadius:'5px', fontSize:'13px', fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}
+            style={{ padding:'9px 20px', background:'#111', color:'#fff', border:'none', borderRadius:'5px', fontSize:'14px', fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}
             onClick={() => location.href='/clyq/fitting/products/new'}
           >
             피팅 제품 등록
@@ -101,16 +101,16 @@ export default function FittingProductsPage() {
         {/* 요약 */}
         <div className="fp-stat-grid">
           {[
-            { label:'전체 피팅 제품', value: products.length + '개', color:'#1a1a2e' },
-            { label:'총 보유 수량',   value: totalStock + '개',       color:'#2563eb' },
-            { label:'현재 피팅중',    value: inFitting + '개',        color:'#C94E1A' },
-            { label:'가용 재고',      value: available + '개',        color: available <= 5 ? '#dc2626' : '#16a34a' },
+            { label:'전체 피팅 제품', value: products.length + '개', color:'#111' },
+            { label:'총 보유 수량',   value: totalStock + '개',       color:'#555' },
+            { label:'현재 피팅중',    value: inFitting + '개',        color:'#111' },
+            { label:'가용 재고',      value: available + '개',        color: available <= 5 ? '#b3261e' : '#3D6A4F' },
           ].map(s => (
             <div key={s.label} className="fp-stat">
-              <div style={{ fontSize:'11px', color:'#999', marginBottom:'8px' }}>{s.label}</div>
+              <div style={{ fontSize:'12px', color:'#767676', marginBottom:'8px' }}>{s.label}</div>
               <div style={{ fontSize:'24px', fontWeight:800, color:s.color }}>{s.value}</div>
               {s.label === '가용 재고' && lowStock > 0 && (
-                <div style={{ fontSize:'11px', color:'#C94E1A', marginTop:'4px' }}>재고 부족 {lowStock}개 제품</div>
+                <div style={{ fontSize:'12px', color:'#111', marginTop:'4px' }}>재고 부족 {lowStock}개 제품</div>
               )}
             </div>
           ))}
@@ -156,30 +156,30 @@ export default function FittingProductsPage() {
               </thead>
               <tbody>
                 {filtered.map(p => {
-                  const ss = statusStyle[p.status] || { bg:'#f5f5f7', color:'#999' }
+                  const ss = statusStyle[p.status] || { bg:'#f2f2f0', color:'#767676' }
                   const isSel = selected === p.id
                   return (
                     <tr key={p.id} className={isSel ? 'sel' : ''} onClick={() => setSelected(isSel ? null : p.id)}>
-                      <td style={{ fontSize:'11px', color:'#888', fontFamily:'monospace' }}>{p.id}</td>
+                      <td style={{ fontSize:'12px', color:'#6b6b6b', fontFamily:'monospace' }}>{p.id}</td>
                       <td style={{ fontWeight:700 }}>{p.brand}</td>
                       <td>
-                        <div style={{ fontWeight:600, color:'#1a1a2e' }}>{p.name}</div>
-                        <div style={{ fontSize:'11px', color:'#bbb', marginTop:'2px' }}>{p.sku}</div>
+                        <div style={{ fontWeight:600, color:'#111' }}>{p.name}</div>
+                        <div style={{ fontSize:'12px', color:'#8a8a8a', marginTop:'2px' }}>{p.sku}</div>
                       </td>
                       <td>{p.sizes.map(s => <span key={s} className="fp-size-tag">{s}</span>)}</td>
                       <td style={{ textAlign:'center', fontWeight:600 }}>{p.totalStock}</td>
-                      <td style={{ textAlign:'center', fontWeight:700, color: p.inFitting > 0 ? '#C94E1A' : '#bbb' }}>{p.inFitting}</td>
-                      <td style={{ textAlign:'center', fontWeight:700, color: p.available <= 1 ? '#dc2626' : '#16a34a' }}>{p.available}</td>
+                      <td style={{ textAlign:'center', fontWeight:700, color: p.inFitting > 0 ? '#111' : '#8a8a8a' }}>{p.inFitting}</td>
+                      <td style={{ textAlign:'center', fontWeight:700, color: p.available <= 1 ? '#b3261e' : '#3D6A4F' }}>{p.available}</td>
                       <td style={{ textAlign:'center' }}>
                         <div style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
                           <div className="fp-bar-bg">
                             <div className="fp-bar-fill" style={{ width: p.convRate + '%' }}></div>
                           </div>
-                          <span style={{ fontSize:'12px', fontWeight:700, color: p.convRate >= 55 ? '#16a34a' : '#C94E1A' }}>{p.convRate}%</span>
+                          <span style={{ fontSize:'13px', fontWeight:700, color: p.convRate >= 55 ? '#3D6A4F' : '#111' }}>{p.convRate}%</span>
                         </div>
                       </td>
                       <td style={{ textAlign:'right', fontWeight:500 }}>{p.penaltyBase.toLocaleString()}원</td>
-                      <td style={{ fontSize:'12px', color:'#888' }}>{p.storageLocation}</td>
+                      <td style={{ fontSize:'13px', color:'#6b6b6b' }}>{p.storageLocation}</td>
                       <td style={{ textAlign:'center' }}>
                         <span className="fp-badge" style={{ background:ss.bg, color:ss.color }}>{p.status}</span>
                       </td>
@@ -199,19 +199,19 @@ export default function FittingProductsPage() {
             <div className="fp-detail">
               <div className="fp-detail-head">
                 <div>
-                  <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.4)', marginBottom:'3px' }}>제품 상세</div>
+                  <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.4)', marginBottom:'3px' }}>제품 상세</div>
                   <div style={{ fontSize:'16px', fontWeight:800 }}>{p.name}</div>
                 </div>
                 <div style={{ display:'flex', gap:'8px' }}>
                   <button
-                    style={{ padding:'7px 16px', background:'rgba(255,255,255,0.1)', border:'none', color:'#fff', borderRadius:'4px', fontSize:'12px', cursor:'pointer', fontFamily:'inherit' }}
+                    style={{ padding:'7px 16px', background:'rgba(255,255,255,0.1)', border:'none', color:'#fff', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}
                     onClick={() => location.href='/clyq/fitting/products/new'}
                   >
                     수정
                   </button>
                   <button
                     onClick={() => setSelected(null)}
-                    style={{ padding:'7px 14px', background:'rgba(255,255,255,0.08)', border:'none', color:'#fff', borderRadius:'4px', fontSize:'12px', cursor:'pointer', fontFamily:'inherit' }}
+                    style={{ padding:'7px 14px', background:'rgba(255,255,255,0.08)', border:'none', color:'#fff', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}
                   >
                     닫기
                   </button>
@@ -233,8 +233,8 @@ export default function FittingProductsPage() {
                   { label:'배상 기준가',  val: p.penaltyBase.toLocaleString() + '원' },
                 ].map(cell => (
                   <div key={cell.label} className="fp-detail-cell">
-                    <div style={{ fontSize:'11px', color:'#999', marginBottom:'4px' }}>{cell.label}</div>
-                    <div style={{ fontSize:'13px', fontWeight:600, color:'#1a1a2e' }}>{cell.val}</div>
+                    <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>{cell.label}</div>
+                    <div style={{ fontSize:'14px', fontWeight:600, color:'#111' }}>{cell.val}</div>
                   </div>
                 ))}
               </div>
