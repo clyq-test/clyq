@@ -13,7 +13,8 @@ const looksOf = (name, bi) => {
   const r = bi % l.length
   return [...l.slice(r), ...l.slice(0, r)]
 }
-const BRAND_LOOKS = BRAND_INFO.map((b, i) => ({ ...b, looks: looksOf(b.name, i) }))
+// 입점일 데이터가 아직 없어 목록의 마지막 브랜드가 가장 최근에 입점한 것으로 보고 역순(최신 → 이전)으로 보여줍니다. 입점일 필드가 생기면 그 값으로 정렬하세요.
+const BRAND_LOOKS = BRAND_INFO.map((b, i) => ({ ...b, looks: looksOf(b.name, i) })).reverse()
 
 export default function Lookbook() {
   const [open, setOpen] = useState(null) // { bi, idx }
@@ -33,18 +34,17 @@ export default function Lookbook() {
     <main>
       <SharedStyle />
       <style>{`
-        .lb-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 36px 20px; padding: 8px 0 80px; }
-        .lb-card { text-align: left; display: block; width: 100%; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-        .lb-ph { aspect-ratio: 2 / 3; background: #f4f4f2; overflow: hidden; position: relative; }
-        .lb-ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }
-        .lb-card:hover .lb-ph img { transform: scale(1.03); }
-        .lb-more { position: absolute; right: 10px; bottom: 10px; background: rgba(255,255,255,.92); font-size: 12px; padding: 5px 10px; }
-        .lb-cap { padding: 12px 2px 0; }
-        .lb-cap b { display: block; font-size: 15px; font-weight: 600; letter-spacing: .01em; margin-bottom: 3px; }
-        .lb-cap span { font-size: 13px; color: #8a8a8a; line-height: 1.5; }
-        @media (max-width: 1280px) { .lb-grid { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 1024px) { .lb-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 640px) { .lb-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; } }
+        .lb-list { display: flex; flex-direction: column; align-items: center; gap: 64px; padding: 8px 0 96px; }
+        .lb-card { display: block; width: min(760px, 100%); color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+        .lb-ph { aspect-ratio: 4 / 5; background: #f4f4f2; overflow: hidden; position: relative; }
+        .lb-ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s; }
+        .lb-card:hover .lb-ph img { transform: scale(1.02); }
+        .lb-ph::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 42%; background: linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0)); pointer-events: none; }
+        .lb-cap { position: absolute; right: 28px; bottom: 26px; left: 28px; z-index: 1; text-align: right; color: #fff; }
+        .lb-cap b { display: block; font-size: 22px; font-weight: 600; letter-spacing: .02em; margin-bottom: 6px; }
+        .lb-cap span { display: block; font-size: 14px; line-height: 1.5; opacity: .92; }
+        .lb-cap em { display: inline-block; margin-top: 12px; font-style: normal; font-size: 12px; border: 1px solid rgba(255,255,255,.7); padding: 5px 12px; }
+        @media (max-width: 640px) { .lb-list { gap: 40px; } .lb-cap { right: 16px; bottom: 16px; left: 16px; } .lb-cap b { font-size: 18px; } }
 
         .lbp-bg { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 1200; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .lbp { background: #fff; width: min(960px, 100%); height: min(760px, 94dvh); display: grid; grid-template-columns: 1fr 112px; grid-template-rows: auto 1fr; }
@@ -69,12 +69,14 @@ export default function Lookbook() {
       `}</style>
       <Navbar />
       <div className="wrap-full">
-        <div className="page-head"><h1>룩북</h1><p>입점 브랜드 {BRAND_INFO.length}곳의 대표 룩이에요. 사진을 누르면 브랜드의 전체 룩을 볼 수 있어요.</p></div>
-        <div className="lb-grid">
+        <div className="page-head"><h1>룩북</h1><p>최신 입점 브랜드부터 보여드려요. 사진을 누르면 브랜드의 전체 룩을 볼 수 있어요.</p></div>
+        <div className="lb-list">
           {BRAND_LOOKS.map((br, bi) => (
             <button key={br.name} className="lb-card" onClick={() => setOpen({ bi, idx: 0 })} aria-label={`${br.name} 룩북 열기`}>
-              <div className="lb-ph"><Img src={br.looks[0].image} alt={`${br.name} 대표 룩`} /><span className="lb-more">전체 {br.looks.length}컷 보기</span></div>
-              <div className="lb-cap"><b>{br.name}</b><span>{br.concept}</span></div>
+              <div className="lb-ph">
+                <Img src={br.looks[0].image} alt={`${br.name} 대표 룩`} />
+                <div className="lb-cap"><b>{br.name}</b><span>{br.concept}</span><em>전체 {br.looks.length}컷 보기</em></div>
+              </div>
             </button>
           ))}
         </div>

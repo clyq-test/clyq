@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 import { useMember } from './lib/auth'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from './components/Navbar'
 import { FitDrawer, Footer } from './components/ui'
 import { useShop } from './lib/store'
@@ -23,7 +23,7 @@ const banners = [
 const editorPicks = mix(allProducts.filter(p => p.fit && p.original === p.price), 5)
 const saleItems = mix(allProducts.filter(p => p.original > p.price).sort((x, y) => (y.original - y.price) / y.original - (x.original - x.price) / x.original), 5)
 const fitItems = mix(allProducts.filter(p => p.fit && p.category !== '아우터'), 5)
-const featured = ['coat', 'office', 'knit'].map(k => EXHIBITIONS.find(e => e.key === k))
+const featured = EXHIBITIONS
 
 const communityPosts = [
   { title: '마르시아 코트 S/M 비교 피팅 후기', author: '김지연', likes: 48, comments: 12, tag: '피팅 후기', image: U('1539533018447-63fcce2678e3', 200) },
@@ -74,6 +74,11 @@ const CAT_MENU = [
 
 export default function Home() {
   const [bannerIdx, setBannerIdx] = useState(0)
+  const edRef = useRef(null)
+  const [edPos, setEdPos] = useState(0)
+  const [edAtEnd, setEdAtEnd] = useState(false)
+  const slideEd = d => { const t = edRef.current; if (!t) return; const w = t.querySelector('.ed'); t.scrollBy({ left: d * (w.offsetWidth + 20), behavior: 'smooth' }) }
+  useEffect(() => { const t = edRef.current; if (t) setEdAtEnd(t.scrollLeft + t.clientWidth >= t.scrollWidth - 4) }, [edPos])
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
   const [fitProd, setFitProd] = useState(null)
@@ -182,11 +187,19 @@ export default function Home() {
         .step b { display: block; font-size: 16px; margin-bottom: 6px; }
         .step span { font-size: 13px; color: #6b6b6b; line-height: 1.6; }
 
-        /* 기획전 */
-        .ed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .ed-img { aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; margin-bottom: 14px; }
+        /* 기획전: 한 화면 3개, 좌우 슬라이드 */
+        .ed-wrap { position: relative; }
+        .ed-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .ed-track::-webkit-scrollbar { display: none; }
+        .ed { flex: 0 0 calc((100% - 40px) / 3); scroll-snap-align: start; color: inherit; min-width: 0; }
+        .ed-img { aspect-ratio: 2/3; background: #f4f4f2; overflow: hidden; margin-bottom: 14px; }
         .ed-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
         .ed:hover .ed-img img { transform: scale(1.03); }
+        .ed-nav { position: absolute; top: calc(50% - 40px); width: 44px; height: 44px; background: rgba(255,255,255,.92); border: 1px solid #e5e5e5; font-size: 22px; line-height: 1; z-index: 2; }
+        .ed-nav.l { left: -22px; } .ed-nav.r { right: -22px; }
+        .ed-nav:disabled { opacity: .35; cursor: default; }
+        @media (max-width: 900px) { .ed { flex-basis: calc((100% - 20px) / 2); } .ed-nav.l { left: 4px; } .ed-nav.r { right: 4px; } }
+        @media (max-width: 560px) { .ed { flex-basis: 78%; } }
         .ed b { display: block; font-size: 17px; font-weight: 600; margin-bottom: 4px; }
         .ed span { font-size: 13px; color: #6b6b6b; }
 
@@ -313,14 +326,18 @@ export default function Home() {
       <section className="sec">
         <div className="wrap-full">
           <div className="sec-row"><h2 className="sec-title">기획전</h2><a href="/exhibition" className="sec-more">전체 기획전</a></div>
-          <div className="ed-grid">
-            {featured.map(ed => { const l = exhibitionItems(ed); return (
-              <a key={ed.key} href={'/products/new?ex=' + ed.key} className="ed">
-                <div className="ed-img"><img src={l[0].image} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} /></div>
-                <b>{ed.title}</b>
-                <span>{ed.sub} · {l.length}개</span>
-              </a>
-            ) })}
+          <div className="ed-wrap">
+            <button className="ed-nav l" onClick={() => slideEd(-1)} disabled={edPos <= 0} aria-label="이전 기획전">‹</button>
+            <div className="ed-track" ref={edRef} onScroll={e => setEdPos(e.currentTarget.scrollLeft)}>
+              {featured.map(ed => { const l = exhibitionItems(ed); return (
+                <a key={ed.key} href={'/products/new?ex=' + ed.key} className="ed">
+                  <div className="ed-img"><img src={l[0].image} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} /></div>
+                  <b>{ed.title}</b>
+                  <span>{ed.sub} · {l.length}개</span>
+                </a>
+              ) })}
+            </div>
+            <button className="ed-nav r" onClick={() => slideEd(1)} disabled={edAtEnd} aria-label="다음 기획전">›</button>
           </div>
         </div>
       </section>

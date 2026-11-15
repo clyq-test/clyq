@@ -20,7 +20,6 @@ export const EXHIBITIONS = [
   { key: 'knit', title: '니트·가디건 모아보기', sub: '가을·겨울에 꺼내 입는 니트', test: p => /니트|가디건|터틀넥/.test(p.name) },
   { key: 'dress', title: '특별한 날의 원피스', sub: '모임·행사에 입기 좋은 원피스', test: p => p.category === '원피스' },
   { key: 'sale', title: '시즌 세일', sub: '할인 중인 제품만 모았어요', test: p => p.original > p.price },
-  { key: 'fit', title: '입어보고 고르는 피팅 제품', sub: '피팅박스로 먼저 입어볼 수 있는 제품', test: p => p.fit },
 ]
 export const exhibitionOf = key => EXHIBITIONS.find(e => e.key === key)
 export const exhibitionItems = e => allProducts.filter(e.test)
