@@ -2,7 +2,7 @@
 'use client'
 import { useState } from 'react'
 import { Page, Kpis, Badge, Empty, Modal, itemsText } from '../_ui'
-import { useOrders, createOrder, setStatus, nextStatus, patchOrder, addClaim, ALL_STATUS, won, dt, DONE } from '../../lib/orders'
+import { useOrders, createOrder, brandStatus, setStatus, nextStatus, patchOrder, addClaim, ALL_STATUS, won, dt, DONE } from '../../lib/orders'
 import { allProducts } from '../../lib/catalog'
 
 const SAMPLES = [
@@ -71,12 +71,20 @@ export default function Orders() {
           <div className="ad-h3">상품</div>
           <div className="ad-scroll"><table className="ad-tbl"><tbody>{cur.items.map((i, k) => <tr key={k}><td>{i.brand}</td><td>{i.name}</td><td>{i.size || '-'}</td><td>{i.qty}개</td><td className="ad-r">{won(i.price * i.qty)}</td></tr>)}
             <tr><td colSpan={4}><b>{cur.kind === 'fitting' ? '구매 확정 시 결제액' : '합계'}</b></td><td className="ad-r"><b>{won(cur.total)}</b></td></tr></tbody></table></div>
-          <div className="ad-h3">상태 처리</div>
-          <div className="ad-row">
-            <select className="ad-inp" value={cur.status} onChange={e => setStatus(cur.id, e.target.value)} aria-label="상태 변경">{ALL_STATUS[cur.kind].map(s => <option key={s}>{s}</option>)}</select>
-            {nextStatus(cur) && <button className="ad-btn p" onClick={() => setStatus(cur.id, nextStatus(cur))}>다음 단계: {nextStatus(cur)}</button>}
-            {cur.status !== '취소' && <button className="ad-btn d" onClick={() => { if (confirm('이 주문을 취소 처리할까요?')) setStatus(cur.id, '취소') }}>주문 취소</button>}
-          </div>
+          <div className="ad-h3">{cur.kind === 'fitting' ? '피팅박스 처리 (본사)' : '상태 (브랜드가 출고 처리)'}</div>
+          {cur.kind === 'fitting' && cur.status !== '구매확정' && cur.status !== '취소' ? (
+            <div className="ad-row">
+              <select className="ad-inp" value={cur.status} onChange={e => setStatus(cur.id, e.target.value)} aria-label="상태 변경">{ALL_STATUS.fitting.map(s => <option key={s}>{s}</option>)}</select>
+              {nextStatus(cur) && <button className="ad-btn p" onClick={() => setStatus(cur.id, nextStatus(cur))}>다음 단계: {nextStatus(cur)}</button>}
+              <button className="ad-btn d" onClick={() => { if (confirm('이 주문을 취소 처리할까요?')) setStatus(cur.id, '취소') }}>주문 취소</button>
+            </div>
+          ) : (
+            <div className="ad-row"><Badge s={cur.status} />{cur.status !== '취소' && cur.kind === 'purchase' && cur.status !== '배송완료' && cur.status !== '반품완료' && <button className="ad-btn d" onClick={() => { if (confirm('이 주문을 취소 처리할까요?')) setStatus(cur.id, '취소') }}>주문 취소</button>}</div>
+          )}
+          {(cur.kind === 'purchase' || cur.ship) && (<>
+            <div className="ad-h3">브랜드 출고 현황 (조회 전용)</div>
+            <div className="ad-scroll"><table className="ad-tbl"><tbody>{[...new Set(cur.items.map(i => i.brand))].map(b => { const s = cur.ship && cur.ship[b]; return <tr key={b}><td>{b}</td><td><Badge s={brandStatus(cur, b)} /></td><td>{s && s.tracking ? `${s.tracking.carrier} ${s.tracking.no}` : '-'}</td><td>{s && s.source ? s.source : ''}</td></tr> })}</tbody></table></div>
+          </>)}
           <div className="ad-h3">클레임 등록 (취소·반품·교환)</div>
           <div className="ad-row">
             <select className="ad-inp" value={ctype} onChange={e => setCtype(e.target.value)}>{['취소', '반품', '교환'].map(s => <option key={s}>{s}</option>)}</select>

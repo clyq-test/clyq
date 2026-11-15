@@ -43,15 +43,17 @@ export default function MyOrders() {
               {o.items.map((i, k) => <div key={k}>{i.brand} · {i.name} / {i.size || '-'} / {i.qty}개 — {won(i.price * i.qty)}</div>)}
               <div style={{ color: '#8a8a8a', fontSize: 13 }}>
                 {o.kind === 'fitting' ? '구매 확정 시 결제될 금액 ' : '합계 '}{won(o.total)}
-                {o.tracking && <> · 송장 {o.tracking.carrier} {o.tracking.no}</>}
+                {o.tracking && <> · 피팅박스 송장 {o.tracking.carrier} {o.tracking.no}</>}
                 {o.fitStartAt && o.status === '피팅중' && <> · 반납/구매 결정 기한 {dt(new Date(new Date(o.fitStartAt).getTime() + 48 * 3600 * 1000).toISOString())}</>}
               </div>
               {inq.filter(q => q.orderId === o.id).map(q => <div key={q.id} style={{ fontSize: 13, color: '#555' }}>문의: {q.text} → {q.answer ? '답변: ' + q.answer : '답변 대기 중'}</div>)}
+              {o.kind === 'fitting' && o.ship && Object.entries(o.ship).map(([b, s]) => <div key={b} style={{ fontSize: 13, color: '#3D6A4F' }}>새 제품 발송({b}): {s.status}{s.tracking ? ` · ${s.tracking.carrier} ${s.tracking.no}` : ''}</div>)}
+              {o.kind === 'purchase' && o.ship && Object.entries(o.ship).map(([b, s]) => <div key={b} style={{ fontSize: 13, color: '#555' }}>{b} 발송: {s.status}{s.tracking ? ` · ${s.tracking.carrier} ${s.tracking.no}` : ''}</div>)}
               {(o.claims || []).map(c => <div key={c.id} style={{ fontSize: 13, color: '#555' }}>{c.type} 요청: {c.status}{c.note ? ` (${c.note})` : ''}</div>)}
             </div>
             <div className="mo-act">
               {o.kind === 'fitting' && o.status === '피팅중' && <>
-                <button className="p" onClick={() => { setStatus(o.id, '구매확정', '고객') }}>구매 확정</button>
+                <button className="p" onClick={() => { if (confirm('구매를 확정하면 브랜드가 새 제품을 보내드려요. 확정할까요?')) setStatus(o.id, '구매확정', '고객') }}>구매 확정</button>
                 <button onClick={() => { setStatus(o.id, '반납수거중', '고객') }}>반납 신청</button>
               </>}
               <button onClick={() => { setAsk(o); setAtext('') }}>문의하기</button>

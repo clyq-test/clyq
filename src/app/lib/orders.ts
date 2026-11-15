@@ -72,8 +72,14 @@ export function setStatus(id, status, by = '관리자') {
     o.status = status
     if (DONE.includes(status)) o.doneAt = now()
     if (status === '피팅중') o.fitStartAt = now()
+    if (status === '구매확정' && o.kind === 'fitting') {
+      // 구매 확정 → 본사는 데이터만, 브랜드에 새 제품 출고 지시
+      const brands = [...new Set(o.items.map(i => i.brand))]
+      o.ship = { ...(o.ship || {}) }
+      brands.forEach(b => { if (!o.ship[b]) o.ship[b] = { status: '출고대기', source: '피팅 구매확정', at: now() } })
+    }
     return o
-  }, `상태 → ${status}`, by)
+  }, `상태 → ${status}` + (status === '구매확정' && kvRead('clyq_orders', []).find(x => x.id === id)?.kind === 'fitting' ? ' (브랜드 출고 지시 생성)' : ''), by)
 }
 export function nextStatus(o) {
   const f = FLOW[o.kind]; const i = f.indexOf(o.status)
@@ -110,19 +116,24 @@ export const brandOrders = (orders, brand) => orders.filter(o => o.items.some(i 
 })
 export function brandStatus(o, brand) {
   if (['취소', '반품완료'].includes(o.status)) return o.status
-  if (o.kind === 'fitting') return o.status
   const s = o.ship && o.ship[brand]
   if (s && s.status) return s.status
+  if (o.kind === 'fitting') return o.status
   if (o.status === '배송중' || o.status === '배송완료') return o.status
   return '출고대기'
 }
+/* 브랜드가 출고해야 하는 주문: 구매 주문 + 피팅 후 구매확정된 주문. 피팅박스 자체(피팅 진행)는 제외 */
+export const brandShippable = (orders, brand) => brandOrders(orders, brand).filter(o => o.kind === 'purchase' || (o.ship && o.ship[brand]))
+export const brandFittings = (orders, brand) => brandOrders(orders, brand).filter(o => o.kind === 'fitting')
 export function brandShip(id, brand, status, tracking) {
   patchOrder(id, o => {
     const prev = (o.ship || {})[brand] || {}
     o.ship = { ...(o.ship || {}), [brand]: { ...prev, status, tracking: tracking || prev.tracking, at: now() } }
-    if (tracking && !o.tracking) o.tracking = tracking
-    const sts = [...new Set(o.items.map(i => i.brand))].map(b => o.ship[b] && o.ship[b].status)
-    if (sts.every(x => x === '배송완료')) { o.status = '배송완료'; o.doneAt = now() } else if (sts.some(x => x)) { o.status = '배송중' }
+    if (o.kind === 'purchase') { // 피팅 주문의 상태·송장은 피팅박스 기준이라 건드리지 않음
+      if (tracking && !o.tracking) o.tracking = tracking
+      const sts = [...new Set(o.items.map(i => i.brand))].map(b => o.ship[b] && o.ship[b].status)
+      if (sts.every(x => x === '배송완료')) { o.status = '배송완료'; o.doneAt = now() } else if (sts.some(x => x)) { o.status = '배송중' }
+    }
     return o
   }, `${brand} ${status}${tracking ? ` (${tracking.carrier} ${tracking.no})` : ''}`, brand)
 }
