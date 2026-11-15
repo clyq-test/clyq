@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { AD_CSS } from '../lib/adminCss'
 import { BRAND } from './_brand'
@@ -137,6 +137,11 @@ export default function AdminLayout({ children }) {
   const [openMenus, setOpenMenus] = useState(['my_product', 'order'])
   const [mobileOpen, setMobileOpen] = useState(false)
   const toggle = id => setOpenMenus(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id])
+
+  useEffect(() => {
+    const ids = menus.filter(m => m.children && m.children.some(g => g.items.some(i => i.href === pathname))).map(m => m.id)
+    if (ids.length) setOpenMenus(prev => [...new Set([...prev, ...ids])])
+  }, [pathname])
   const isActive = href => !!(href && pathname === href)
   const today = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' })
 
@@ -149,8 +154,8 @@ export default function AdminLayout({ children }) {
         .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#111; }
         .cq-logo-con { font-size:13px; color:#555; margin-top:4px; }
         .cq-menu-header, .cq-menu-single { display:flex; align-items:center; justify-content:space-between; padding:11px 24px; cursor:pointer; font-size:14px; font-weight:500; color:#111; user-select:none; }
-        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid #3D6A4F; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
-        .cq-menu-single.active { background:#dbe3d7; }
+        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid transparent; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
+        .cq-menu-single.active { background:#dbe3d7; border-left-color:#3D6A4F; }
         .cq-menu-arrow { font-size:11px; color:#767676; transition:transform .2s; } .cq-menu-arrow.open { transform:rotate(180deg); }
         .cq-menu-link { display:flex; align-items:center; justify-content:space-between; padding:8px 24px 8px 36px; font-size:13px; color:#555; text-decoration:none; }
         .cq-menu-link:hover { color:#111; background:#f7f7f5; } .cq-menu-link.active { color:#111; font-weight:700; background:#f4f4f2; }
@@ -187,7 +192,7 @@ export default function AdminLayout({ children }) {
                       <div key={gi}>
                         {g.group && <div style={{ padding:'8px 24px 2px 36px', fontSize:'12px', color:'#767676' }}>{g.group}</div>}
                         {g.items.map(item => (
-                          <a key={item.href} href={item.href} className={isActive(item.href) ? 'cq-menu-link active' : 'cq-menu-link'} onClick={() => setMobileOpen(false)}>{item.label}</a>
+                          <a key={item.href} href={item.href} className={isActive(item.href) ? 'cq-menu-link active' : 'cq-menu-link'} onClick={e => { e.preventDefault(); router.push(item.href); setMobileOpen(false) }}>{item.label}</a>
                         ))}
                       </div>
                     ))}
@@ -200,7 +205,7 @@ export default function AdminLayout({ children }) {
         <div style={{ padding:'16px 24px', borderTop:'1px solid #e6e6e3', fontSize:'13px', color:'#555', cursor:'pointer', flexShrink:0 }} onClick={() => router.push('/')}>로그아웃</div>
       </aside>
 
-      <div className={mobileOpen ? 'cq-overlay show' : 'cq-overlay'} onClick={() => setMobileOpen(false)}></div>
+      <div className={mobileOpen ? 'cq-overlay show' : 'cq-overlay'} onClick={e => { e.preventDefault(); router.push(item.href); setMobileOpen(false) }}></div>
 
       <header className="cq-header">
         <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>

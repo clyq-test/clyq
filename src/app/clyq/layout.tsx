@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { AD_CSS } from '../lib/adminCss'
 
@@ -68,6 +68,11 @@ export default function ClyqLayout({ children }) {
     )
   }
 
+
+  useEffect(() => {
+    const ids = menus.filter(m => m.children && m.children.some(g => g.items.some(i => i.href === pathname))).map(m => m.id)
+    if (ids.length) setOpenMenus(prev => [...new Set([...prev, ...ids])])
+  }, [pathname])
   const isActive   = (href) => !!(href && pathname === href)
   const sideClass  = mobileOpen ? 'cq-side mob-open' : 'cq-side'
   const overlayClass = mobileOpen ? 'cq-overlay show' : 'cq-overlay'
@@ -84,8 +89,8 @@ export default function ClyqLayout({ children }) {
         .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#111; }
         .cq-logo-con { font-size:12px; color:#767676; margin-top:4px; }
         .cq-menu-header, .cq-menu-single { display:flex; align-items:center; justify-content:space-between; padding:11px 24px; cursor:pointer; font-size:14px; font-weight:500; color:#111; user-select:none; }
-        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid #3D6A4F; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
-        .cq-menu-single.active { background:#dbe3d7; }
+        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid transparent; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
+        .cq-menu-single.active { background:#dbe3d7; border-left-color:#3D6A4F; }
         .cq-menu-arrow { font-size:11px; color:#767676; transition:transform .2s; }
         .cq-menu-arrow.open { transform:rotate(180deg); }
         .cq-menu-link { display:flex; align-items:center; justify-content:space-between; padding:8px 24px 8px 36px; font-size:13px; color:#555; text-decoration:none; }
@@ -151,7 +156,7 @@ export default function ClyqLayout({ children }) {
                                 <span key={item.href} className="cq-menu-link soon">{item.label}<span className="cq-soon">준비중</span></span>
                               )
                               return (
-                                <a key={item.href} href={item.href} className={linkClass} onClick={() => setMobileOpen(false)}>
+                                <a key={item.href} href={item.href} className={linkClass} onClick={e => { e.preventDefault(); router.push(item.href); setMobileOpen(false) }}>
                                   {item.label}
                                 </a>
                               )
@@ -175,7 +180,7 @@ export default function ClyqLayout({ children }) {
         </div>
       </aside>
 
-      <div className={overlayClass} onClick={() => setMobileOpen(false)}></div>
+      <div className={overlayClass} onClick={e => { e.preventDefault(); router.push(item.href); setMobileOpen(false) }}></div>
 
       {/* 헤더 */}
       <header className="cq-header">
