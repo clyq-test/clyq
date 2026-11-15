@@ -63,8 +63,8 @@ export default function ProductDetail() {
     <main>
       <SharedStyle />
       <style>{`
-        .pd { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; padding: 32px 0 64px; align-items: start; }
-        .pd-main { position: relative; aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; touch-action: pan-y; }
+        .pd { display: grid; grid-template-columns: 1.25fr 1fr; gap: 72px; padding: 32px 0 64px; align-items: start; }
+        .pd-main { position: relative; aspect-ratio: 4/5; max-height: 86vh; width: 100%; background: #f4f4f2; overflow: hidden; touch-action: pan-y; }
         .pd-track { display: flex; height: 100%; transition: transform .35s ease; }
         .pd-slide { flex: 0 0 100%; height: 100%; overflow: hidden; }
         .pd-slide img { width: 100%; height: 100%; object-fit: cover; transition: transform .15s ease-out; }
@@ -93,13 +93,13 @@ export default function ProductDetail() {
         .btn-fit { background: #3D6A4F; color: #fff; min-height: 52px; font-size: 15px; font-weight: 500; }
         .btn-fit:hover { background: #2F5540; }
         .pd-row { display: grid; grid-template-columns: 1fr 52px 52px; gap: 8px; }
-        .pd-sec { padding: 40px 0; border-top: 1px solid #eee; display: grid; grid-template-columns: 200px 1fr; gap: 24px; }
+        .pd-sec { padding: 48px 0; border-top: 1px solid #eee; display: grid; grid-template-columns: 240px 1fr; gap: 32px; }
         .pd-sec h2 { font-size: 16px; font-weight: 600; margin: 0; }
         .pd-sec li { list-style: none; font-size: 14px; color: #444; line-height: 1.9; }
-        .pd-sec table { border-collapse: collapse; width: 100%; max-width: 560px; font-size: 13px; }
+        .pd-sec table { border-collapse: collapse; width: 100%; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
-        .pd-dl { display: grid; grid-template-columns: 140px 1fr; margin: 0; max-width: 720px; font-size: 14px; }
+        .pd-dl { display: grid; grid-template-columns: 140px 1fr; margin: 0; font-size: 14px; }
         .pd-dl dt, .pd-dl dd { padding: 12px 0; border-bottom: 1px solid #eee; margin: 0; line-height: 1.7; }
         .pd-dl dt { color: #8a8a8a; }
         .pd-note { font-size: 12px; color: #8a8a8a; margin-top: 12px; }
@@ -122,7 +122,7 @@ export default function ProductDetail() {
         }
       `}</style>
       <Navbar />
-      <div className="wrap">
+      <div className="wrap-full">
         <div className="crumb"><a href="/">홈</a> / <a href="/products/new">신상품</a> / {product.name}</div>
         <div className="pd">
           <div>
@@ -201,7 +201,7 @@ export default function ProductDetail() {
 
         <div style={{ borderTop: '1px solid #eee', padding: '48px 0 72px' }}>
           <h2 className="sec-title" style={{ fontSize: 22, fontWeight: 600, margin: '0 0 24px' }}>함께 보면 좋은 제품</h2>
-          <div className="grid-4" style={{ padding: 0 }}>{related.map(p => <ProductCard key={p.id} p={p} />)}</div>
+          <div className="grid-full" style={{ padding: 0 }}>{related.map(p => <ProductCard key={p.id} p={p} />)}</div>
         </div>
       </div>
 
