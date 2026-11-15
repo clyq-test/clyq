@@ -43,7 +43,7 @@ export default function ProductDetail() {
     const rest = allProducts.filter(x => x.id !== cur && !same.includes(x))
     return [...same, ...rest].slice(0, 3)
   })()
-  const [relOpen, setRelOpen] = useState(false)
+  const [relOpen, setRelOpen] = useState(true)
   const sizeNames = det ? det.table.map(r => r[0]) : null
   async function share() {
     const url = window.location.href
@@ -149,7 +149,9 @@ export default function ProductDetail() {
         .rel.shut .rel-t { opacity: 0; }
         .rel-t { transition: opacity .2s; white-space: nowrap; }
         .rel ul { transition: opacity .2s; } .rel.shut ul { opacity: 0; pointer-events: none; }
-        @media (prefers-reduced-motion: reduce) { .rel, .rel-t, .rel ul { transition: none; } }
+        .pd-wrap { transition: padding-right .35s ease; }
+        @media (min-width: 901px) { .wrap-full.pd-open { padding-right: 280px; } }
+        @media (prefers-reduced-motion: reduce) { .pd-wrap { transition: none; } .rel, .rel-t, .rel ul { transition: none; } }
         @media (max-width: 768px) { .rel { bottom: 12px; width: min(232px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
@@ -179,7 +181,7 @@ export default function ProductDetail() {
         }
       `}</style>
       <Navbar />
-      <div className="wrap-full">
+      <div className={'wrap-full pd-wrap' + (relOpen ? ' pd-open' : '')}>
         <div className="crumb"><a href="/">홈</a> / <a href="/products/new">신상품</a> / {product.name}</div>
         <div className="pd">
           <div>

@@ -66,6 +66,12 @@ function ProductCard({ p, onFit }) {
   )
 }
 
+const CAT_MENU = [
+  { h: '아우터', sub: ['코트', '재킷', '패딩', '조끼'] }, { h: '상의', sub: ['블라우스', '니트', '티셔츠', '셔츠'] },
+  { h: '하의', sub: ['스커트', '팬츠', '레깅스', '쇼츠'] }, { h: '원피스·세트', sub: ['미디 드레스', '미니 드레스', '세트업', '점프수트'] },
+  { h: '가방', sub: ['숄더백', '크로스백', '토트백', '클러치'] }, { h: '슈즈', sub: ['플랫', '힐', '스니커즈', '부츠'] },
+]
+
 export default function Home() {
   const [bannerIdx, setBannerIdx] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -140,10 +146,10 @@ export default function Home() {
         .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 36px 20px; }
 
         .sec-sub { margin: -14px 0 24px; font-size: 13px; color: #8a8a8a; line-height: 1.6; }
-        .cat-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-        .cat-tile { color: inherit; display: flex; justify-content: space-between; align-items: baseline; padding: 22px 20px; border: 1px solid #e5e5e5; min-height: 72px; transition: border-color .2s; }
-        .cat-tile:hover { border-color: #111; }
-        .cat-tile b { font-size: 17px; font-weight: 600; margin-right: 8px; } .cat-tile span { font-size: 12px; color: #8a8a8a; }
+        .cat-menu { display: grid; grid-template-columns: repeat(6, 1fr); gap: 32px; text-align: center; }
+        .cat-h { display: block; font-size: 15px; font-weight: 600; color: #111; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid #e5e5e5; }
+        .cat-s { display: block; font-size: 14px; color: #777; padding: 9px 0; font-weight: 300; transition: color .15s; }
+        .cat-s:hover, .cat-h:hover { color: #3D6A4F; }
         .mood-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
         .mood-tabs::-webkit-scrollbar { display: none; }
         .mood-tab { flex-shrink: 0; padding: 0 20px; min-height: 42px; border: 1px solid #e0e0e0; background: #fff; font-size: 14px; color: #555; border-radius: 21px; }
@@ -208,7 +214,7 @@ export default function Home() {
         @media (max-width: 1024px) {
           .wrap { padding: 0 24px; }
           .grid-5, .grid-6 { grid-template-columns: repeat(3, 1fr); }
-          .cat-tiles { grid-template-columns: repeat(3, 1fr); }
+          .cat-menu { grid-template-columns: repeat(3, 1fr); }
           .brand-grid { grid-template-columns: repeat(3, 1fr); }
           .hero { gap: 32px; }
           .hero-title { font-size: 44px; }
@@ -226,7 +232,7 @@ export default function Home() {
           .sec { padding: 44px 0; }
           .sec-title { font-size: 20px; }
           .grid-5, .grid-6 { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
-          .cat-tiles { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+          .cat-menu { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
           .brand-grid { grid-template-columns: repeat(2, 1fr); }
           .sec-sub { margin-top: -10px; }
           .steps { grid-template-columns: 1fr; gap: 16px; }
@@ -278,11 +284,12 @@ export default function Home() {
       <section className="sec" style={{ paddingTop: 8, paddingBottom: 56 }}>
         <div className="wrap-full">
           <div className="sec-row"><h2 className="sec-title">카테고리별 쇼핑</h2><a href="/products/new" className="sec-more">전체보기</a></div>
-          <div className="cat-tiles">
-            {CATEGORIES.map(c => (
-              <a key={c} href={'/products/new?c=' + encodeURIComponent(c)} className="cat-tile">
-                <b>{c}</b><span>{allProducts.filter(p => p.category === c).length}개</span>
-              </a>
+          <div className="cat-menu">
+            {CAT_MENU.map(col => (
+              <div key={col.h} className="cat-col">
+                <a className="cat-h" href={'/products/new?c=' + encodeURIComponent(col.h.split('·')[0])}>{col.h}</a>
+                {col.sub.map(s => <a key={s} className="cat-s" href={'/products/new?c=' + encodeURIComponent(col.h.split('·')[0])}>{s}</a>)}
+              </div>
             ))}
           </div>
         </div>
