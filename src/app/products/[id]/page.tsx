@@ -1,11 +1,11 @@
 // @ts-nocheck
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useShop } from '../../lib/store'
-import { byId, detailOf } from '../../lib/catalog'
+import { byId, detailOf, allProducts } from '../../lib/catalog'
 import Navbar from '../../components/Navbar'
-import { SharedStyle, Footer, Img, U, ProductCard } from '../../components/ui'
+import { SharedStyle, Footer, Img, U } from '../../components/ui'
 
 /* 샘플 상품 데이터 — 실제 상품 정보가 아닙니다. */
 const baseProduct = {
@@ -27,12 +27,6 @@ function pickDetail(id, n = 4) {
   for (let i = a.length - 1; i > 0; i--) { seed = (seed * 9301 + 49297) % 233280; const j = Math.floor((seed / 233280) * (i + 1)); [a[i], a[j]] = [a[j], a[i]] }
   return a.slice(0, n).map(x => U(x, 1400))
 }
-const related = [
-  { id: 2, brand: 'EIGHT', name: '셔링 디테일 미디 드레스', price: 198000, original: 240000, image: U('1515372039744-b8f02a3ae446'), fit: true },
-  { id: 3, brand: 'MATIN KIM', name: '오버핏 레더 재킷', price: 578000, original: 578000, image: U('1551028719-00167b16eac5'), fit: true },
-  { id: 6, brand: 'EENK', name: '셔링 미디 스커트', price: 148000, original: 148000, image: U('1496217590455-aa63a8350eea'), fit: true },
-  { id: 7, brand: 'D.POUND', name: '라운드넥 실크 블라우스', price: 158000, original: 198000, image: U('1581044777550-4cfa60707c03'), fit: true },
-]
 
 export default function ProductDetail() {
   const params = useParams()
@@ -40,6 +34,14 @@ export default function ProductDetail() {
   const product = cp ? { ...baseProduct, brand: cp.brand, name: cp.name, price: cp.price, original: cp.original, fit: cp.fit, images: [cp.image.replace('w=600', 'w=900'), ...baseProduct.images.filter(x => !x.includes(cp.image.split('photo-')[1].split('?')[0]))].slice(0, 5) } : baseProduct
   const { isWished, toggleWish, addCart } = useShop()
   const det = cp ? detailOf(cp) : null
+  const related = (() => {
+    const cur = cp ? cp.id : 0
+    const same = allProducts.filter(x => x.id !== cur && cp && x.category === cp.category)
+    const rest = allProducts.filter(x => x.id !== cur && !same.includes(x))
+    return [...same, ...rest].slice(0, 5)
+  })()
+  const [relOpen, setRelOpen] = useState(true)
+  useEffect(() => { if (window.matchMedia('(max-width: 768px)').matches) setRelOpen(false) }, [])
   const sizeNames = det ? det.table.map(r => r[0]) : null
   async function share() {
     const url = window.location.href
@@ -112,6 +114,17 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
+        .rel { position: fixed; left: 20px; bottom: 20px; width: 260px; background: #fff; border: 1px solid #e5e5e5; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; }
+        .rel-h { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; min-height: 44px; font-size: 13px; font-weight: 600; }
+        .rel ul { margin: 0; padding: 0 8px 8px; list-style: none; max-height: calc(100vh - 160px); overflow-y: auto; }
+        .rel li a { display: flex; gap: 10px; padding: 6px; align-items: center; color: inherit; }
+        .rel li a:hover { background: #fafaf8; }
+        .rel li img { width: 44px; height: 56px; object-fit: cover; flex-shrink: 0; background: #f4f4f2; }
+        .rel li span { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+        .rel em { font-style: normal; font-size: 11px; color: #8a8a8a; }
+        .rel b { font-size: 13px; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .rel i { font-style: normal; font-size: 12px; font-weight: 600; }
+        @media (max-width: 768px) { .rel { left: 12px; bottom: 12px; width: min(260px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
         .pd-img img { width: 100%; height: auto; min-height: 320px; object-fit: cover; }
@@ -227,11 +240,25 @@ export default function ProductDetail() {
         </div>
         <div className="pd-sec"><h2>배송·반납</h2><div><p style={{ fontSize: 14, color: '#444', lineHeight: 1.8, margin: 0 }}>배송, 교환, 반품, 피팅박스 반납 조건은 서비스 오픈 전에 확정해 안내합니다.</p><p className="pd-note">이 페이지의 제품 정보는 화면 구성을 위한 샘플입니다.</p></div></div>
 
-        <div style={{ borderTop: '1px solid #eee', padding: '48px 0 72px' }}>
-          <h2 className="sec-title" style={{ fontSize: 22, fontWeight: 600, margin: '0 0 24px' }}>함께 보면 좋은 제품</h2>
-          <div className="grid-full" style={{ padding: 0 }}>{related.map(p => <ProductCard key={p.id} p={p} />)}</div>
-        </div>
       </div>
+
+      <aside className={'rel' + (relOpen ? ' open' : '')} aria-label="함께 보면 좋은 제품">
+        <button className="rel-h" onClick={() => setRelOpen(!relOpen)} aria-expanded={relOpen}>
+          <span>함께 보면 좋은 제품</span><span aria-hidden>{relOpen ? '−' : '+'}</span>
+        </button>
+        {relOpen && (
+          <ul>
+            {related.map(r => (
+              <li key={r.id}>
+                <a href={'/products/' + r.id}>
+                  <Img src={r.image.replace('w=600', 'w=160')} alt="" />
+                  <span><em>{r.brand}</em><b>{r.name}</b><i>{r.price.toLocaleString()}원</i></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </aside>
 
       {drawer && (
         <div className="bg" onClick={closeDrawer}>
