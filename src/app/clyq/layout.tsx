@@ -114,7 +114,7 @@ export default function ClyqLayout({ children }) {
 
       {/* 사이드바 */}
       <aside className={sideClass}>
-        <div className="cq-logo">
+        <div className="cq-logo" role="link" tabIndex={0} aria-label="대시보드로 이동" style={{ cursor:'pointer' }} onClick={() => { router.push('/clyq'); setMobileOpen(false) }} onKeyDown={e => { if (e.key === 'Enter') router.push('/clyq') }}>
           <div className="cq-logo-name">CLYQ</div>
           <div className="cq-logo-con">본사 관리</div>
         </div>
@@ -198,7 +198,7 @@ export default function ClyqLayout({ children }) {
         </div>
       </header>
 
-      <main className="cq-body">{children}</main>
+      <main className="cq-body" style={pathname === '/clyq' ? { background:'#e9ede6' } : undefined}>{children}</main>
     </div>
   )
 }

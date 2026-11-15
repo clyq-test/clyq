@@ -165,7 +165,7 @@ export default function AdminLayout({ children }) {
       `}</style>
 
       <aside className={mobileOpen ? 'cq-side mob-open' : 'cq-side'}>
-        <div className="cq-logo">
+        <div className="cq-logo" role="link" tabIndex={0} aria-label="대시보드로 이동" style={{ cursor:'pointer' }} onClick={() => { router.push('/admin'); setMobileOpen(false) }} onKeyDown={e => { if (e.key === 'Enter') router.push('/admin') }}>
           <div className="cq-logo-name">CLYQ</div>
           <div className="cq-logo-con">{ROLE === 'clyq' ? '본사 관리자' : BRAND + ' 브랜드 파트너'}</div>
         </div>
@@ -216,7 +216,7 @@ export default function AdminLayout({ children }) {
         </div>
       </header>
 
-      <main className="cq-body">{children}</main>
+      <main className="cq-body" style={pathname === '/admin' ? { background:'#e9ede6' } : undefined}>{children}</main>
     </div>
   )
 }
