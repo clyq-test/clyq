@@ -102,7 +102,7 @@ export function Footer() {
       <div className="wrap-full">
         <div className="foot-grid">
           <div>
-            <div className="foot-logo">CLYQ</div>
+            <div className="foot-logo"><img src="/logo.png" alt="CLYQ" style={{ height: '26px', width: 'auto', display: 'block' }} /></div>
             <p>입어보고 결정하는 패션 쇼핑.<br />집에서 먼저 입어보고, 확실한 것만 구매하세요.</p>
           </div>
           {FOOT_COLS.map(col => (

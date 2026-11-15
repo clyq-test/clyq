@@ -47,7 +47,7 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
       `}</style>
       <aside className={mobileOpen ? 'cq-side mob-open' : 'cq-side'}>
         <div className="cq-logo" role="link" tabIndex={0} aria-label="대시보드로 이동" style={{ cursor:'pointer' }} onClick={() => go(home)} onKeyDown={e => { if (e.key === 'Enter') go(home) }}>
-          <div className="cq-logo-name">CLYQ</div>
+          <div className="cq-logo-name"><img src="/logo-white.png" alt="CLYQ" style={{ height: '28px', width: 'auto', display: 'block' }} /></div>
           <div className="cq-logo-con">{subtitle}</div>
         </div>
         <div style={{ flex:1 }}>

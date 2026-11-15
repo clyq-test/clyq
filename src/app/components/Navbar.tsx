@@ -154,8 +154,8 @@ export default function Navbar() {
         >
           {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
-            <a href="/" style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', color: '#111', textDecoration: 'none' }}>
-              CLYQ
+            <a href="/" aria-label="CLYQ 홈" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/logo.png" alt="CLYQ" style={{ height: '26px', width: 'auto', display: 'block' }} />
             </a>
             <div className="nav-dm" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <a href="/" style={{ fontSize: '12.5px', color: '#6A6460', textDecoration: 'none', transition: 'color .15s' }}
@@ -394,7 +394,7 @@ export default function Navbar() {
           <div className="lm-box" onClick={e => e.stopPropagation()}>
             <button className="lm-close" onClick={closeLogin}>✕</button>
             <div className="lm-hd">
-              <div className="lm-logo">CLYQ</div>
+              <div className="lm-logo"><img src="/logo.png" alt="CLYQ" style={{ height: '30px', width: 'auto', display: 'block' }} /></div>
               <div className="lm-tabs">
                 <button className={'lm-tab ' + (loginTab === 'login' ? 'on' : '')} onClick={() => setLoginTab('login')}>로그인</button>
                 <button className={'lm-tab ' + (loginTab === 'find' ? 'on' : '')} onClick={() => setLoginTab('find')}>아이디/비밀번호 찾기</button>

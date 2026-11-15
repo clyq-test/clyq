@@ -208,7 +208,7 @@ export default function SignupPage() {
       <Navbar />
 
       <div className="su-wrap">
-        <div className="su-title">CLY<span style={{color:'#3D6A4F'}}>Q</span></div>
+        <div className="su-title"><a href="/"><img src="/logo.png" alt="CLYQ" style={{height:'36px',width:'auto',display:'inline-block'}}/></a></div>
         <div className="su-sub">회원가입</div>
 
         {/* 스텝 인디케이터 */}
