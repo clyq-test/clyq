@@ -17,7 +17,9 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
     const ids = menus.filter(m => m.children && m.children.some(g => g.items.some(i => i.href === pathname))).map(m => m.id)
     if (ids.length) setOpenMenus(prev => [...new Set([...prev, ...ids])])
   }, [pathname])
-  const today = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' })
+  const [now, setNow] = useState(null)
+  useEffect(() => { setNow(new Date()); const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t) }, [])
+  const clock = now ? now.toLocaleString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }) : ''
 
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'#f7f7f5', color:'#111', fontFamily:"'Pretendard','Noto Sans KR',sans-serif" }}>
@@ -81,7 +83,7 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
       <header className="cq-header">
         <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
           <button className="cq-hamb" onClick={() => setMobileOpen(v => !v)} aria-label="메뉴"><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span></button>
-          <span style={{ fontSize:'13px', color:'#555' }}>{today}</span>
+          <span style={{ fontSize:'15px', color:'#555', fontVariantNumeric:'tabular-nums', minWidth:'1px' }} suppressHydrationWarning>{clock}</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
           <span style={{ fontSize:'13px', color:'#555' }}>알림</span>
