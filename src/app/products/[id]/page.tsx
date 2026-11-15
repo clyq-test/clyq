@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { useShop } from '../../lib/store'
-import { byId } from '../../lib/catalog'
+import { byId, detailOf } from '../../lib/catalog'
 import Navbar from '../../components/Navbar'
 import { SharedStyle, Footer, Img, U, ProductCard } from '../../components/ui'
 
@@ -31,6 +31,15 @@ export default function ProductDetail() {
   const cp = byId(params?.id)
   const product = cp ? { ...baseProduct, brand: cp.brand, name: cp.name, price: cp.price, original: cp.original, fit: cp.fit, images: [cp.image.replace('w=600', 'w=900'), ...baseProduct.images.filter(x => !x.includes(cp.image.split('photo-')[1].split('?')[0]))].slice(0, 5) } : baseProduct
   const { isWished, toggleWish, addCart } = useShop()
+  const det = cp ? detailOf(cp) : null
+  const sizeNames = det ? det.table.map(r => r[0]) : null
+  async function share() {
+    const url = window.location.href
+    try {
+      if (navigator.share) { await navigator.share({ title: product.brand + ' ' + product.name, url }); return }
+      await navigator.clipboard.writeText(url); say('링크를 복사했어요')
+    } catch (e) { if (e && e.name !== 'AbortError') say('공유하지 못했어요. 주소창의 링크를 복사해 주세요') }
+  }
   const [img, setImg] = useState(0)
   const [size, setSize] = useState('')
   const [drawer, setDrawer] = useState(null) // 'fit' | 'buy'
@@ -68,6 +77,7 @@ export default function ProductDetail() {
         .pd-th.on { border-color: #111; }
         .pd-th img { width: 100%; height: 100%; object-fit: cover; }
         .pd-info { position: sticky; top: 88px; }
+        .pd-short { font-size: 14px; color: #6b6b6b; line-height: 1.7; margin: -4px 0 16px; }
         .pd-brand { font-size: 13px; color: #8a8a8a; margin-bottom: 6px; }
         .pd-info h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.35; margin: 0 0 16px; }
         .pd-price { display: flex; align-items: baseline; gap: 10px; margin-bottom: 28px; }
@@ -82,13 +92,16 @@ export default function ProductDetail() {
         .pd-btns { display: grid; gap: 8px; }
         .btn-fit { background: #3D6A4F; color: #fff; min-height: 52px; font-size: 15px; font-weight: 500; }
         .btn-fit:hover { background: #2F5540; }
-        .pd-row { display: grid; grid-template-columns: 1fr 52px; gap: 8px; }
+        .pd-row { display: grid; grid-template-columns: 1fr 52px 52px; gap: 8px; }
         .pd-sec { padding: 40px 0; border-top: 1px solid #eee; display: grid; grid-template-columns: 200px 1fr; gap: 24px; }
         .pd-sec h2 { font-size: 16px; font-weight: 600; margin: 0; }
         .pd-sec li { list-style: none; font-size: 14px; color: #444; line-height: 1.9; }
         .pd-sec table { border-collapse: collapse; width: 100%; max-width: 560px; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
+        .pd-dl { display: grid; grid-template-columns: 140px 1fr; margin: 0; max-width: 720px; font-size: 14px; }
+        .pd-dl dt, .pd-dl dd { padding: 12px 0; border-bottom: 1px solid #eee; margin: 0; line-height: 1.7; }
+        .pd-dl dt { color: #8a8a8a; }
         .pd-note { font-size: 12px; color: #8a8a8a; margin-top: 12px; }
         .bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1000; display: flex; justify-content: flex-end; }
         .dr { width: min(440px, 100vw); height: 100dvh; background: #fff; display: flex; flex-direction: column; }
@@ -142,11 +155,12 @@ export default function ProductDetail() {
           <div className="pd-info">
             <div className="pd-brand">{product.brand}</div>
             <h1>{product.name}</h1>
+            {det && <p className="pd-short">{det.short}</p>}
             <div className="pd-price">{dc > 0 && <span className="dc">{dc}%</span>}<b>{product.price.toLocaleString()}원</b>{dc > 0 && <s>{product.original.toLocaleString()}원</s>}</div>
             <div className="lbl"><span>사이즈</span></div>
             <div className="sizes">
-              {product.sizes.map(z => <button key={z} className={'size' + (size === z ? ' on' : '')} onClick={() => setSize(z)}>{z}</button>)}
-              {product.soldout.map(z => <button key={z} className="size" disabled>{z}</button>)}
+              {(sizeNames || product.sizes).map(z => <button key={z} className={'size' + (size === z ? ' on' : '')} onClick={() => setSize(z)}>{z}</button>)}
+              {!sizeNames && product.soldout.map(z => <button key={z} className="size" disabled>{z}</button>)}
             </div>
             <div className="pd-btns">
               {product.fit && <button className="btn-fit" onClick={() => openDrawer('fit')}>피팅박스 신청</button>}
@@ -154,21 +168,35 @@ export default function ProductDetail() {
               <div className="pd-row">
                 <button className="btn-p" onClick={() => openDrawer('buy')}>바로 구매</button>
                 <button className="btn-s" onClick={() => { if (!cp) return; toggleWish(cp.id); say(wish ? '찜을 해제했어요' : '찜했어요') }} aria-label="찜하기" style={{ padding: 0, color: wish ? '#c04b4b' : undefined }}>{wish ? '♥' : '♡'}</button>
+                <button className="btn-s" onClick={share} aria-label="공유하기" style={{ padding: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>
+                </button>
               </div>
             </div>
             <p className="pd-note">피팅박스는 받은 뒤 48시간 동안 입어보고, 구매를 확정한 제품만 결제합니다.</p>
           </div>
         </div>
 
-        <div className="pd-sec"><h2>제품 정보</h2><ul>{product.info.map(t => <li key={t}>{t}</li>)}</ul></div>
-        <div className="pd-sec"><h2>사이즈 표</h2>
+        <div className="pd-sec"><h2>상세 정보</h2>
           <div>
-            <table><thead><tr><th>cm</th><th>총장</th><th>가슴</th><th>어깨</th><th>소매</th><th>밑단</th></tr></thead>
-              <tbody>{product.table.map(r => <tr key={r[0]}>{r.map((c, i) => i === 0 ? <th key={i}>{c}</th> : <td key={i}>{c}</td>)}</tr>)}</tbody></table>
+            <dl className="pd-dl">
+              <dt>브랜드</dt><dd>{product.brand}</dd>
+              <dt>제품명</dt><dd>{product.name}</dd>
+              <dt>소재(혼용율)</dt><dd>{(det ? det.fabric : product.info).map(t => <div key={t}>{t}</div>)}</dd>
+              <dt>세탁 방법</dt><dd>{(det ? det.care : product.care).map(t => <div key={t}>{t}</div>)}</dd>
+              <dt>색상</dt><dd>상세 이미지 참고</dd>
+              <dt>제조국</dt><dd>입점 브랜드 등록 정보 기준</dd>
+            </dl>
+            <p className="pd-note">현재 표시된 상세 정보는 화면 구성을 위한 샘플이며, 입점 브랜드가 등록한 실제 정보로 교체됩니다.</p>
+          </div>
+        </div>
+        <div className="pd-sec"><h2>사이즈 가이드</h2>
+          <div>
+            <table><thead><tr><th>cm</th>{(det ? det.head : ['총장', '가슴', '어깨', '소매', '밑단']).map(h => <th key={h}>{h}</th>)}</tr></thead>
+              <tbody>{(det ? det.table : product.table).map(r => <tr key={r[0]}>{r.map((c, i) => i === 0 ? <th key={i}>{c}</th> : <td key={i}>{c}</td>)}</tr>)}</tbody></table>
             <p className="pd-note">측정 방법에 따라 1~3cm 차이가 날 수 있어요. 사이즈가 고민되면 피팅박스로 입어보세요.</p>
           </div>
         </div>
-        <div className="pd-sec"><h2>관리 방법</h2><ul>{product.care.map(t => <li key={t}>{t}</li>)}</ul></div>
         <div className="pd-sec"><h2>배송·반납</h2><div><p style={{ fontSize: 14, color: '#444', lineHeight: 1.8, margin: 0 }}>배송, 교환, 반품, 피팅박스 반납 조건은 서비스 오픈 전에 확정해 안내합니다.</p><p className="pd-note">이 페이지의 제품 정보는 화면 구성을 위한 샘플입니다.</p></div></div>
 
         <div style={{ borderTop: '1px solid #eee', padding: '48px 0 72px' }}>
