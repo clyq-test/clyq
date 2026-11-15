@@ -102,7 +102,7 @@ export function ProductCard({ p, onFit }) {
         <Img src={p.image} alt={p.name} style={{ transform: hovered ? 'scale(1.03)' : 'scale(1)' }} />
         <button className={'pc-heart' + (isWished(p.id) ? ' on' : '')} aria-label="찜하기" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWish(p.id) }}>{isWished(p.id) ? '♥' : '♡'}</button>
         {p.fit && <span className="pc-fit">피팅</span>}
-        {hovered && (
+        {hovered && p.fit && (
           <button className="pc-add" onClick={e => { e.preventDefault(); onFit && onFit(p) }}>피팅박스 담기</button>
         )}
       </div>

@@ -91,7 +91,12 @@ export default function ProductDetail() {
         .size:disabled { color: #ccc; text-decoration: line-through; cursor: not-allowed; }
         .pd-btns { display: grid; gap: 8px; }
         .btn-fit { background: #3D6A4F; color: #fff; min-height: 52px; font-size: 15px; font-weight: 500; }
-        .btn-fit:hover { background: #2F5540; }
+        .btn-fit:hover:not(:disabled) { background: #2F5540; }
+        .btn-fit:disabled { background: #ececea; color: #a0a0a0; cursor: not-allowed; }
+        .fit-info { display: flex; gap: 12px; align-items: flex-start; margin-top: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.6; background: #edf4ef; color: #2f5540; }
+        .fit-info.no { background: #f4f4f2; color: #6b6b6b; }
+        .fit-info b { display: block; font-weight: 600; margin-bottom: 2px; }
+        .pd-fitbadge { position: absolute; top: 12px; left: 12px; z-index: 2; background: #fff; color: #3D6A4F; font-size: 12px; font-weight: 500; padding: 5px 10px; }
         .pd-row { display: grid; grid-template-columns: 1fr 52px 52px; gap: 8px; }
         .pd-sec { padding: 48px 0; border-top: 1px solid #eee; display: grid; grid-template-columns: 240px 1fr; gap: 32px; }
         .pd-sec h2 { font-size: 16px; font-weight: 600; margin: 0; }
@@ -144,7 +149,15 @@ export default function ProductDetail() {
               </div>
               <button className="pd-arr l" onClick={() => go(img - 1)} aria-label="이전 이미지">‹</button>
               <button className="pd-arr r" onClick={() => go(img + 1)} aria-label="다음 이미지">›</button>
+              {product.fit && <span className="pd-fitbadge">피팅박스 신청 가능</span>}
               <span className="pd-cnt">{img + 1} / {product.images.length}</span>
+            </div>
+            <div className={'fit-info' + (product.fit ? '' : ' no')} style={{ marginTop: 12, marginBottom: 12 }}>
+              {product.fit ? (
+                <div><b>피팅박스 신청 가능</b>집에서 48시간 입어보고, 마음에 들면 구매를 확정하세요. 구매를 확정한 제품만 결제됩니다.</div>
+              ) : (
+                <div><b>피팅박스 신청 불가</b>이 제품은 피팅박스로 받아볼 수 없어요. 바로 구매로 이용해 주세요.</div>
+              )}
             </div>
             <div className="pd-thumbs">
               {product.images.map((s, i) => (
@@ -163,7 +176,7 @@ export default function ProductDetail() {
               {!sizeNames && product.soldout.map(z => <button key={z} className="size" disabled>{z}</button>)}
             </div>
             <div className="pd-btns">
-              {product.fit && <button className="btn-fit" onClick={() => openDrawer('fit')}>피팅박스 신청</button>}
+              <button className="btn-fit" disabled={!product.fit} onClick={() => product.fit && openDrawer('fit')}>{product.fit ? '피팅박스 신청' : '피팅박스 신청 불가 제품'}</button>
               <button className="btn-s" onClick={() => { if (!size) { say('사이즈를 먼저 선택해 주세요'); return } if (cp) { addCart(cp.id, size); say('장바구니에 담았어요') } }}>장바구니 담기</button>
               <div className="pd-row">
                 <button className="btn-p" onClick={() => openDrawer('buy')}>바로 구매</button>
@@ -173,7 +186,7 @@ export default function ProductDetail() {
                 </button>
               </div>
             </div>
-            <p className="pd-note">피팅박스는 받은 뒤 48시간 동안 입어보고, 구매를 확정한 제품만 결제합니다.</p>
+            
           </div>
         </div>
 

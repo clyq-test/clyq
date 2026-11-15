@@ -79,7 +79,7 @@ function ProductCard({ p, onFit }) {
         />
         <button className={'pc-heart' + (isWished(p.id) ? ' on' : '')} aria-label="찜하기" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWish(p.id) }}>{isWished(p.id) ? '♥' : '♡'}</button>
         {p.fit && <span className="pc-fit">피팅</span>}
-        {hovered && (
+        {hovered && p.fit && (
           <button className="pc-add" onClick={e => { e.preventDefault(); e.stopPropagation(); onFit && onFit(p) }}>피팅박스 신청</button>
         )}
       </div>
