@@ -19,6 +19,14 @@ const baseProduct = {
   care: ['드라이클리닝 권장', '물세탁·기계 세탁 불가', '건조기 사용 금지'],
   table: [['XS', '100', '100', '41', '59', '104'], ['S', '103', '104', '43', '60', '106'], ['M', '106', '108', '45', '61', '110'], ['L', '109', '112', '47', '62', '114']],
 }
+const DETAIL_POOL = ['1551232864-3f0890e580d9', '1581044777550-4cfa60707c03', '1583744946564-b52ac1c389c8', '1496217590455-aa63a8350eea', '1515886657613-9f3515b0c78f', '1566174053879-31528523f8ae', '1578932750294-f5075e85f44a', '1539533018447-63fcce2678e3', '1515372039744-b8f02a3ae446', '1551028719-00167b16eac5', '1469334031218-e382a71b716b']
+// 상품 번호를 기준으로 섞어서 새로고침해도 같은 이미지가 나오도록 함 (샘플 이미지)
+function pickDetail(id, n = 4) {
+  let seed = (Number(id) || 1) * 9301 + 49297
+  const a = [...DETAIL_POOL]
+  for (let i = a.length - 1; i > 0; i--) { seed = (seed * 9301 + 49297) % 233280; const j = Math.floor((seed / 233280) * (i + 1)); [a[i], a[j]] = [a[j], a[i]] }
+  return a.slice(0, n).map(x => U(x, 1400))
+}
 const related = [
   { id: 2, brand: 'EIGHT', name: '셔링 디테일 미디 드레스', price: 198000, original: 240000, image: U('1515372039744-b8f02a3ae446'), fit: true },
   { id: 3, brand: 'MATIN KIM', name: '오버핏 레더 재킷', price: 578000, original: 578000, image: U('1551028719-00167b16eac5'), fit: true },
@@ -104,6 +112,10 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
+        .pd-imgs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 24px 0 16px; border-top: 1px solid #eee; }
+        .pd-img { aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; }
+        .pd-img img { width: 100%; height: 100%; object-fit: cover; }
+        @media (max-width: 768px) { .pd-imgs { grid-template-columns: 1fr; } }
         .pd-dl { display: grid; grid-template-columns: 140px 1fr; margin: 0; font-size: 14px; }
         .pd-dl dt, .pd-dl dd { padding: 12px 0; border-bottom: 1px solid #eee; margin: 0; line-height: 1.7; }
         .pd-dl dt { color: #8a8a8a; }
@@ -190,6 +202,10 @@ export default function ProductDetail() {
           </div>
         </div>
 
+        <div className="pd-imgs">
+          {pickDetail(params?.id).map((src, i) => <div key={i} className="pd-img"><Img src={src} alt={`${product.name} 상세 이미지 ${i + 1}`} /></div>)}
+        </div>
+        <p className="pd-note" style={{ margin: '0 0 40px' }}>상세 이미지는 샘플입니다. 입점 브랜드가 등록한 실제 상세 이미지로 교체됩니다.</p>
         <div className="pd-sec"><h2>상세 정보</h2>
           <div>
             <dl className="pd-dl">
