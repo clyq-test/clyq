@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { AD_CSS } from './adminCss'
 
 // 본사·브랜드 관리페이지 공통 레이아웃. UI 사양은 여기 한 곳에서만 정의하고, 메뉴 구성/문구만 props로 받는다.
-export default function AdminShell({ menus, home, subtitle, avatar, userLabel, children }) {
+export default function AdminShell({ menus, home, subtitle, avatar, userLabel, extra, children }) {
   const router = useRouter()
   const pathname = usePathname()
   const [openMenus, setOpenMenus] = useState([])
@@ -87,6 +87,7 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
           <span style={{ fontSize:'15px', color:'#E6F2EA', fontVariantNumeric:'tabular-nums', minWidth:'1px' }} suppressHydrationWarning>{clock}</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
+          {extra}
           <span style={{ fontSize:'13px', color:'#A8D5BA' }}>알림</span>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             <div style={{ width:'28px', height:'28px', borderRadius:'50%', background:'#A8D5BA', color:'#0F3D2E', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:700 }}>{avatar}</div>

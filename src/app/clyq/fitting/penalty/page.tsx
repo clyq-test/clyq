@@ -2,40 +2,16 @@
 'use client'
 import { useState } from 'react'
 
-const INIT_DATA = [
-  {
-    id:'PEN-2026-001', fitId:'FIT-2026-0507-024',
-    brand:'MATIN KIM', product:'레더 재킷',
-    customer:'한**', phone:'010-****-5678',
-    damageType:'훼손', detail:'소매 부분 스크래치',
-    basePrice:456000, rate:30, amount:136800,
-    status:'청구 대기', claimedAt:'', paidAt:'', inspDate:'2026-05-10',
-  },
-  {
-    id:'PEN-2026-002', fitId:'FIT-2026-0505-011',
-    brand:'MARCIA', product:'캐시미어 니트',
-    customer:'정**', phone:'010-****-1122',
-    damageType:'오염', detail:'전체적 오염 (세탁 불가)',
-    basePrice:178000, rate:70, amount:124600,
-    status:'청구 완료', claimedAt:'2026-05-09', paidAt:'', inspDate:'2026-05-08',
-  },
-  {
-    id:'PEN-2026-003', fitId:'FIT-2026-0503-007',
-    brand:'EENK', product:'더블 브레스트 코트',
-    customer:'이**', phone:'010-****-3344',
-    damageType:'분실', detail:'제품 미반납',
-    basePrice:528000, rate:100, amount:528000,
-    status:'납부 완료', claimedAt:'2026-05-05', paidAt:'2026-05-08', inspDate:'2026-05-05',
-  },
-  {
-    id:'PEN-2026-004', fitId:'FIT-2026-0501-003',
-    brand:'ADER ERROR', product:'그래픽 후드집업',
-    customer:'최**', phone:'010-****-5566',
-    damageType:'훼손', detail:'지퍼 파손',
-    basePrice:198000, rate:30, amount:59400,
-    status:'분쟁 중', claimedAt:'2026-05-03', paidAt:'', inspDate:'2026-05-02',
-  },
-]
+import { useOrders } from '../../../lib/orders'
+import { fitRows, setPenaltyStatus, isPenalty, mask, maskPhone } from '../../../lib/hq'
+
+// 검수에서 훼손·분실로 기록된 주문이 패널티 목록이 됩니다.
+const toRows = orders => orders.filter(isPenalty).map(o => {
+  const p = o.penalty, it = o.items[0] || {}
+  return { id: 'PEN-' + o.id.slice(4), fitId: o.id, brand: it.brand, product: it.name, customer: mask(o.customer.name), phone: maskPhone(o.customer.phone),
+    damageType: p.damageType, detail: p.detail || '-', basePrice: p.basePrice, rate: p.rate, amount: p.amount, status: p.status, claimedAt: p.claimedAt, paidAt: p.paidAt,
+    inspDate: o.inspect ? o.inspect.at.slice(0, 10) : '' }
+})
 
 const STATUS_STYLE = {
   '청구 대기': { bg:'#f4f4f2', color:'#111' },
@@ -53,7 +29,8 @@ const DAMAGE_STYLE = {
 const FILTER_OPTS = ['전체','청구 대기','청구 완료','납부 완료','분쟁 중']
 
 export default function PenaltyPage() {
-  const [rows, setRows]         = useState(INIT_DATA)
+  const [orders] = useOrders()
+  const rows = toRows(orders)
   const [tab, setTab]           = useState('전체')
   const [modal, setModal]       = useState(null)
 
@@ -63,19 +40,8 @@ export default function PenaltyPage() {
   const paid    = rows.filter(r => r.status === '납부 완료').reduce((s, r) => s + r.amount, 0)
   const unpaid  = rows.filter(r => r.status !== '납부 완료').reduce((s, r) => s + r.amount, 0)
 
-  function doClaim(id) {
-    const today = new Date().toLocaleDateString('ko-KR')
-    setRows(prev => prev.map(r =>
-      r.id === id ? { ...r, status:'청구 완료', claimedAt:today } : r
-    ))
-  }
-
-  function doPaid(id) {
-    const today = new Date().toLocaleDateString('ko-KR')
-    setRows(prev => prev.map(r =>
-      r.id === id ? { ...r, status:'납부 완료', paidAt:today } : r
-    ))
-  }
+  const doClaim = id => setPenaltyStatus('FIT-' + id.slice(4), '청구 완료')
+  const doPaid = id => setPenaltyStatus('FIT-' + id.slice(4), '납부 완료')
 
   const statCards = [
     { label:'전체 건수',    value: rows.length + '건',      color:'#111' },

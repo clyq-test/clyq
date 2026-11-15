@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import { BRAND_INFO, allProducts as catalog } from '../../lib/catalog'
+import { useBrandStats } from '../../lib/hq'
 
 // 쇼핑몰 카탈로그의 가상 브랜드 15곳. 담당자·연락처·계약 정보는 모두 샘플이며 실제 입점 계약 데이터로 교체해야 합니다.
 const INIT_BRANDS = BRAND_INFO.map((b, i) => ({
@@ -22,7 +23,9 @@ const STATUS_STYLE = {
 const FILTER_OPTS = ['전체','정상','계약만료임박','이용정지']
 
 export default function BrandsPage() {
-  const [brands, setBrands]     = useState(INIT_BRANDS)
+  const [baseBrands, setBrands] = useState(INIT_BRANDS)
+  const live = useBrandStats() // 이달 매출은 실제 주문(배송완료·구매확정)에서 계산
+  const brands = baseBrands.map(b => ({ ...b, monthSales: (live.find(x => x.name === b.name) || { monthSales: 0 }).monthSales }))
   const [filter, setFilter]     = useState('전체')
   const [search, setSearch]     = useState('')
   const [modal, setModal]       = useState(null)

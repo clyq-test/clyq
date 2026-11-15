@@ -1,65 +1,10 @@
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
-import { useOrders, won, DONE } from '../lib/orders'
+import { useOrders, useKV, won, DONE } from '../lib/orders'
+import { fitRows, dLabel, useBrandStats, ACTIVE, isPenalty, isThisMonth, isToday } from '../lib/hq'
 
-const kpis = [
-  { label:'오늘 피팅 신청',  value:'18',         unit:'건', sub:'+8% 어제 대비',   color:'#555' },
-  { label:'현재 피팅 진행중',value:'74',         unit:'건', sub:'전체 브랜드 합산', color:'#111' },
-  { label:'오늘 반납 완료',  value:'12',         unit:'건', sub:'검수 대기 5건',    color:'#3D6A4F' },
-  { label:'이달 전환율',     value:'54',         unit:'%',  sub:'목표 60% 대비',   color:'#555' },
-  { label:'이달 매출',       value:'46,820,000', unit:'원', sub:'위디 발행 +24.8M', color:'#555' },
-  { label:'훼손 패널티',     value:'3',          unit:'건', sub:'청구 대기 2건',    color:'#b3261e' },
-]
-
-const pipeline = [
-  { stage:'신청 대기',   count:6,  color:'#555', total:74 },
-  { stage:'배송중',      count:18, color:'#555', total:74 },
-  { stage:'피팅중',      count:24, color:'#111', total:74 },
-  { stage:'반납 수거중', count:9,  color:'#8a6d1f', total:74 },
-  { stage:'검수중',      count:5,  color:'#555', total:74 },
-  { stage:'오늘 완료',   count:12, color:'#3D6A4F', total:74 },
-]
-
-const alerts = [
-  { type:'반납 초과', text:'FIT-0510-015  울 블레이저 세트업 — 김** (1일 초과)', color:'#b3261e', bg:'#fbeeed' },
-  { type:'반납 초과', text:'FIT-0509-031  실크 블라우스 — 윤** (오늘 마감)', color:'#b3261e', bg:'#fbeeed' },
-  { type:'패널티',    text:'FIT-0507-024  캐시미어 니트 — 한** 훼손 확인, 배상 청구 대기', color:'#555', bg:'#f4f4f2' },
-  { type:'재고 부족', text:'MA-2026-JK-007  레더 재킷 피팅 재고 3개 이하 (MARCIA)', color:'#111', bg:'#f4f4f2' },
-  { type:'재고 부족', text:'MA-2026-BL-005  실크 블라우스 피팅 재고 0개 (MARCIA)', color:'#111', bg:'#f4f4f2' },
-]
-
-const brands = [
-  { name:'MARCIA',        products:4, fitting:6,  monthFit:31, converted:16, convRate:52, monthSales:12840000, status:'정상' },
-  { name:'MATIN KIM',     products:3, fitting:5,  monthFit:24, converted:14, convRate:58, monthSales:9620000,  status:'정상' },
-  { name:'EENK',          products:6, fitting:12, monthFit:41, converted:28, convRate:68, monthSales:5280000,  status:'재고부족' },
-  { name:'D.POUND',       products:2, fitting:3,  monthFit:18, converted:8,  convRate:44, monthSales:4150000,  status:'정상' },
-  { name:'ANDERSSONBELL', products:5, fitting:7,  monthFit:29, converted:17, convRate:59, monthSales:3960000,  status:'정상' },
-  { name:'ANOTHER A',     products:3, fitting:4,  monthFit:15, converted:7,  convRate:47, monthSales:2730000,  status:'정상' },
-  { name:'EIGHT',         products:2, fitting:2,  monthFit:11, converted:5,  convRate:45, monthSales:1980000,  status:'정상' },
-  { name:'ADER ERROR',    products:4, fitting:9,  monthFit:22, converted:14, convRate:64, monthSales:6410000,  status:'패널티' },
-]
-
-const fittingList = [
-  { id:'FIT-0510-018', brand:'MARCIA',        product:'오버핏 캐시미어 울 코트', customer:'이**', size:'M', stage:'검수 대기',   returnDue:'05-12', dDay:0,  alert:true  },
-  { id:'FIT-0510-015', brand:'MARCIA',        product:'울 블레이저 세트업',      customer:'김**', size:'S', stage:'피팅중',      returnDue:'05-13', dDay:-1, alert:true  },
-  { id:'FIT-0510-014', brand:'MATIN KIM',     product:'레더 재킷',               customer:'박**', size:'M', stage:'피팅중',      returnDue:'05-13', dDay:-2, alert:false },
-  { id:'FIT-0510-013', brand:'EENK',          product:'울 블레이저',             customer:'최**', size:'L', stage:'배송중',      returnDue:'05-15', dDay:2,  alert:false },
-  { id:'FIT-0510-012', brand:'ANDERSSONBELL', product:'오버사이즈 셔츠',         customer:'정**', size:'M', stage:'배송중',      returnDue:'05-15', dDay:2,  alert:false },
-  { id:'FIT-0509-042', brand:'D.POUND',       product:'캐시미어 니트',           customer:'한**', size:'L', stage:'피팅중',      returnDue:'05-13', dDay:-2, alert:false },
-  { id:'FIT-0509-039', brand:'ADER ERROR',    product:'그래픽 후드집업',         customer:'조**', size:'S', stage:'신청 대기',   returnDue:'05-14', dDay:1,  alert:false },
-  { id:'FIT-0509-031', brand:'MARCIA',        product:'실크 블라우스',           customer:'윤**', size:'M', stage:'반납 수거중', returnDue:'05-11', dDay:-1, alert:true  },
-]
-
-const activity = [
-  { type:'피팅박스', text:'FIT-0510-018  피팅 완료 → 검수 대기',            time:'10:24' },
-  { type:'주문',     text:'ORD-0510-024  결제 완료 / MARCIA 캐시미어 코트', time:'10:18' },
-  { type:'패널티',   text:'FIT-0509-012  훼손 패널티 청구 — 이**  32,000원', time:'09:55' },
-  { type:'피팅박스', text:'FIT-0510-017  반납 완료 → 세탁 처리',            time:'09:40' },
-  { type:'주문',     text:'ORD-0510-023  배송 완료 / MATIN KIM 레더재킷',   time:'09:22' },
-  { type:'피팅박스', text:'FIT-0510-011  피팅 신청 — 최**  EENK 블레이저',  time:'08:44' },
-  { type:'반납',     text:'FIT-0509-042  반납 D-1 알림 발송 — 박**',        time:'08:00' },
-]
+const stageOptions = ['전체', ...ACTIVE]
 
 const stageStyle = {
   '신청 대기':   { bg:'#f4f4f2', color:'#555' },
@@ -69,6 +14,9 @@ const stageStyle = {
   '검수 대기':   { bg:'#f4f4f2', color:'#555' },
   '검수중':      { bg:'#f4f4f2', color:'#555' },
   '완료':        { bg:'#eef4f0', color:'#3D6A4F' },
+  '반납 완료':   { bg:'#f4f4f2', color:'#555' },
+  '구매 전환':   { bg:'#eef4f0', color:'#3D6A4F' },
+  '훼손 패널티': { bg:'#fbeeed', color:'#b3261e' },
 }
 
 const activityColor = {
@@ -85,15 +33,48 @@ const brandStatusStyle = {
   '패널티': { color:'#b3261e' },
 }
 
-const stageOptions = ['전체', ...pipeline.map(p => p.stage)]
-
 export default function ClyqDashboard() {
   const [realOrders] = useOrders()
+  const [log] = useKV('clyq_log', [])
+  const brands = useBrandStats()
   const newN = realOrders.filter(o => ['주문접수', '신청접수'].includes(o.status)).length
   const shipN = realOrders.filter(o => ['상품준비', '발송준비'].includes(o.status)).length
   const claimN = realOrders.reduce((n, o) => n + (o.claims || []).filter(c => c.status === '접수' || c.status === '처리중').length, 0)
   const [selectedBrand, setSelectedBrand] = useState(null)
   const [stageFilter, setStageFilter]     = useState('전체')
+
+  // ── 모든 수치는 이 브라우저에 쌓인 실제 주문에서 계산합니다 ──
+  const fits = fitRows(realOrders)
+  const fittingList = fits.filter(f => ACTIVE.includes(f.stage)).map(f => ({ ...f, returnDue: f.returnDue ? f.returnDue.slice(5) : '-' }))
+  const monthFitOrders = realOrders.filter(o => o.kind === 'fitting' && isThisMonth(o.createdAt))
+  const decided = monthFitOrders.filter(o => ['구매확정', '반납완료'].includes(o.status))
+  const conv = decided.length ? Math.round(decided.filter(o => o.status === '구매확정').length / decided.length * 100) : null
+  const monthSales = realOrders.filter(o => DONE.includes(o.status) && isThisMonth(o.doneAt || o.createdAt)).reduce((n, o) => n + o.total, 0)
+  const pens = realOrders.filter(isPenalty)
+  const pendingPen = pens.filter(o => o.penalty.status === '청구 대기').length
+  const doneToday = realOrders.filter(o => o.kind === 'fitting' && ((o.inspect && isToday(o.inspect.at)) || (o.status === '구매확정' && isToday(o.doneAt)))).length
+  const waitInspect = fits.filter(f => f.stage === '검수 대기').length
+  const kpis = [
+    { label:'오늘 피팅 신청',   value: String(realOrders.filter(o => o.kind === 'fitting' && isToday(o.createdAt)).length), unit:'건', sub:`전체 ${fits.length}건`, color:'#555' },
+    { label:'현재 피팅 진행중', value: String(fittingList.length), unit:'건', sub:'신청~검수 진행 합산', color:'#111' },
+    { label:'오늘 완료',        value: String(doneToday), unit:'건', sub:`검수 대기 ${waitInspect}건`, color:'#3D6A4F' },
+    { label:'이달 전환율',      value: conv == null ? '-' : String(conv), unit: conv == null ? '' : '%', sub: conv == null ? '이달 완료된 피팅 없음' : `완료 ${decided.length}건 중 구매확정`, color:'#555' },
+    { label:'이달 매출',        value: monthSales.toLocaleString(), unit:'원', sub:'배송완료·구매확정 기준', color:'#555' },
+    { label:'훼손 패널티',      value: String(pens.length), unit:'건', sub:`청구 대기 ${pendingPen}건`, color:'#b3261e' },
+  ]
+  const pcount = st => fittingList.filter(f => f.stage === st).length
+  const ptotal = Math.max(1, fittingList.length)
+  const pipeline = [
+    { stage:'신청 대기', color:'#555' }, { stage:'배송중', color:'#555' }, { stage:'피팅중', color:'#111' }, { stage:'반납 수거중', color:'#8a6d1f' }, { stage:'검수 대기', color:'#555' },
+  ].map(p => ({ ...p, count: pcount(p.stage), total: ptotal })).concat([{ stage:'오늘 완료', count: doneToday, color:'#3D6A4F', total: ptotal }])
+  const alerts = [
+    ...fits.filter(f => f.overdue).map(f => ({ type:'반납 초과', text:`${f.id}  ${f.product} — ${f.customer} (${dLabel(f.dDay)})`, color:'#b3261e', bg:'#fbeeed' })),
+    ...pens.filter(o => o.penalty.status === '청구 대기').map(o => ({ type:'패널티', text:`${o.id}  ${o.items[0].name} — ${o.penalty.damageType} 확인, 청구 대기 ${o.penalty.amount.toLocaleString()}원`, color:'#555', bg:'#f4f4f2' })),
+    ...(waitInspect ? [{ type:'검수', text:`검수 대기 ${waitInspect}건 — 검수 화면에서 결과를 입력해 주세요`, color:'#111', bg:'#f4f4f2' }] : []),
+  ]
+  const typeOf = t => /^FIT-/.test(t) ? '피팅박스' : /^ORD-/.test(t) ? '주문' : /패널티/.test(t) ? '패널티' : /회원 가입/.test(t) ? '신규' : '주문'
+  const hm = iso => { const d = new Date(iso); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') }
+  const activity = (log || []).slice(0, 7).map(l => ({ type: typeOf(l.text), text: l.text, time: hm(l.at) }))
 
   const filteredFitting = stageFilter === '전체'
     ? fittingList
@@ -189,7 +170,7 @@ export default function ClyqDashboard() {
         {/* 헤더 */}
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'20px', flexWrap:'wrap', gap:'10px' }}>
           <div>
-            <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>샘플 데이터 · 실제 운영 데이터 연동 전</div>
+            <div style={{ fontSize:'12px', color:'#767676', marginBottom:'4px' }}>실시간 · 이 브라우저에 접수된 주문 기준</div>
             <h1 style={{ fontSize:'24px', fontWeight:700, color:'#111', margin:0 }}>피팅박스 대시보드</h1>
           </div>
           <div style={{ display:'flex', gap:'8px' }}>
@@ -252,6 +233,7 @@ export default function ClyqDashboard() {
             <span style={{ fontSize:'14px', fontWeight:700, color:'#111' }}>처리 필요 알림</span>
             <span className="cqd-alert-cnt">{alerts.length}</span>
           </div>
+          {alerts.length === 0 && <div style={{ padding:'20px', fontSize:'13px', color:'#767676' }}>지금 처리가 필요한 알림이 없습니다.</div>}
           {alerts.map((a, i) => (
             <div key={i} className="cqd-alert-item">
               <span className="cqd-alert-badge" style={{ background:a.bg, color:a.color }}>{a.type}</span>
@@ -302,7 +284,7 @@ export default function ClyqDashboard() {
                             <div className="cqd-bar-fill" style={{ width: b.convRate + '%' }}></div>
                           </div>
                           <span style={{ fontSize:'13px', fontWeight:700, color: b.convRate >= 55 ? '#3D6A4F' : '#111' }}>
-                            {b.convRate}%
+                            {b.convKnown ? b.convRate + '%' : '-'}
                           </span>
                         </div>
                       </td>
@@ -327,6 +309,7 @@ export default function ClyqDashboard() {
               <span className="cqd-card-title">실시간 활동</span>
               <button className="cqd-link">전체</button>
             </div>
+            {activity.length === 0 && <div style={{ padding:'20px', fontSize:'13px', color:'#767676' }}>아직 활동 기록이 없습니다.</div>}
             {activity.map((a, i) => {
               const ac = activityColor[a.type] || { bg:'#f2f2f0', color:'#555' }
               return (
@@ -363,7 +346,7 @@ export default function ClyqDashboard() {
                 { label:'등록 제품',   value: brandDetail.products + '개',                      color:'#111' },
                 { label:'현재 피팅중', value: brandDetail.fitting + '건',                        color:'#111' },
                 { label:'이달 피팅',   value: brandDetail.monthFit + '건',                       color:'#555' },
-                { label:'이달 전환율', value: brandDetail.convRate + '%',                        color: brandDetail.convRate >= 55 ? '#3D6A4F' : '#111' },
+                { label:'이달 전환율', value: brandDetail.convKnown ? brandDetail.convRate + '%' : '-',                        color: brandDetail.convRate >= 55 ? '#3D6A4F' : '#111' },
                 { label:'이달 매출',   value: brandDetail.monthSales.toLocaleString() + '원',    color:'#3D6A4F' },
               ].map(s => (
                 <div key={s.label} className="cqd-brand-stat">
@@ -398,8 +381,8 @@ export default function ClyqDashboard() {
                   <tbody>
                     {brandFitting.map(f => {
                       const ss = stageStyle[f.stage] || { bg:'#f2f2f0', color:'#555' }
-                      const dDayLabel = f.dDay === 0 ? 'D-Day' : f.dDay > 0 ? 'D-' + f.dDay : '초과 ' + Math.abs(f.dDay) + '일'
-                      const dDayColor = f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
+                      const dDayLabel = dLabel(f.dDay)
+                      const dDayColor = f.dDay != null && f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
                       return (
                         <tr key={f.id}>
                           <td style={{ fontSize:'13px', color:'#6b6b6b', fontFamily:'monospace' }}>{f.id}</td>
@@ -460,8 +443,8 @@ export default function ClyqDashboard() {
               <tbody>
                 {filteredFitting.map(f => {
                   const ss = stageStyle[f.stage] || { bg:'#f2f2f0', color:'#555' }
-                  const dDayLabel = f.dDay === 0 ? 'D-Day' : f.dDay > 0 ? 'D-' + f.dDay : '초과 ' + Math.abs(f.dDay) + '일'
-                  const dDayColor = f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
+                  const dDayLabel = dLabel(f.dDay)
+                  const dDayColor = f.dDay != null && f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
                   return (
                     <tr key={f.id}>
                       <td style={{ fontSize:'13px', color:'#6b6b6b', fontFamily:'monospace' }}>{f.id}</td>

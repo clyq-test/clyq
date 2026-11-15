@@ -41,7 +41,7 @@ export default function ProductDetail() {
     const cur = cp ? cp.id : 0
     const same = allProducts.filter(x => x.id !== cur && cp && x.category === cp.category)
     const rest = allProducts.filter(x => x.id !== cur && !same.includes(x))
-    return [...same, ...rest].slice(0, 5)
+    return [...same, ...rest].slice(0, 3)
   })()
   const [relOpen, setRelOpen] = useState(true)
   useEffect(() => { if (window.matchMedia('(max-width: 768px)').matches) setRelOpen(false) }, [])
@@ -131,7 +131,7 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 11px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
-        .rel { position: fixed; right: 0; bottom: 20px; width: 280px; background: rgba(255,255,255,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.6); border-right: 0; border-radius: 20px 0 0 20px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; overflow: hidden; }
+        .rel { position: fixed; right: 0; bottom: 20px; width: 232px; background: rgba(255,255,255,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.6); border-right: 0; border-radius: 20px 0 0 20px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; overflow: hidden; }
         .rel-h { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; min-height: 44px; font-size: 12px; font-weight: 600; }
         .rel ul { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0 14px 10px 8px; list-style: none; max-height: calc(100vh - 150px); overflow-y: auto; }
         .rel li a { display: flex; gap: 10px; padding: 6px; align-items: center; color: inherit; }
@@ -140,9 +140,11 @@ export default function ProductDetail() {
         .rel li img { width: 68px; height: 86px; object-fit: cover; flex-shrink: 0; background: #f4f4f2; }
         .rel li span { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
         .rel em { font-style: normal; font-size: 10px; color: #8a8a8a; }
-        .rel b { font-size: 11px; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .rel b { font-size: 11px; font-weight: 500; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 10; line-clamp: 10; overflow-wrap: anywhere; }
+        .rel li a { align-items: flex-start; } .rel li img { width: 56px; height: 72px; }
+        @media (min-width: 1100px) { .pd-shell { padding-right: 264px; } .pd-sec { width: 100%; } }
         .rel i { font-style: normal; font-size: 11px; font-weight: 600; }
-        @media (max-width: 768px) { .rel { bottom: 12px; width: min(260px, calc(100vw - 24px)); } }
+        @media (max-width: 768px) { .rel { bottom: 12px; width: min(232px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
         .pd-img img { width: 100%; height: auto; min-height: 320px; object-fit: cover; }
@@ -171,7 +173,7 @@ export default function ProductDetail() {
         }
       `}</style>
       <Navbar />
-      <div className="wrap-full">
+      <div className="wrap-full pd-shell">
         <div className="crumb"><a href="/">홈</a> / <a href="/products/new">신상품</a> / {product.name}</div>
         <div className="pd">
           <div>

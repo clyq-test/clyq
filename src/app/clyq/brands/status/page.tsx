@@ -2,16 +2,7 @@
 'use client'
 import { useState } from 'react'
 
-const BRANDS = [
-  { name:'MARCIA',        products:24, fitting:4, inFitting:6,  monthFit:31, converted:16, convRate:52, monthSales:12840000, monthOrders:247, avgOrder:51976, commission:30, stock:12, lowStock:1, penalty:0 },
-  { name:'MATIN KIM',     products:18, fitting:3, inFitting:5,  monthFit:24, converted:14, convRate:58, monthSales:9620000,  monthOrders:184, avgOrder:52283, commission:30, stock:8,  lowStock:0, penalty:1 },
-  { name:'EENK',          products:31, fitting:6, inFitting:12, monthFit:41, converted:28, convRate:68, monthSales:5280000,  monthOrders:98,  avgOrder:53878, commission:28, stock:3,  lowStock:2, penalty:0 },
-  { name:'D.POUND',       products:12, fitting:2, inFitting:3,  monthFit:18, converted:8,  convRate:44, monthSales:4150000,  monthOrders:76,  avgOrder:54605, commission:27, stock:6,  lowStock:0, penalty:0 },
-  { name:'ANDERSSONBELL', products:27, fitting:5, inFitting:7,  monthFit:29, converted:17, convRate:59, monthSales:3960000,  monthOrders:72,  avgOrder:55000, commission:30, stock:9,  lowStock:0, penalty:0 },
-  { name:'ANOTHER A',     products:15, fitting:3, inFitting:4,  monthFit:15, converted:7,  convRate:47, monthSales:2730000,  monthOrders:51,  avgOrder:53529, commission:27, stock:11, lowStock:0, penalty:0 },
-  { name:'EIGHT',         products:9,  fitting:2, inFitting:2,  monthFit:11, converted:5,  convRate:45, monthSales:1980000,  monthOrders:38,  avgOrder:52105, commission:25, stock:14, lowStock:0, penalty:0 },
-  { name:'ADER ERROR',    products:21, fitting:4, inFitting:9,  monthFit:22, converted:14, convRate:64, monthSales:6410000,  monthOrders:122, avgOrder:52541, commission:30, stock:5,  lowStock:1, penalty:1 },
-]
+import { useBrandStats } from '../../../lib/hq'
 
 const SORT_OPTS = [
   { key:'monthSales',  label:'이달 매출순' },
@@ -21,6 +12,7 @@ const SORT_OPTS = [
 ]
 
 export default function BrandStatusPage() {
+  const BRANDS = useBrandStats()
   const [selected, setSelected] = useState(null)
   const [sortKey, setSortKey]   = useState('monthSales')
   const [search, setSearch]     = useState('')
@@ -32,7 +24,8 @@ export default function BrandStatusPage() {
   const totalSales   = BRANDS.reduce((s, b) => s + b.monthSales, 0)
   const totalFitting = BRANDS.reduce((s, b) => s + b.inFitting, 0)
   const totalOrders  = BRANDS.reduce((s, b) => s + b.monthOrders, 0)
-  const avgConv      = Math.round(BRANDS.reduce((s, b) => s + b.convRate, 0) / BRANDS.length)
+  const known        = BRANDS.filter(b => b.convKnown)
+  const avgConv      = known.length ? Math.round(known.reduce((s, b) => s + b.convRate, 0) / known.length) : 0
 
   const detail = BRANDS.find(b => b.name === selected)
 
@@ -129,7 +122,7 @@ export default function BrandStatusPage() {
                 { label:'피팅 제품',   value: detail.fitting + '개',                 color:'#111' },
                 { label:'현재 피팅중', value: detail.inFitting + '건',               color:'#111' },
                 { label:'이달 피팅',   value: detail.monthFit + '건',                color:'#555' },
-                { label:'전환율',      value: detail.convRate + '%',                 color: detail.convRate >= 55 ? '#3D6A4F' : '#111' },
+                { label:'전환율',      value: detail.convKnown ? detail.convRate + '%' : '-',                 color: detail.convRate >= 55 ? '#3D6A4F' : '#111' },
                 { label:'이달 매출',   value: detail.monthSales.toLocaleString() + '원', color:'#3D6A4F' },
               ].map(s => (
                 <div key={s.label} className="bs-dk">
@@ -207,7 +200,7 @@ export default function BrandStatusPage() {
                       <div className="bs-bar-bg">
                         <div className="bs-bar-fill" style={{ background: b.convRate >= 55 ? '#3D6A4F' : '#111', width: b.convRate + '%' }}/>
                       </div>
-                      <span style={{ fontWeight:700, color: b.convRate >= 55 ? '#3D6A4F' : '#111', fontSize:'13px' }}>{b.convRate}%</span>
+                      <span style={{ fontWeight:700, color: b.convRate >= 55 ? '#3D6A4F' : '#111', fontSize:'13px' }}>{b.convKnown ? b.convRate + '%' : '-'}</span>
                     </div>
                   </div>
                   <div className="bs-brand-row">

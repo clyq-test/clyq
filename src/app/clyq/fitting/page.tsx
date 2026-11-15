@@ -2,18 +2,9 @@
 'use client'
 import { useState } from 'react'
 
-const fittings = [
-  { id:'FIT-2026-0510-018', brand:'MARCIA', product:'오버핏 캐시미어 울 코트', sku:'MA-2026-CT-001', size:'M', customer:'이**', phone:'010-****-3842', stage:'검수 대기', reqDate:'2026-05-07', shipDate:'2026-05-08', recvDate:'2026-05-09', returnDue:'2026-05-12', returnDate:'2026-05-11', inspDate:'', converted:false, penalty:false, dDay:0 },
-  { id:'FIT-2026-0510-015', brand:'MARCIA', product:'울 블레이저 세트업', sku:'MA-2026-ST-003', size:'S', customer:'김**', phone:'010-****-5571', stage:'피팅중', reqDate:'2026-05-08', shipDate:'2026-05-09', recvDate:'2026-05-10', returnDue:'2026-05-13', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:-1 },
-  { id:'FIT-2026-0510-014', brand:'MATIN KIM', product:'레더 재킷', sku:'MK-2026-JK-001', size:'M', customer:'박**', phone:'010-****-2219', stage:'피팅중', reqDate:'2026-05-07', shipDate:'2026-05-08', recvDate:'2026-05-09', returnDue:'2026-05-13', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:-2 },
-  { id:'FIT-2026-0510-013', brand:'EENK', product:'울 블레이저', sku:'EK-2026-JK-003', size:'L', customer:'최**', phone:'010-****-7734', stage:'배송중', reqDate:'2026-05-09', shipDate:'2026-05-10', recvDate:'', returnDue:'2026-05-15', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:2 },
-  { id:'FIT-2026-0510-012', brand:'ANDERSSONBELL', product:'오버사이즈 셔츠', sku:'AB-2026-SH-002', size:'M', customer:'정**', phone:'010-****-4421', stage:'배송중', reqDate:'2026-05-09', shipDate:'2026-05-10', recvDate:'', returnDue:'2026-05-15', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:2 },
-  { id:'FIT-2026-0509-042', brand:'D.POUND', product:'캐시미어 니트', sku:'DP-2026-KN-001', size:'L', customer:'한**', phone:'010-****-8812', stage:'피팅중', reqDate:'2026-05-07', shipDate:'2026-05-08', recvDate:'2026-05-09', returnDue:'2026-05-13', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:-2 },
-  { id:'FIT-2026-0509-039', brand:'ADER ERROR', product:'그래픽 후드집업', sku:'AE-2026-HD-001', size:'S', customer:'조**', phone:'010-****-3309', stage:'신청 대기', reqDate:'2026-05-11', shipDate:'', recvDate:'', returnDue:'2026-05-14', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:1 },
-  { id:'FIT-2026-0509-031', brand:'MARCIA', product:'실크 블라우스', sku:'MA-2026-BL-005', size:'M', customer:'윤**', phone:'010-****-6645', stage:'반납 수거중', reqDate:'2026-05-06', shipDate:'2026-05-07', recvDate:'2026-05-08', returnDue:'2026-05-11', returnDate:'', inspDate:'', converted:false, penalty:false, dDay:-1 },
-  { id:'FIT-2026-0508-031', brand:'MARCIA', product:'오버핏 캐시미어 울 코트', sku:'MA-2026-CT-001', size:'L', customer:'정**', phone:'010-****-1234', stage:'구매 전환', reqDate:'2026-05-05', shipDate:'2026-05-06', recvDate:'2026-05-07', returnDue:'2026-05-10', returnDate:'2026-05-10', inspDate:'2026-05-11', converted:true, penalty:false, dDay:0 },
-  { id:'FIT-2026-0507-024', brand:'MATIN KIM', product:'레더 재킷', sku:'MK-2026-JK-001', size:'M', customer:'한**', phone:'010-****-5678', stage:'훼손 패널티', reqDate:'2026-05-03', shipDate:'2026-05-04', recvDate:'2026-05-05', returnDue:'2026-05-08', returnDate:'2026-05-09', inspDate:'2026-05-10', converted:false, penalty:true, dDay:0 },
-]
+import { useOrders, setStatus } from '../../lib/orders'
+import { fitRows, dLabel, saveInspection } from '../../lib/hq'
+import { BRANDS } from '../../lib/catalog'
 
 const stageStyle = {
   '신청 대기':   { bg:'#f4f4f2', color:'#555' },
@@ -23,13 +14,17 @@ const stageStyle = {
   '검수 대기':   { bg:'#f4f4f2', color:'#555' },
   '검수중':      { bg:'#f4f4f2', color:'#555' },
   '구매 전환':   { bg:'#eef4f0', color:'#3D6A4F' },
+  '반납 완료':   { bg:'#f4f4f2', color:'#555' },
+  '취소':        { bg:'#f2f2f0', color:'#767676' },
   '훼손 패널티': { bg:'#fbeeed', color:'#b3261e' },
 }
 
-const stages = ['전체','신청 대기','배송중','피팅중','반납 수거중','검수 대기','구매 전환','훼손 패널티']
-const brands  = ['전체','MARCIA','MATIN KIM','EENK','D.POUND','ANDERSSONBELL','ADER ERROR']
+const stages = ['전체','신청 대기','배송중','피팅중','반납 수거중','검수 대기','반납 완료','구매 전환','훼손 패널티']
+const brands  = ['전체', ...BRANDS]
 
 export default function FittingAllPage() {
+  const [orders] = useOrders()
+  const fittings = fitRows(orders)
   const [stageFilter, setStageFilter] = useState('전체')
   const [brandFilter, setBrandFilter] = useState('전체')
   const [search, setSearch]           = useState('')
@@ -38,7 +33,7 @@ export default function FittingAllPage() {
   const filtered = fittings.filter(f => {
     const ms = stageFilter === '전체' || f.stage === stageFilter
     const mb = brandFilter === '전체' || f.brand === brandFilter
-    const mq = !search || f.id.includes(search) || f.product.includes(search) || f.customer.includes(search)
+    const mq = !search || f.id.includes(search) || f.product.includes(search) || f.customer.includes(search) || f.brand.includes(search.toUpperCase())
     return ms && mb && mq
   })
 
@@ -125,7 +120,7 @@ export default function FittingAllPage() {
           </div>
           <div className="fa-filter-row">
             <span className="fa-filter-label">검색</span>
-            <input className="fa-search" type="text" placeholder="피팅ID · 상품명 · 고객" value={search} onChange={e => setSearch(e.target.value)}/>
+            <input className="fa-search" type="text" placeholder="피팅ID · 상품명 · 브랜드" value={search} onChange={e => setSearch(e.target.value)}/>
             <span style={{ fontSize:'13px', color:'#767676', marginLeft:'6px' }}>{filtered.length}건</span>
           </div>
         </div>
@@ -133,13 +128,13 @@ export default function FittingAllPage() {
         {/* 피팅 카드 목록 */}
         {filtered.map(f => {
           const ss = stageStyle[f.stage] || { bg:'#f2f2f0', color:'#555' }
-          const isOpen = selected === f.id
-          const dDayLabel = f.dDay === 0 ? 'D-Day' : f.dDay > 0 ? 'D-' + f.dDay : '초과 ' + Math.abs(f.dDay) + '일'
-          const dDayColor = f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
+          const isOpen = selected === f.key
+          const dDayLabel = dLabel(f.dDay)
+          const dDayColor = f.dDay != null && f.dDay < 0 ? '#b3261e' : f.dDay === 0 ? '#111' : '#555'
 
           return (
-            <div key={f.id} className="fa-card">
-              <div className="fa-card-top" onClick={() => setSelected(isOpen ? null : f.id)}>
+            <div key={f.key} className="fa-card">
+              <div className="fa-card-top" onClick={() => setSelected(isOpen ? null : f.key)}>
                 <div>
                   <div style={{ fontWeight:700, color:'#111', fontSize:'14px', marginBottom:'3px' }}>{f.product}</div>
                   <div style={{ fontSize:'12px', color:'#767676' }}>{f.id} · {f.brand} · SIZE {f.size}</div>
@@ -150,7 +145,7 @@ export default function FittingAllPage() {
                 </div>
                 <div>
                   <div style={{ fontSize:'12px', color:'#767676', marginBottom:'3px' }}>반납 기한</div>
-                  <div style={{ fontWeight:600 }}>{f.returnDue}</div>
+                  <div style={{ fontWeight:600 }}>{f.returnDue || '-'}</div>
                 </div>
                 <div>
                   <span className="fa-badge" style={{ background:ss.bg, color:ss.color }}>{f.stage}</span>
@@ -188,21 +183,21 @@ export default function FittingAllPage() {
                   <div style={{ display:'flex', gap:'8px', marginTop:'16px', justifyContent:'flex-end' }}>
                     {f.stage === '검수 대기' && (
                       <>
-                        <button style={{ padding:'7px 16px', background:'#3D6A4F', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
+                        <button onClick={() => saveInspection(f.orderId, { result:'이상없음' })} style={{ padding:'7px 16px', background:'#3D6A4F', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
                           검수 통과
                         </button>
-                        <button style={{ padding:'7px 16px', background:'#b3261e', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
+                        <button onClick={() => location.href='/clyq/fitting/inspection'} style={{ padding:'7px 16px', background:'#b3261e', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
                           훼손 확인
                         </button>
                       </>
                     )}
                     {f.stage === '신청 대기' && (
-                      <button style={{ padding:'7px 16px', background:'#111', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
-                        출고 처리
+                      <button onClick={() => setStatus(f.orderId, f.status === '신청접수' ? '발송준비' : '배송중')} style={{ padding:'7px 16px', background:'#111', color:'#fff', border:'none', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit', fontWeight:600 }}>
+                        {f.status === '신청접수' ? '발송 준비' : '출고 처리'}
                       </button>
                     )}
-                    <button style={{ padding:'7px 14px', background:'#f2f2f0', color:'#555', border:'1px solid #d6d6d2', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}>
-                      메모
+                    <button onClick={() => location.href='/clyq/orders'} style={{ padding:'7px 14px', background:'#f2f2f0', color:'#555', border:'1px solid #d6d6d2', borderRadius:'4px', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}>
+                      주문 상세
                     </button>
                   </div>
                 </div>

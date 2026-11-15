@@ -2,14 +2,14 @@
 'use client'
 import { useState } from 'react'
 
-const inspections = [
-  { id:'FIT-2026-0510-018', brand:'MARCIA', product:'오버핏 캐시미어 울 코트', size:'M', customer:'이**', returnDate:'2026-05-11', receivedAt:'2026-05-12 09:30', result:'', penaltyAmt:0, note:'' },
-  { id:'FIT-2026-0509-031', brand:'MARCIA', product:'실크 블라우스', size:'M', customer:'윤**', returnDate:'2026-05-11', receivedAt:'2026-05-12 10:15', result:'', penaltyAmt:0, note:'' },
-  { id:'FIT-2026-0509-042', brand:'D.POUND', product:'캐시미어 니트', size:'L', customer:'한**', returnDate:'2026-05-10', receivedAt:'2026-05-11 14:00', result:'이상없음', penaltyAmt:0, note:'세탁 완료' },
-  { id:'FIT-2026-0508-031', brand:'MARCIA', product:'오버핏 캐시미어 울 코트', size:'L', customer:'정**', returnDate:'2026-05-10', receivedAt:'2026-05-10 16:00', result:'이상없음', penaltyAmt:0, note:'' },
-  { id:'FIT-2026-0507-024', brand:'MATIN KIM', product:'레더 재킷', size:'M', customer:'한**', returnDate:'2026-05-09', receivedAt:'2026-05-10 09:00', result:'훼손', penaltyAmt:136800, note:'소매 부분 스크래치 확인' },
-  { id:'FIT-2026-0506-019', brand:'EENK', product:'더블 브레스트 코트', size:'S', customer:'조**', returnDate:'2026-05-08', receivedAt:'2026-05-09 11:30', result:'이상없음', penaltyAmt:0, note:'' },
-]
+import { useOrders } from '../../../lib/orders'
+import { fitRows, saveInspection } from '../../../lib/hq'
+
+// 반납된 피팅박스(검수중·반납완료) 또는 검수 결과가 있는 주문을 실제 주문에서 가져옵니다.
+const toItems = orders => fitRows(orders).filter(f => ['검수중', '반납완료'].includes(f.status) || f.inspect).map(f => ({
+  id: f.orderId, brand: f.brand, product: f.product, size: f.size, customer: f.customer, returnDate: f.returnDate, receivedAt: f.returnDate,
+  result: f.inspect ? f.inspect.result : '', penaltyAmt: f.inspect ? f.inspect.penaltyAmt : 0, note: f.inspect ? f.inspect.note : '',
+}))
 
 const resultOpts = ['이상없음','경미한 오염','훼손','분실']
 const resultStyle = {
@@ -21,7 +21,8 @@ const resultStyle = {
 }
 
 export default function InspectionPage() {
-  const [items, setItems]         = useState(inspections)
+  const [orders] = useOrders()
+  const items = toItems(orders)
   const [filter, setFilter]       = useState('전체')
   const [selected, setSelected]   = useState(null)
   const [editNote, setEditNote]   = useState('')
@@ -36,11 +37,7 @@ export default function InspectionPage() {
   }
 
   function saveResult() {
-    setItems(prev => prev.map(i =>
-      i.id === selected.id
-        ? { ...i, result: editResult, note: editNote, penaltyAmt: Number(editPenalty) || 0 }
-        : i
-    ))
+    saveInspection(selected.id, { result: editResult, note: editNote, penaltyAmt: ['훼손', '분실'].includes(editResult) ? Number(editPenalty) || 0 : 0 })
     setSelected(null)
   }
 
