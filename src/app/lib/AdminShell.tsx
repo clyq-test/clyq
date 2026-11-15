@@ -19,29 +19,30 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
   }, [pathname])
   const [now, setNow] = useState(null)
   useEffect(() => { setNow(new Date()); const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t) }, [])
-  const clock = now ? now.toLocaleString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }) : ''
+  const clock = now ? now.toLocaleString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }) : ''
 
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'#f7f7f5', color:'#111', fontFamily:"'Pretendard','Noto Sans KR',sans-serif" }}>
       <style>{`
         * { box-sizing:border-box; }
         .cq-side { width:224px; background:#fff; border-right:1px solid #e6e6e3; display:flex; flex-direction:column; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:300; transition:transform .25s; }
-        .cq-logo { padding:24px 24px 20px; flex-shrink:0; }
-        .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#111; }
-        .cq-logo-con { font-size:13px; color:#555; margin-top:4px; }
+        .cq-logo { padding:24px 24px 20px; flex-shrink:0; background:#0F3D2E; }
+        .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#F9FCF8; }
+        .cq-logo-con { font-size:13px; color:#A8D5BA; margin-top:4px; }
         .cq-menu-header, .cq-menu-single { display:flex; align-items:center; justify-content:space-between; padding:11px 24px; cursor:pointer; font-size:14px; font-weight:500; color:#111; user-select:none; }
-        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid transparent; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
-        .cq-menu-single.active { background:#dbe3d7; border-left-color:#3D6A4F; }
+        .cq-menu-header:hover { background:#F9FCF8; }
+        .cq-menu-single { background:#E6F2EA; border-left:3px solid transparent; padding-left:21px; font-weight:700; color:#0F3D2E; } .cq-menu-single:hover { background:#d4e9db; }
+        .cq-menu-single.active { background:#A8D5BA; border-left-color:#166534; }
         .cq-menu-arrow { font-size:11px; color:#767676; transition:transform .2s; } .cq-menu-arrow.open { transform:rotate(180deg); }
         .cq-menu-link { display:flex; align-items:center; justify-content:space-between; padding:8px 24px 8px 36px; font-size:13px; color:#555; text-decoration:none; }
-        .cq-menu-link:hover { color:#111; background:#f7f7f5; } .cq-menu-link.active { color:#111; font-weight:700; background:#f4f4f2; }
+        .cq-menu-link:hover { color:#0F3D2E; background:#F9FCF8; } .cq-menu-link.active { color:#0F3D2E; font-weight:700; background:#E6F2EA; box-shadow:inset 3px 0 0 #4C956C; }
         .cq-tag { font-size:11px; color:#767676; border:1px solid #e6e6e3; padding:1px 6px; border-radius:3px; margin-left:6px; }
-        .cq-header { position:fixed; top:0; left:224px; right:0; height:56px; background:#fff; border-bottom:1px solid #e6e6e3; display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:200; }
+        .cq-header { position:fixed; top:0; left:224px; right:0; height:56px; background:#0F3D2E; color:#E6F2EA; display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:200; }
         .cq-body { flex:1; min-width:0; margin-left:224px; margin-top:56px; padding:32px; min-height:calc(100vh - 56px); }
         ${AD_CSS}
         .cq-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:299; } .cq-overlay.show { display:block; }
         .cq-hamb { display:none; background:none; border:none; cursor:pointer; padding:8px; }
-        .cq-ham-bar { display:block; width:18px; height:2px; background:#111; margin-bottom:4px; } .cq-ham-bar:last-child { margin-bottom:0; }
+        .cq-ham-bar { display:block; width:18px; height:2px; background:#E6F2EA; margin-bottom:4px; } .cq-ham-bar:last-child { margin-bottom:0; }
         @media (max-width:768px) { .cq-side { transform:translateX(-224px); } .cq-side.mob-open { transform:translateX(0); } .cq-header { left:0; padding:0 16px; } .cq-body { margin-left:0; padding:16px; } .cq-hamb { display:block; } }
       `}</style>
       <aside className={mobileOpen ? 'cq-side mob-open' : 'cq-side'}>
@@ -83,13 +84,13 @@ export default function AdminShell({ menus, home, subtitle, avatar, userLabel, c
       <header className="cq-header">
         <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
           <button className="cq-hamb" onClick={() => setMobileOpen(v => !v)} aria-label="메뉴"><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span><span className="cq-ham-bar"></span></button>
-          <span style={{ fontSize:'15px', color:'#555', fontVariantNumeric:'tabular-nums', minWidth:'1px' }} suppressHydrationWarning>{clock}</span>
+          <span style={{ fontSize:'15px', color:'#E6F2EA', fontVariantNumeric:'tabular-nums', minWidth:'1px' }} suppressHydrationWarning>{clock}</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
-          <span style={{ fontSize:'13px', color:'#555' }}>알림</span>
+          <span style={{ fontSize:'13px', color:'#A8D5BA' }}>알림</span>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div style={{ width:'28px', height:'28px', borderRadius:'50%', background:'#111', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:700 }}>{avatar}</div>
-            <span style={{ fontSize:'14px', fontWeight:500 }}>{userLabel}</span>
+            <div style={{ width:'28px', height:'28px', borderRadius:'50%', background:'#A8D5BA', color:'#0F3D2E', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:700 }}>{avatar}</div>
+            <span style={{ fontSize:'14px', fontWeight:500, color:'#F9FCF8' }}>{userLabel}</span>
           </div>
         </div>
       </header>
