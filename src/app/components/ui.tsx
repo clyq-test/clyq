@@ -107,3 +107,76 @@ export function ProductCard({ p, onFit }) {
     </Tag>
   )
 }
+
+export function FitDrawer({ product, onClose }) {
+  const [step, setStep] = useState(1)
+  const [size, setSize] = useState('')
+  const [done, setDone] = useState(false)
+  if (!product) return null
+  const canNext = step === 1 ? !!size : true
+  return (
+    <div className="fd-bg" onClick={onClose}>
+      <style>{`
+        .fd-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: flex; justify-content: flex-end; }
+        .fd { width: min(440px, 100vw); height: 100dvh; background: #fff; display: flex; flex-direction: column; color: #111; }
+        .fd-h { padding: 12px 12px 12px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; }
+        .fd-h button { width: 44px; height: 44px; font-size: 18px; }
+        .fd-prog { height: 2px; background: #eee; } .fd-prog i { display: block; height: 100%; background: #3D6A4F; transition: width .3s; }
+        .fd-b { flex: 1; overflow-y: auto; padding: 24px; }
+        .fd-f { padding: 16px 24px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .fd-prod { display: flex; gap: 14px; padding: 14px; background: #fafaf8; margin-bottom: 20px; }
+        .fd-prod img { width: 64px; height: 80px; object-fit: cover; flex-shrink: 0; }
+        .fd-sizes { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 20px; }
+        .fd-size { width: 56px; height: 44px; border: 1px solid #e5e5e5; font-size: 13px; color: #555; background: #fff; }
+        .fd-size.on { border-color: #111; background: #111; color: #fff; }
+        .fd-inp { width: 100%; padding: 12px 14px; border: 1px solid #e5e5e5; font-size: 14px; font-family: inherit; margin-bottom: 12px; min-height: 44px; }
+        .fd-inp:focus { outline: none; border-color: #111; }
+        .fd-note { background: #fafaf8; padding: 14px 16px; font-size: 13px; line-height: 1.7; color: #444; }
+        .fd-sum { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .fd-sum span:first-child { color: #8a8a8a; }
+        .fd-btn { padding: 0 28px; min-height: 48px; background: #111; color: #fff; font-size: 14px; font-weight: 500; }
+        .fd-btn:disabled { background: #ccc; cursor: not-allowed; }
+      `}</style>
+      <div className="fd" role="dialog" aria-modal="true" aria-label="피팅박스 신청" onClick={e => e.stopPropagation()}>
+        <div className="fd-h"><span>{done ? '신청이 접수됐어요' : `피팅박스 신청 (${step}/3)`}</span><button onClick={onClose} aria-label="닫기">✕</button></div>
+        {!done && <div className="fd-prog"><i style={{ width: `${step * 33.3}%` }} /></div>}
+        <div className="fd-b">
+          <div className="fd-prod">
+            <Img src={product.image} alt={product.name} />
+            <div><div className="pc-brand" style={{ fontSize: 12, color: '#8a8a8a' }}>{product.brand}</div><div style={{ fontSize: 14, fontWeight: 500, margin: '2px 0 4px' }}>{product.name}</div><div style={{ fontSize: 14, fontWeight: 600 }}>{product.price.toLocaleString()}원</div></div>
+          </div>
+          {done ? (
+            <div>
+              <p style={{ fontSize: 14, color: '#6b6b6b', lineHeight: 1.7, margin: '0 0 20px' }}>접수 상태는 알림으로 알려드려요. 실제 일정은 서비스 오픈 시 확정됩니다.</p>
+              <button className="fd-btn" style={{ width: '100%' }} onClick={onClose}>확인</button>
+            </div>
+          ) : step === 1 ? (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 500 }}>사이즈</div>
+              <div className="fd-sizes">{['XS', 'S', 'M', 'L', 'XL'].map(z => <button key={z} className={'fd-size' + (size === z ? ' on' : '')} onClick={() => setSize(z)}>{z}</button>)}</div>
+              <div className="fd-note">수령 후 48시간 동안 입어보고, 구매를 확정한 제품만 결제됩니다.</div>
+            </div>
+          ) : step === 2 ? (
+            <div>
+              <input className="fd-inp" placeholder="받는 분" /><input className="fd-inp" type="tel" placeholder="연락처" />
+              <input className="fd-inp" placeholder="주소" /><input className="fd-inp" placeholder="상세 주소" />
+            </div>
+          ) : (
+            <div>
+              <div className="fd-sum"><span>사이즈</span><span>{size}</span></div>
+              <div className="fd-sum"><span>착용 기간</span><span>수령 후 48시간</span></div>
+              <div className="fd-sum"><span>구매 확정 시 결제</span><span>{product.price.toLocaleString()}원</span></div>
+              <div className="fd-note" style={{ marginTop: 20 }}>구매를 확정하기 전에는 결제되지 않습니다. 반납 방법과 비용은 오픈 시 안내됩니다.</div>
+            </div>
+          )}
+        </div>
+        {!done && (
+          <div className="fd-f">
+            <button onClick={() => step > 1 && setStep(step - 1)} style={{ fontSize: 13, color: '#8a8a8a', visibility: step > 1 ? 'visible' : 'hidden', minHeight: 44 }}>이전</button>
+            <button className="fd-btn" disabled={!canNext} onClick={() => step < 3 ? setStep(step + 1) : setDone(true)}>{step < 3 ? '다음' : '신청하기'}</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

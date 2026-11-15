@@ -2,16 +2,17 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
+import { FitDrawer } from './components/ui'
 
 /* ── 이미지 (Unsplash, 전부 로드 확인된 ID만 사용) ── */
 const U = (id, w = 600) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop&crop=center`
 const FB = U('1551232864-3f0890e580d9', 600) // 이미지 로드 실패시 대체
 
 const banners = [
-  { title: '입어보고\n확실한 것만\n담아가세요', sub: '집에서 먼저 입어보고, 마음에 드는 옷만 구매하세요.', image: U('1551232864-3f0890e580d9', 1000), cta: '피팅박스 신청', ctaLink: '/fitting' },
-  { title: '취향에 맞는\n스타일을\n추천해 드려요', sub: '몇 가지 질문으로 나에게 맞는 제품을 골라드려요.', image: U('1581044777550-4cfa60707c03', 1000), cta: '취향 분석 시작', ctaLink: '/mypage' },
-  { title: '위디 포인트로\n더 알차게\n쇼핑하세요', sub: '피팅하고 구매할 때마다 위디가 쌓여요.', image: U('1583744946564-b52ac1c389c8', 1000), cta: '위디 알아보기', ctaLink: '/withy' },
-  { title: '커뮤니티에서\n함께 나누는\n패션 이야기', sub: '피팅 후기와 스타일을 공유해 보세요.', image: U('1496217590455-aa63a8350eea', 1000), cta: '커뮤니티 가기', ctaLink: '/community' },
+  { title: '입어보고\n확실한 것만\n담아가세요', sub: '집에서 먼저 입어보고, 마음에 드는 옷만 구매하세요.', image: U('1551232864-3f0890e580d9', 2400), cta: '피팅박스 신청', ctaLink: '/fitting' },
+  { title: '취향에 맞는\n스타일을\n추천해 드려요', sub: '몇 가지 질문으로 나에게 맞는 제품을 골라드려요.', image: U('1581044777550-4cfa60707c03', 2400), cta: '취향 분석 시작', ctaLink: '/mypage' },
+  { title: '위디 포인트로\n더 알차게\n쇼핑하세요', sub: '피팅하고 구매할 때마다 위디가 쌓여요.', image: U('1583744946564-b52ac1c389c8', 2400), cta: '위디 알아보기', ctaLink: '/withy' },
+  { title: '커뮤니티에서\n함께 나누는\n패션 이야기', sub: '피팅 후기와 스타일을 공유해 보세요.', image: U('1496217590455-aa63a8350eea', 2400), cta: '커뮤니티 가기', ctaLink: '/community' },
 ]
 
 const bestProducts = [
@@ -63,7 +64,7 @@ const articles = [
   { title: '가을 니트 고르는 법', tag: '스타일링' },
 ]
 
-function ProductCard({ p }) {
+function ProductCard({ p, onFit }) {
   const [hovered, setHovered] = useState(false)
   const dc = p.original > p.price ? Math.round((1 - p.price / p.original) * 100) : 0
   return (
@@ -76,7 +77,7 @@ function ProductCard({ p }) {
         />
         {p.fit && <span className="pc-fit">피팅</span>}
         {hovered && (
-          <button className="pc-add" onClick={e => e.preventDefault()}>피팅박스 담기</button>
+          <button className="pc-add" onClick={e => { e.preventDefault(); e.stopPropagation(); onFit && onFit(p) }}>피팅박스 신청</button>
         )}
       </div>
       <div className="pc-brand">{p.brand}</div>
@@ -94,6 +95,7 @@ export default function Home() {
   const [bannerIdx, setBannerIdx] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
+  const [fitProd, setFitProd] = useState(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('clyq_user')
@@ -117,6 +119,25 @@ export default function Home() {
         main { background: #fff; color: #111; font-size: 14px; }
         .wrap { max-width: 1320px; margin: 0 auto; padding: 0 40px; }
 
+        .hero-full { position: relative; width: 100%; height: clamp(480px, 78vh, 820px); overflow: hidden; background: #222; color: #fff; }
+        .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: heroIn .8s ease; }
+        @keyframes heroIn { from { opacity: 0 } to { opacity: 1 } }
+        .hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 55%, rgba(0,0,0,0) 100%); }
+        .hero-copy { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 56px 64px; max-width: 760px; }
+        .hero-full .hero-title { color: #fff; margin-bottom: 16px; }
+        .hero-full .hero-desc { color: rgba(255,255,255,.85); margin-bottom: 28px; }
+        .btn-w { padding: 14px 28px; background: #fff; color: #111; font-size: 14px; font-weight: 500; min-height: 48px; display: inline-flex; align-items: center; }
+        .btn-w:hover { background: #3D6A4F; color: #fff; }
+        .btn-o { padding: 13px 28px; border: 1px solid rgba(255,255,255,.7); color: #fff; font-size: 14px; min-height: 48px; display: inline-flex; align-items: center; }
+        .btn-o:hover { background: rgba(255,255,255,.15); }
+        .hero-full .dot { background: rgba(255,255,255,.4); } .hero-full .dot.on { background: #fff; }
+        .wrap-full { width: 100%; padding: 0 48px; }
+        @media (max-width: 768px) {
+          .hero-full { height: 70vh; min-height: 440px; }
+          .hero-copy { padding: 0 20px 36px; }
+          .hero-shade { background: linear-gradient(0deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.1) 70%); }
+          .wrap-full { padding: 0 16px; }
+        }
         /* 히어로 */
         .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 56px 0 72px; }
         .hero-title { font-size: 56px; font-weight: 700; line-height: 1.18; letter-spacing: -0.035em; margin: 0 0 20px; white-space: pre-line; }
@@ -236,37 +257,34 @@ export default function Home() {
 
       <Navbar />
 
-      {/* ── 히어로 ── */}
-      <div className="wrap">
-        <section className="hero">
-          <div>
-            <h1 className="hero-title">{b.title}</h1>
-            <p className="hero-desc">{b.sub}</p>
-            <div className="hero-btns">
-              <a href={b.ctaLink} className="btn-p">{b.cta}</a>
-              <a href="/products/new" className="btn-s">전체 상품 보기</a>
-            </div>
-            <div className="dots" role="tablist" aria-label="배너 선택">
-              {banners.map((_, i) => (
-                <button key={i} className={'dot' + (bannerIdx === i ? ' on' : '')} onClick={() => setBannerIdx(i)} aria-label={`배너 ${i + 1}`} />
-              ))}
-            </div>
+      {/* ── 히어로 (전체 화면 가로형) ── */}
+      <section className="hero-full">
+        <img className="hero-bg" key={bannerIdx} src={b.image} alt="" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} />
+        <div className="hero-shade" />
+        <div className="hero-copy">
+          <h1 className="hero-title">{b.title}</h1>
+          <p className="hero-desc">{b.sub}</p>
+          <div className="hero-btns">
+            <a href={b.ctaLink} className="btn-w">{b.cta}</a>
+            <a href="/products/new" className="btn-o">전체 상품 보기</a>
           </div>
-          <div className="hero-media">
-            <img src={b.image} alt="" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} />
+          <div className="dots" role="tablist" aria-label="배너 선택">
+            {banners.map((_, i) => (
+              <button key={i} className={'dot' + (bannerIdx === i ? ' on' : '')} onClick={() => setBannerIdx(i)} aria-label={`배너 ${i + 1}`} />
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       {/* ── 베스트 / 추천 ── */}
-      <section className="sec" style={{ paddingTop: 0 }}>
-        <div className="wrap">
+      <section className="sec" style={{ paddingTop: 56 }}>
+        <div className="wrap-full">
           <div className="sec-row">
             <h2 className="sec-title">{isLoggedIn ? `${userName}님을 위한 추천` : '이번 주 베스트'}</h2>
             <a href="/products/new" className="sec-more">전체보기</a>
           </div>
           <div className="grid-5">
-            {displayProducts.map(p => <ProductCard key={p.id} p={p} />)}
+            {displayProducts.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
           </div>
         </div>
       </section>
@@ -288,13 +306,13 @@ export default function Home() {
 
       {/* ── 신상품 ── */}
       <section className="sec">
-        <div className="wrap">
+        <div className="wrap-full">
           <div className="sec-row">
             <h2 className="sec-title">신상품</h2>
             <a href="/products/new" className="sec-more">전체보기</a>
           </div>
           <div className="grid-6">
-            {newProducts.map(p => <ProductCard key={p.id} p={p} />)}
+            {newProducts.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
           </div>
         </div>
       </section>
@@ -398,6 +416,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      {fitProd && <FitDrawer product={fitProd} onClose={() => setFitProd(null)} />}
     </main>
   )
 }
