@@ -51,11 +51,12 @@ export default function Navbar() {
   }
 
   const catItems = [
-    { label: '신상품', href: '/products/new', hot: true },
-    { label: '베스트', href: '/#best' },
+    { label: 'New', href: '/products/new', hot: true },
+    { label: 'Best', href: '/#best' },
     { label: '카테고리', href: '/products/new', mega: true },
+    { label: '기획전', href: '/exhibition' },
     { label: '브랜드', href: '/products/new', mega: true },
-    { label: 'SALE', href: '/products/new?sale=1', red: true },
+    { label: '룩북', href: '/lookbook' },
     { label: '매거진', href: '/magazine' },
     { label: '커뮤니티', href: '/community' },
   ]
@@ -109,8 +110,8 @@ export default function Navbar() {
         .lm-signup a { color:#3D6A4F; font-weight:500; text-decoration:none; }
 
         /* ── Mega Menu ── */
-        .mega-wrap { position:absolute; top:100%; left:0; right:0; background:#fff; border-top:1px solid #E4DFDA; border-bottom:1px solid #E4DFDA; box-shadow:0 8px 32px rgba(28,24,20,.07); z-index:400; padding:28px 40px; display:flex; gap:40px; }
-        .mega-col { min-width:120px; }
+        .mega-wrap { position:absolute; top:100%; left:0; right:0; background:#fff; border-top:1px solid #E4DFDA; border-bottom:1px solid #E4DFDA; box-shadow:0 8px 32px rgba(28,24,20,.07); z-index:400; padding:28px 40px; display:flex; gap:40px; justify-content:center; text-align:center; }
+        .mega-col { min-width:120px; text-align:center; }
         .mega-col-title { font-size:12px; font-weight:500; color:#1C1C1C; letter-spacing:0.04em; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #F0EBE4; }
         .mega-sub-link { display:block; font-size:12px; color:#6A6460; text-decoration:none; padding:5px 0; font-weight:300; transition:color .15s; }
         .mega-sub-link:hover { color:#3D6A4F; }
@@ -150,10 +151,10 @@ export default function Navbar() {
             <div className="nav-dm" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <a href="/" style={{ fontSize: '12.5px', color: '#6A6460', textDecoration: 'none', transition: 'color .15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6A6460')}>홈</a>
+                onMouseLeave={e => (e.currentTarget.style.color = '#6A6460')}>home</a>
               <a href="/about" style={{ fontSize: '12.5px', color: '#6A6460', textDecoration: 'none', transition: 'color .15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6A6460')}>서비스 소개</a>
+                onMouseLeave={e => (e.currentTarget.style.color = '#6A6460')}>About CLYQ</a>
             </div>
           </div>
 
@@ -323,9 +324,12 @@ export default function Navbar() {
               </div>
             </div>
             {[
-              { label: '홈', href: '/' },
-              { label: '서비스 소개', href: '/about', sub: 'CLYQ 피팅박스 서비스 안내' },
-              { label: '신상품', href: '/products/new', sub: '새로 들어온 제품들', accent: true },
+              { label: 'home', href: '/' },
+              { label: 'About CLYQ', href: '/about', sub: 'CLYQ 피팅박스 서비스 안내' },
+              { label: 'New', href: '/products/new', sub: '새로 들어온 제품들', accent: true },
+              { label: 'Best', href: '/#best', sub: '지금 많이 찾는 제품' },
+              { label: '기획전', href: '/exhibition', sub: '테마별 기획 모음' },
+              { label: '룩북', href: '/lookbook', sub: '시즌 스타일 제안' },
               { label: '피팅박스관', href: '/fitting', sub: '집에서 입어보고 결정하세요', hl: true },
               { label: '커뮤니티', href: '/community', sub: '피팅 후기 공유하고 위디 적립' },
               { label: '위디 포인트', href: '/withy', sub: '적립·등급·구독 혜택 확인' },
@@ -336,7 +340,6 @@ export default function Navbar() {
               { label: '원피스·세트', href: '/products/new?c=원피스', sub: '미디·미니·세트업' },
               { label: '가방', href: '/products/new?c=가방', sub: '숄더·크로스·토트' },
               { label: '슈즈', href: '/products/new?c=슈즈', sub: '플랫·힐·스니커즈' },
-              { label: 'SALE', href: '/products/new?sale=1', sub: '한정 기간 특가', red: true },
             ].map((item, i) => (
               <a key={i} href={item.href} onClick={() => setMenuOpen(false)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid #F7F4F0', textDecoration: 'none', background: item.hl ? '#EDF4EF' : '#fff' }}>
