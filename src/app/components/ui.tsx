@@ -65,11 +65,19 @@ export function SharedStyle() {
       .step-n { font-size: 13px; color: #3D6A4F; font-weight: 600; margin-bottom: 6px; }
       .step b { display: block; font-size: 15px; margin-bottom: 4px; }
       .step span { font-size: 13px; color: #6b6b6b; line-height: 1.6; }
-      .foot { background: #fafaf8; border-top: 1px solid #eee; padding: 28px 0; }
-      .foot .wrap-full { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #aaa; }
-      .foot b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: #111; }
-      @media (max-width: 1024px) { .grid-4 { grid-template-columns: repeat(3, 1fr); } }
+      .foot { background: #fafaf8; border-top: 1px solid #eee; padding: 56px 0 28px; }
+      .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 40px; margin-bottom: 24px; border-bottom: 1px solid #eee; }
+      .foot-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+      .foot p { margin: 0; font-size: 13px; color: #8a8a8a; line-height: 1.9; }
+      .foot h4 { margin: 0 0 14px; font-size: 13px; font-weight: 600; }
+      .foot a { display: block; font-size: 13px; color: #6b6b6b; padding: 5px 0; }
+      .foot a:hover { color: #111; }
+      .foot-bottom { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; flex-wrap: wrap; gap: 8px; }
+      @media (max-width: 1024px) { .grid-4 { grid-template-columns: repeat(3, 1fr); } .foot-grid { grid-template-columns: 1fr 1fr 1fr; } }
       @media (max-width: 768px) {
+        .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+        .foot-grid > div:first-child { grid-column: 1 / -1; }
+        .foot-bottom { flex-direction: column; }
         .wrap { padding: 0 16px; }
         .page-head { padding: 28px 0 16px; }
         .page-head h1 { font-size: 24px; }
@@ -80,12 +88,33 @@ export function SharedStyle() {
   )
 }
 
+const FOOT_COLS = [
+  { title: '쇼핑', links: [{ t: 'New', h: '/products/new' }, { t: 'Best', h: '/#best' }, { t: '기획전', h: '/exhibition' }, { t: '피팅박스관', h: '/fitting' }] },
+  { title: '서비스', links: [{ t: '피팅 이용 안내', h: '/about' }, { t: 'Withy 포인트', h: '/withy' }, { t: '반납 방법', h: '/about' }, { t: 'AI 취향 분석', h: '/mypage' }] },
+  { title: '커뮤니티', links: [{ t: '피팅 후기', h: '/community' }, { t: '스타일 공유', h: '/community' }, { t: '매거진', h: '/magazine' }, { t: '룩북', h: '/lookbook' }] },
+  { title: '고객센터', links: [{ t: '1:1 문의', h: '/' }, { t: '자주 묻는 질문', h: '/about' }, { t: '배송 조회', h: '/' }, { t: '회사 소개', h: '/about' }] },
+]
+
 export function Footer() {
   return (
     <footer className="foot">
       <div className="wrap-full">
-        <b>CLYQ</b>
-        <span>© 2026 CLYQ Inc.</span>
+        <div className="foot-grid">
+          <div>
+            <div className="foot-logo">CLYQ</div>
+            <p>입어보고 결정하는 패션 쇼핑.<br />집에서 먼저 입어보고, 확실한 것만 구매하세요.</p>
+          </div>
+          {FOOT_COLS.map(col => (
+            <div key={col.title}>
+              <h4>{col.title}</h4>
+              {col.links.map(l => <a key={l.t} href={l.h}>{l.t}</a>)}
+            </div>
+          ))}
+        </div>
+        <div className="foot-bottom">
+          <span>© 2026 CLYQ Inc. exyai company. 통신판매업신고: 2026-서울강남-0000 대표: 학선</span>
+          <span>사업자등록번호: 000-00-00000</span>
+        </div>
       </div>
     </footer>
   )

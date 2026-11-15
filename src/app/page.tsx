@@ -2,7 +2,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
-import { FitDrawer } from './components/ui'
+import { FitDrawer, Footer } from './components/ui'
 import { useShop } from './lib/store'
 
 /* ── 이미지 (Unsplash, 전부 로드 확인된 ID만 사용) ── */
@@ -216,14 +216,6 @@ export default function Home() {
         .brands span:hover { color: #111; cursor: pointer; }
 
         /* 푸터 */
-        .foot { background: #fafaf8; border-top: 1px solid #eee; padding: 56px 0 28px; }
-        .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 40px; margin-bottom: 24px; border-bottom: 1px solid #eee; }
-        .foot-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
-        .foot p { margin: 0; font-size: 13px; color: #8a8a8a; line-height: 1.9; }
-        .foot h4 { margin: 0 0 14px; font-size: 13px; font-weight: 600; }
-        .foot a { display: block; font-size: 13px; color: #6b6b6b; padding: 5px 0; }
-        .foot a:hover { color: #111; }
-        .foot-bottom { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; flex-wrap: wrap; gap: 8px; }
 
         @media (max-width: 1024px) {
           .wrap { padding: 0 24px; }
@@ -232,8 +224,7 @@ export default function Home() {
           .hero-title { font-size: 44px; }
           .fit { grid-template-columns: 1fr; gap: 32px; }
           .two { gap: 32px; }
-          .foot-grid { grid-template-columns: 1fr 1fr 1fr; }
-        }
+          }
         @media (max-width: 768px) {
           .wrap { padding: 0 16px; }
           .hero { grid-template-columns: 1fr; padding: 24px 0 48px; gap: 28px; }
@@ -251,10 +242,7 @@ export default function Home() {
           .ed-img { aspect-ratio: 16/10; }
           .two { grid-template-columns: 1fr; gap: 40px; }
           .withy { padding: 24px 20px; }
-          .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
-          .foot-grid > div:first-child { grid-column: 1 / -1; }
-          .foot-bottom { flex-direction: column; }
-        }
+              }
         @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
       `}</style>
 
@@ -393,32 +381,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── 푸터 ── */}
-      <footer className="foot">
-        <div className="wrap">
-          <div className="foot-grid">
-            <div>
-              <div className="foot-logo">CLYQ</div>
-              <p>입어보고 결정하는 패션 쇼핑.<br />집에서 먼저 입어보고, 확실한 것만 구매하세요.</p>
-            </div>
-            {[
-              { title: '쇼핑', links: [{ t: '신상품', h: '/products/new' }, { t: '베스트', h: '/' }, { t: '피팅박스관', h: '/fitting' }, { t: 'SALE', h: '/' }] },
-              { title: '서비스', links: [{ t: '피팅 이용 안내', h: '/about' }, { t: 'Withy 포인트', h: '/withy' }, { t: '반납 방법', h: '/about' }, { t: 'AI 취향 분석', h: '/mypage' }] },
-              { title: '커뮤니티', links: [{ t: '피팅 후기', h: '/community' }, { t: '스타일 공유', h: '/community' }, { t: '매거진', h: '/magazine' }] },
-              { title: '고객센터', links: [{ t: '1:1 문의', h: '/' }, { t: '자주 묻는 질문', h: '/' }, { t: '배송 조회', h: '/' }, { t: '회사 소개', h: '/about' }] },
-            ].map(col => (
-              <div key={col.title}>
-                <h4>{col.title}</h4>
-                {col.links.map(l => <a key={l.t} href={l.h}>{l.t}</a>)}
-              </div>
-            ))}
-          </div>
-          <div className="foot-bottom">
-            <span>© 2026 CLYQ Inc. exyai company. 통신판매업신고: 2026-서울강남-0000 대표: 학선</span>
-            <span>사업자등록번호: 000-00-00000</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
       {fitProd && <FitDrawer product={fitProd} onClose={() => setFitProd(null)} />}
     </main>
   )
