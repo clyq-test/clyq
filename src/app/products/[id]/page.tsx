@@ -41,7 +41,7 @@ export default function ProductDetail() {
     const cur = cp ? cp.id : 0
     const same = allProducts.filter(x => x.id !== cur && cp && x.category === cp.category)
     const rest = allProducts.filter(x => x.id !== cur && !same.includes(x))
-    return [...same, ...rest].slice(0, 3)
+    return [...same, ...rest].slice(0, 7)
   })()
   const [relOpen, setRelOpen] = useState(true)
   const sizeNames = det ? det.table.map(r => r[0]) : null
