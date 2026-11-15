@@ -184,7 +184,7 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
         .ss-opt { border:1.5px solid #e8e8e8; padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:all .15s; user-select:none; }
         .ss-opt:hover { border-color:#ccc; }
         .ss-opt.on { border-color:#111; background:#fafafa; }
-        .ss-opt.on.fit { border-color:#C94E1A; background:#fff5f2; }
+        .ss-opt.on.fit { border-color:#3D6A4F; background:#fff5f2; }
         .ss-icon { width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:22px; background:#f5f5f5; flex-shrink:0; }
         .ss-check { width:18px; height:18px; border:1.5px solid #ccc; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; transition:all .15s; margin-left:auto; }
         .ss-check.on { background:#111; border-color:#111; color:#fff; }
@@ -205,11 +205,11 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
         {/* 진행바 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
           <div style={{ flex: 1, height: '4px', background: '#e8e8e8', borderRadius: '2px', overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'linear-gradient(90deg,#C94E1A,#B08D57)', width: progress + '%', borderRadius: '2px', transition: 'width .4s' }}/>
+            <div style={{ height: '100%', background: 'linear-gradient(90deg,#3D6A4F,#B08D57)', width: progress + '%', borderRadius: '2px', transition: 'width .4s' }}/>
           </div>
           <div style={{ fontSize: '11px', color: '#999', flexShrink: 0 }}>{currentStep + 1} / {totalSteps}</div>
         </div>
-        <div style={{ fontSize: '10px', letterSpacing: '3px', color: '#C94E1A', fontWeight: 600, marginBottom: '6px' }}>AI 취향 분석</div>
+        <div style={{ fontSize: '10px', letterSpacing: '3px', color: '#3D6A4F', fontWeight: 600, marginBottom: '6px' }}>AI 취향 분석</div>
         <div style={{ fontSize: '20px', fontWeight: 500, color: '#111', marginBottom: '6px' }}>{step.title}</div>
         <div style={{ fontSize: '13px', color: '#999', fontWeight: 300, marginBottom: '20px', lineHeight: 1.6 }}>{step.sub}</div>
       </div>
@@ -252,7 +252,7 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
                 }}>
                 <div style={{ fontSize: '28px', marginBottom: '6px' }}>{opt.icon}</div>
                 <div style={{ fontSize: '11px', color: '#333', fontWeight: isSelected(opt.value) ? 500 : 400 }}>{opt.label}</div>
-                {isSelected(opt.value) && <div style={{ fontSize: '10px', color: '#C94E1A', marginTop: '2px' }}>✓ 선택됨</div>}
+                {isSelected(opt.value) && <div style={{ fontSize: '10px', color: '#3D6A4F', marginTop: '2px' }}>✓ 선택됨</div>}
               </div>
             ))}
           </div>
@@ -282,7 +282,7 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
                   {opt.color?.includes('gradient') ? '' : ''}
                 </div>
                 <div style={{ fontSize: '11px', color: '#333', lineHeight: 1.4, fontWeight: isSelected(opt.value) ? 500 : 400 }}>{opt.label}</div>
-                {isSelected(opt.value) && <div style={{ fontSize: '10px', color: '#C94E1A', marginTop: '2px' }}>✓</div>}
+                {isSelected(opt.value) && <div style={{ fontSize: '10px', color: '#3D6A4F', marginTop: '2px' }}>✓</div>}
               </div>
             ))}
           </div>

@@ -98,8 +98,8 @@ export default function MyPage() {
     : wityhHistory.filter(h => h.type === 'use')
 
   const statusColor = {
-    '피팅중':'#C94E1A', '구매확정':'#2a7a50', '반납완료':'#999',
-    '배송완료':'#2a7a50', '배송중':'#C94E1A', '주문완료':'#B08D57'
+    '피팅중':'#3D6A4F', '구매확정':'#2a7a50', '반납완료':'#999',
+    '배송완료':'#2a7a50', '배송중':'#3D6A4F', '주문완료':'#B08D57'
   }
 
   function getStyleTag(key) {
@@ -117,7 +117,7 @@ export default function MyPage() {
         .mp-grade { display:inline-flex; align-items:center; gap:5px; background:rgba(176,141,87,.2); border:1px solid rgba(176,141,87,.3); padding:3px 10px; font-size:11px; color:#B08D57; font-weight:500; margin-bottom:6px; }
         .mp-join { font-size:11px; color:rgba(255,255,255,.4); }
         .mp-withy-quick { text-align:right; }
-        .mp-withy-num { font-family:Georgia,serif; font-size:36px; font-weight:300; color:#B08D57; line-height:1; }
+        .mp-withy-num {  font-size:36px; font-weight:300; color:#B08D57; line-height:1; }
         .mp-withy-label { font-size:10px; color:rgba(255,255,255,.4); margin-top:2px; }
         .mp-tabs { background:#fff; border-bottom:1px solid #e8e8e8; display:flex; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; z-index:100; }
         .mp-tabs::-webkit-scrollbar { display:none; }
@@ -127,7 +127,7 @@ export default function MyPage() {
         .mp-card-title { font-size:13px; font-weight:600; color:#111; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
         .mp-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
         .mp-stat { background:#fff; border:1px solid #e8e8e8; padding:20px; text-align:center; }
-        .mp-stat-num { font-family:Georgia,serif; font-size:28px; font-weight:300; color:#111; margin-bottom:4px; }
+        .mp-stat-num {  font-size:28px; font-weight:300; color:#111; margin-bottom:4px; }
         .mp-stat-label { font-size:11px; color:#999; }
         .fit-card { display:flex; gap:14px; padding:16px 0; border-bottom:1px solid #f5f5f5; }
         .fit-card:last-child { border-bottom:none; }
@@ -155,7 +155,7 @@ export default function MyPage() {
         .mp-input:disabled { background:#f9f9f9; color:#999; }
         .mp-label { font-size:11px; font-weight:500; color:#555; margin-bottom:6px; display:block; }
         .prog-bar { height:5px; background:#e8e8e8; border-radius:3px; overflow:hidden; margin:8px 0; }
-        .prog-fill { height:100%; background:linear-gradient(90deg,#B08D57,#C94E1A); border-radius:3px; transition:width .5s; }
+        .prog-fill { height:100%; background:linear-gradient(90deg,#B08D57,#3D6A4F); border-radius:3px; transition:width .5s; }
         .style-tag { display:inline-block; background:#f5f5f5; padding:3px 10px; border-radius:20px; margin:2px 3px; font-size:11px; color:#555; }
         @media (max-width:768px) {
           .mp-profile { padding:20px 16px; gap:14px; }
@@ -212,7 +212,7 @@ export default function MyPage() {
               </div>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:'12px',flexWrap:'wrap',gap:'12px'}}>
                 <div>
-                  <div style={{fontFamily:'Georgia,serif',fontSize:'44px',fontWeight:300,color:'#B08D57',lineHeight:1}}>{user.withy.toLocaleString()}</div>
+                  <div style={{fontSize:'44px',fontWeight:300,color:'#B08D57',lineHeight:1}}>{user.withy.toLocaleString()}</div>
                   <div style={{fontSize:'12px',color:'#999',marginTop:'4px'}}>포인트 잔액 · 약 {user.withy.toLocaleString()}원 상당</div>
                 </div>
                 <button onClick={() => showToast('위디 포인트는 피팅박스·구매 할인에 사용 가능해요')}
@@ -281,7 +281,7 @@ export default function MyPage() {
                     취향 설정을 완료하면 AI가 나에게 딱 맞는<br/>피팅박스를 추천해드려요!
                   </div>
                   <button onClick={() => setStyleEditOpen(true)}
-                    style={{padding:'11px 24px',background:'#C94E1A',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
+                    style={{padding:'11px 24px',background:'#3D6A4F',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
                     ✨ 지금 설정하기 (+100P)
                   </button>
                 </div>
@@ -302,7 +302,7 @@ export default function MyPage() {
                 <div className="mp-stat-label">피팅 구매 전환율</div>
               </div>
               <div className="mp-stat">
-                <div className="mp-stat-num" style={{color:'#C94E1A',fontSize:'22px'}}>576,000</div>
+                <div className="mp-stat-num" style={{color:'#3D6A4F',fontSize:'22px'}}>576,000</div>
                 <div className="mp-stat-label">총 구매 금액(원)</div>
               </div>
             </div>
@@ -351,7 +351,7 @@ export default function MyPage() {
                   <div style={{fontSize:'16px',fontWeight:500,color:'#fff',marginBottom:'4px'}}>커뮤니티에서 위디 적립하세요</div>
                   <div style={{fontSize:'12px',color:'rgba(255,255,255,.5)'}}>피팅 후기 +50P · 댓글 +10P · 공유 +10P</div>
                 </div>
-                <a href="/community" style={{padding:'11px 20px',background:'#C94E1A',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none',flexShrink:0}}>
+                <a href="/community" style={{padding:'11px 20px',background:'#3D6A4F',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none',flexShrink:0}}>
                   커뮤니티 가기
                 </a>
               </div>
@@ -383,7 +383,7 @@ export default function MyPage() {
                         )}
                         {fit.status === '반납완료' && (
                           <button onClick={() => showToast('다시 피팅박스를 신청해보세요!')}
-                            style={{padding:'6px 12px',border:'1px solid #C94E1A',color:'#C94E1A',background:'#fff',fontSize:'11px',cursor:'pointer',fontFamily:'inherit'}}>재신청</button>
+                            style={{padding:'6px 12px',border:'1px solid #3D6A4F',color:'#3D6A4F',background:'#fff',fontSize:'11px',cursor:'pointer',fontFamily:'inherit'}}>재신청</button>
                         )}
                         <span className="fit-price">{fit.price.toLocaleString()}원</span>
                       </div>
@@ -397,7 +397,7 @@ export default function MyPage() {
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'0',borderTop:'1px solid #f0f0f0'}}>
                 {[{label:'총 이용',val:'4회'},{label:'구매 확정',val:'2회'},{label:'전환율',val:'50%'}].map((s,i) => (
                   <div key={i} style={{padding:'16px',textAlign:'center',borderRight:i<2?'1px solid #f0f0f0':'none'}}>
-                    <div style={{fontFamily:'Georgia,serif',fontSize:'28px',fontWeight:300,color:'#111',marginBottom:'4px'}}>{s.val}</div>
+                    <div style={{fontSize:'28px',fontWeight:300,color:'#111',marginBottom:'4px'}}>{s.val}</div>
                     <div style={{fontSize:'11px',color:'#999'}}>{s.label}</div>
                   </div>
                 ))}
@@ -416,7 +416,7 @@ export default function MyPage() {
             {orderHistory.length === 0 ? (
               <div style={{textAlign:'center',padding:'40px 0',color:'#999',fontSize:'13px'}}>
                 주문 내역이 없어요.<br/>
-                <a href="/products/new" style={{color:'#C94E1A',fontWeight:500,textDecoration:'none'}}>쇼핑하러 가기 →</a>
+                <a href="/products/new" style={{color:'#3D6A4F',fontWeight:500,textDecoration:'none'}}>쇼핑하러 가기 →</a>
               </div>
             ) : orderHistory.map(order => (
               <div key={order.id} className="fit-card">
@@ -442,9 +442,9 @@ export default function MyPage() {
         {activeTab === '위디 이력' && (
           <div className="mp-card">
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',borderBottom:'1px solid #f0f0f0',marginBottom:'16px'}}>
-              {[{label:'총 적립',val:'1,638P',color:'#B08D57'},{label:'총 사용',val:'200P',color:'#999'},{label:'현재 잔액',val:'2,400P',color:'#C94E1A'}].map((item,i) => (
+              {[{label:'총 적립',val:'1,638P',color:'#B08D57'},{label:'총 사용',val:'200P',color:'#999'},{label:'현재 잔액',val:'2,400P',color:'#3D6A4F'}].map((item,i) => (
                 <div key={i} style={{padding:'14px',textAlign:'center',borderRight:i<2?'1px solid #f0f0f0':'none'}}>
-                  <div style={{fontFamily:'Georgia,serif',fontSize:'20px',color:item.color,fontWeight:300,marginBottom:'3px'}}>{item.val}</div>
+                  <div style={{fontSize:'20px',color:item.color,fontWeight:300,marginBottom:'3px'}}>{item.val}</div>
                   <div style={{fontSize:'10px',color:'#999'}}>{item.label}</div>
                 </div>
               ))}
@@ -514,7 +514,7 @@ export default function MyPage() {
               <div style={{fontSize:'32px',marginBottom:'8px'}}>💛</div>
               <div style={{fontSize:'15px',fontWeight:500,marginBottom:'6px'}}>커뮤니티에서 더 많은 위디를 모으세요</div>
               <div style={{fontSize:'12px',color:'#999',marginBottom:'20px'}}>피팅 후기 작성 시 추가 50P 적립</div>
-              <a href="/community" style={{display:'inline-block',padding:'12px 28px',background:'#C94E1A',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none'}}>
+              <a href="/community" style={{display:'inline-block',padding:'12px 28px',background:'#3D6A4F',color:'#fff',fontSize:'13px',fontWeight:500,textDecoration:'none'}}>
                 커뮤니티 가기
               </a>
             </div>
@@ -529,7 +529,7 @@ export default function MyPage() {
               <div className="mp-card-title">
                 ✨ AI 취향 분석 설정
                 <button onClick={() => setStyleEditOpen(true)}
-                  style={{padding:'7px 14px',border:'1px solid #C94E1A',color:'#C94E1A',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>
+                  style={{padding:'7px 14px',border:'1px solid #3D6A4F',color:'#3D6A4F',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>
                   {savedStyle ? '수정하기' : '지금 설정하기'}
                 </button>
               </div>
@@ -568,7 +568,7 @@ export default function MyPage() {
               ) : (
                 <div style={{textAlign:'center',padding:'20px 0',color:'#999',fontSize:'13px'}}>
                   취향 설정을 완료하면 AI가 나에게 딱 맞는 제품을 추천해드려요.<br/>
-                  <strong style={{color:'#C94E1A'}}>설정 완료 시 위디 100P 추가 지급!</strong>
+                  <strong style={{color:'#3D6A4F'}}>설정 완료 시 위디 100P 추가 지급!</strong>
                 </div>
               )}
             </div>
@@ -610,7 +610,7 @@ export default function MyPage() {
                 <span style={{background:'#B08D57',color:'#fff',fontSize:'10px',fontWeight:700,padding:'4px 10px'}}>이용중</span>
               </div>
               <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-                <button onClick={() => showToast('PREMIUM으로 업그레이드되었어요!')} style={{flex:1,minWidth:'120px',padding:'11px',border:'1px solid #C94E1A',color:'#C94E1A',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>PREMIUM 업그레이드</button>
+                <button onClick={() => showToast('PREMIUM으로 업그레이드되었어요!')} style={{flex:1,minWidth:'120px',padding:'11px',border:'1px solid #3D6A4F',color:'#3D6A4F',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>PREMIUM 업그레이드</button>
                 <button onClick={() => showToast('구독 해지 신청이 접수됐어요')} style={{flex:1,minWidth:'120px',padding:'11px',border:'1px solid #e8e8e8',color:'#999',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>구독 해지</button>
               </div>
             </div>

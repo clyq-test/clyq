@@ -134,7 +134,7 @@ export default function SignupPage() {
     <main style={{background:'#fafafa',minHeight:'100vh'}}>
       <style>{`
         .su-wrap { max-width:560px; margin:0 auto; padding:40px 20px 80px; }
-        .su-title { font-family:Georgia,serif; font-size:28px; font-weight:300; color:#111; margin-bottom:6px; text-align:center; }
+        .su-title {  font-size:28px; font-weight:300; color:#111; margin-bottom:6px; text-align:center; }
         .su-sub { font-size:13px; color:#999; text-align:center; margin-bottom:32px; }
         .su-step { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:36px; }
         .su-step-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
@@ -153,7 +153,7 @@ export default function SignupPage() {
         .su-input.error { border-color:#e74c3c; }
         .su-error { font-size:11px; color:#e74c3c; margin-top:4px; }
         .su-btn { width:100%; padding:14px; background:#111; color:#fff; font-size:14px; font-weight:500; border:none; cursor:pointer; font-family:inherit; transition:background .2s; }
-        .su-btn:hover { background:#C94E1A; }
+        .su-btn:hover { background:#3D6A4F; }
         .su-btn:disabled { background:#ccc; cursor:not-allowed; }
         .su-btn-outline { width:100%; padding:13px; border:1px solid #e8e8e8; background:#fff; color:#666; font-size:13px; cursor:pointer; font-family:inherit; margin-top:8px; }
         .su-btn-outline:hover { border-color:#111; color:#111; }
@@ -162,13 +162,13 @@ export default function SignupPage() {
         .term-item:last-child { border-bottom:none; }
         .cbox { width:18px; height:18px; border:1.5px solid #ccc; border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; transition:all .15s; font-size:11px; }
         .cbox.on { background:#111; border-color:#111; color:#fff; }
-        .cbox.hl.on { background:#C94E1A; border-color:#C94E1A; }
+        .cbox.hl.on { background:#3D6A4F; border-color:#3D6A4F; }
         .term-label { font-size:13px; color:#333; flex:1; cursor:pointer; }
-        .term-label.hl { font-weight:500; color:#C94E1A; }
+        .term-label.hl { font-weight:500; color:#3D6A4F; }
         .term-expand { font-size:11px; color:#999; cursor:pointer; text-decoration:underline; flex-shrink:0; }
         .term-expand:hover { color:#111; }
         .term-content { background:#f9f9f9; border:1px solid #f0f0f0; padding:14px 16px; font-size:11px; color:#666; line-height:1.9; white-space:pre-wrap; max-height:200px; overflow-y:auto; margin:6px 0 10px; font-weight:300; }
-        .term-hl-banner { background:#fff5f2; border-left:3px solid #C94E1A; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#333; line-height:1.7; }
+        .term-hl-banner { background:#fff5f2; border-left:3px solid #3D6A4F; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#333; line-height:1.7; }
         .su-done { text-align:center; padding:32px 0; }
         .su-done-icon { width:68px; height:68px; border-radius:50%; background:#2a7a50; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 18px; color:#fff; }
         .pw-strength { display:flex; gap:4px; margin-top:6px; }
@@ -186,7 +186,7 @@ export default function SignupPage() {
       <Navbar />
 
       <div className="su-wrap">
-        <div className="su-title">CLY<span style={{color:'#C94E1A'}}>Q</span></div>
+        <div className="su-title">CLY<span style={{color:'#3D6A4F'}}>Q</span></div>
         <div className="su-sub">회원가입</div>
 
         {/* 스텝 인디케이터 */}
@@ -246,7 +246,7 @@ export default function SignupPage() {
             </button>
             <div style={{textAlign:'center',fontSize:'12px',color:'#999',marginTop:'14px'}}>
               이미 회원이신가요?{' '}
-              <a href="/" style={{color:'#C94E1A',fontWeight:500,textDecoration:'none'}}>로그인</a>
+              <a href="/" style={{color:'#3D6A4F',fontWeight:500,textDecoration:'none'}}>로그인</a>
             </div>
           </>
         )}
@@ -388,13 +388,13 @@ export default function SignupPage() {
               {/* 취향 설정 유도 */}
               {!styleComplete ? (
                 <div style={{background:'linear-gradient(110deg,#1a1814,#2d2318)',padding:'20px',marginBottom:'16px',textAlign:'left'}}>
-                  <div style={{fontSize:'10px',letterSpacing:'3px',color:'#C94E1A',fontWeight:600,marginBottom:'8px'}}>AI 취향 분석</div>
+                  <div style={{fontSize:'10px',letterSpacing:'3px',color:'#3D6A4F',fontWeight:600,marginBottom:'8px'}}>AI 취향 분석</div>
                   <div style={{fontSize:'15px',fontWeight:500,color:'#fff',marginBottom:'6px'}}>취향을 설정하고 위디 100P 받으세요</div>
                   <div style={{fontSize:'12px',color:'rgba(255,255,255,.5)',marginBottom:'16px',lineHeight:1.6}}>
                     스타일·컬러·체형 정보를 입력하면 AI가 나에게 딱 맞는 피팅박스를 추천해드려요.
                   </div>
                   <button onClick={() => setStyleSetupOpen(true)}
-                    style={{padding:'12px 20px',background:'#C94E1A',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
+                    style={{padding:'12px 20px',background:'#3D6A4F',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
                     ✨ 취향 설정하기 (+100P)
                   </button>
                 </div>
