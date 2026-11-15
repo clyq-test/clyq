@@ -84,8 +84,8 @@ export default function ClyqLayout({ children }) {
         .cq-logo-name { font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#111; }
         .cq-logo-con { font-size:12px; color:#767676; margin-top:4px; }
         .cq-menu-header, .cq-menu-single { display:flex; align-items:center; justify-content:space-between; padding:11px 24px; cursor:pointer; font-size:14px; font-weight:500; color:#111; user-select:none; }
-        .cq-menu-header:hover, .cq-menu-single:hover { background:#f7f7f5; }
-        .cq-menu-single.active { font-weight:700; background:#f4f4f2; }
+        .cq-menu-header:hover, .cq-menu-single { background:#e9ede6; border-left:3px solid #3D6A4F; padding-left:21px; font-weight:700; } .cq-menu-single:hover { background:#dfe5dc; }
+        .cq-menu-single.active { background:#dbe3d7; }
         .cq-menu-arrow { font-size:11px; color:#767676; transition:transform .2s; }
         .cq-menu-arrow.open { transform:rotate(180deg); }
         .cq-menu-link { display:flex; align-items:center; justify-content:space-between; padding:8px 24px 8px 36px; font-size:13px; color:#555; text-decoration:none; }
@@ -198,7 +198,7 @@ export default function ClyqLayout({ children }) {
         </div>
       </header>
 
-      <main className="cq-body" style={pathname === '/clyq' ? { background:'#e9ede6' } : undefined}>{children}</main>
+      <main className="cq-body">{children}</main>
     </div>
   )
 }
