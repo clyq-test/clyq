@@ -112,10 +112,9 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
-        .pd-imgs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 24px 0 16px; border-top: 1px solid #eee; }
-        .pd-img { aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; }
-        .pd-img img { width: 100%; height: 100%; object-fit: cover; }
-        @media (max-width: 768px) { .pd-imgs { grid-template-columns: 1fr; } }
+        .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
+        .pd-img { width: 100%; max-width: 1100px; background: #f4f4f2; }
+        .pd-img img { width: 100%; height: auto; min-height: 320px; object-fit: cover; }
         .pd-dl { display: grid; grid-template-columns: 140px 1fr; margin: 0; font-size: 14px; }
         .pd-dl dt, .pd-dl dd { padding: 12px 0; border-bottom: 1px solid #eee; margin: 0; line-height: 1.7; }
         .pd-dl dt { color: #8a8a8a; }
