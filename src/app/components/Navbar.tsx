@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { useMember, loginMember, logoutMember, balance } from '../lib/auth'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShop } from '../lib/store'
@@ -17,23 +18,31 @@ export default function Navbar() {
   const [megaOpen, setMegaOpen] = useState(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
+  const [member] = useMember()
+  const [loginErr, setLoginErr] = useState('')
+  const [loginBusy, setLoginBusy] = useState(false)
   useEffect(() => {
-    const saved = localStorage.getItem('clyq_user')
-    if (saved) { const u = JSON.parse(saved); setIsLoggedIn(true); setUserName(u.name) }
+    setIsLoggedIn(!!member); setUserName(member ? member.name : '')
+  }, [member])
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('login') === '1' && !member) { setLoginOpen(true); document.body.style.overflow = 'hidden' }
   }, [])
 
   function openLogin() { setLoginOpen(true); document.body.style.overflow = 'hidden' }
   function closeLogin() { setLoginOpen(false); document.body.style.overflow = '' }
 
-  function handleLogin() {
-    if (!email || !pw) return
-    const u = { name: '김지연', email }
-    localStorage.setItem('clyq_user', JSON.stringify(u))
-    setIsLoggedIn(true); setUserName(u.name); closeLogin()
+  async function handleLogin() {
+    if (loginBusy) return
+    if (!email.trim() || !pw) { setLoginErr('이메일과 비밀번호를 입력해주세요'); return }
+    setLoginBusy(true); setLoginErr('')
+    const r = await loginMember(email, pw)
+    setLoginBusy(false)
+    if (!r.ok) { setLoginErr(r.error); return }
+    setEmail(''); setPw(''); closeLogin()
   }
 
   function handleLogout() {
-    localStorage.removeItem('clyq_user')
+    logoutMember()
     setIsLoggedIn(false); setUserName(''); router.push('/')
   }
 
@@ -356,7 +365,7 @@ export default function Navbar() {
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid #F7F4F0', textDecoration: 'none' }}>
                   <div>
                     <div style={{ fontSize: '14px', color: '#1C1C1C' }}>마이페이지</div>
-                    <div style={{ fontSize: '11px', color: '#A09B97', marginTop: '1px' }}>{userName}님 · 골드 · 위디 2,400P</div>
+                    <div style={{ fontSize: '11px', color: '#A09B97', marginTop: '1px' }}>{userName}님 · 위디 {member ? balance(member).toLocaleString() : 0}P</div>
                   </div>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D4CFC9" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
                 </a>
@@ -394,13 +403,14 @@ export default function Navbar() {
             <div className="lm-body">
               {loginTab === 'login' ? (
                 <>
-                  <button className="lm-kakao" onClick={handleLogin}>
-                    <span style={{ fontWeight: 800, fontSize: '15px' }}>K</span>카카오로 시작하기
+                  <button className="lm-kakao" disabled style={{ opacity: .45, cursor: 'not-allowed' }} title="카카오 로그인은 준비 중이에요">
+                    <span style={{ fontWeight: 800, fontSize: '15px' }}>K</span>카카오로 시작하기 (준비중)
                   </button>
                   <div className="lm-div">또는 이메일로 로그인</div>
                   <input className="lm-inp" type="email" placeholder="이메일 주소" value={email} onChange={e => setEmail(e.target.value)} />
                   <input className="lm-inp" type="password" placeholder="비밀번호" value={pw} onChange={e => setPw(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
-                  <button className="lm-btn" onClick={handleLogin}>로그인</button>
+                  {loginErr && <div style={{ fontSize: '12px', color: '#c0392b', marginBottom: '10px' }}>{loginErr}</div>}
+                  <button className="lm-btn" onClick={handleLogin} disabled={loginBusy}>{loginBusy ? '확인 중...' : '로그인'}</button>
                   <div className="lm-links">
                     <a onClick={() => setLoginTab('find')}>아이디 찾기</a>
                     <span style={{ color: '#E4DFDA' }}>|</span>
@@ -410,9 +420,9 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: '13px', color: '#6A6460', marginBottom: '20px', lineHeight: 1.7 }}>가입 시 입력한 이메일로 임시 비밀번호를 보내드려요.</div>
-                  <input className="lm-inp" type="email" placeholder="가입한 이메일 주소" />
-                  <button className="lm-btn">인증 메일 보내기</button>
+                  <div style={{ fontSize: '13px', color: '#6A6460', marginBottom: '20px', lineHeight: 1.7 }}>아이디/비밀번호 찾기는 준비 중이에요. 급하신 경우 고객센터로 문의해주세요.</div>
+                  <input className="lm-inp" type="email" placeholder="가입한 이메일 주소" disabled />
+                  <button className="lm-btn" disabled style={{ opacity: .45, cursor: 'not-allowed' }}>준비중</button>
                   <div className="lm-links" style={{ marginTop: '14px' }}>
                     <a onClick={() => setLoginTab('login')}>← 로그인으로 돌아가기</a>
                   </div>

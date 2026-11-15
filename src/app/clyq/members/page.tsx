@@ -2,7 +2,8 @@
 'use client'
 import { useState } from 'react'
 import { Page, Kpis, Badge, Empty } from '../_ui'
-import { useOrders, phoneKey, won, dt, DONE } from '../../lib/orders'
+import { useOrders, useKV, phoneKey, won, dt, DONE } from '../../lib/orders'
+import { balance } from '../../lib/auth'
 
 export function buildMembers(orders) {
   const m = {}
@@ -21,10 +22,23 @@ export default function Members() {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(null)
   const all = buildMembers(orders)
+  const [signed] = useKV('clyq_members', [])
+  const fmtP = p => (p || '').replace(/^(\d{3})(\d{3,4})(\d{4})$/, '$1-$2-$3')
   const list = all.filter(m => !q || (m.name + m.phone).includes(q))
   return (
     <Page title="회원 목록" sub="주문·피팅 신청 기록으로 집계한 고객">
-      <div className="ad-note">회원가입 DB가 아직 없어서, 주문과 피팅 신청에 입력된 이름·연락처를 기준으로 고객을 묶어 보여줘요. 가입 정보·등급 관리는 회원 DB 연동 후에 가능합니다.</div>
+      <div className="ad-card">
+        <div className="ad-ch">가입 회원 ({signed.length}명)<span style={{ fontWeight: 400, fontSize: 12, color: '#767676' }}>쇼핑몰 회원가입으로 저장된 정보 · 비밀번호는 해시로만 저장되며 여기서 볼 수 없어요</span></div>
+        {signed.length === 0 ? <Empty>아직 가입한 회원이 없어요.</Empty> : (
+          <div className="ad-scroll"><table className="ad-tbl">
+            <thead><tr><th>이름</th><th>이메일</th><th>연락처</th><th>가입일시</th><th className="ad-c">마케팅 동의</th><th className="ad-c">취향 분석</th><th className="ad-r">위디 잔액</th></tr></thead>
+            <tbody>{[...signed].reverse().map(m => (
+              <tr key={m.id}><td><b>{m.name}</b></td><td>{m.email}</td><td>{fmtP(m.phone)}</td><td>{dt(m.joinedAt)}</td><td className="ad-c">{m.marketing ? '동의' : '-'}</td><td className="ad-c">{m.style ? '완료' : '-'}</td><td className="ad-r">{balance(m).toLocaleString()}P</td></tr>
+            ))}</tbody>
+          </table></div>
+        )}
+      </div>
+      <div className="ad-note">아래 목록은 가입 여부와 무관하게 주문·피팅 신청에 입력된 이름·연락처로 고객을 묶어 보여줘요. 가입 정보는 브라우저 저장소에만 있어 다른 기기의 가입자는 보이지 않으며, 등급 관리는 서버 DB 연동 후에 가능합니다.</div>
       <Kpis items={[{ l: '고객 수', v: all.length + '명' }, { l: '피팅 신청 고객', v: all.filter(m => m.fits).length + '명' }, { l: '구매 확정 고객', v: all.filter(m => m.spent > 0).length + '명' }]} />
       <div className="ad-card">
         <div className="ad-bar"><input className="ad-inp" style={{ minWidth: 220 }} placeholder="이름·연락처 검색" value={q} onChange={e => setQ(e.target.value)} /></div>

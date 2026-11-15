@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import StyleSetup from '../components/StyleSetup'
+import { signupMember, emailTaken, saveStyle, SIGNUP_BONUS, MARKETING_BONUS, STYLE_BONUS } from '../lib/auth'
 
 const TERMS = {
   service: `제1조 (목적)
@@ -14,7 +15,7 @@ const TERMS = {
 
 제3조 (피팅박스 서비스)
 ① 피팅박스 서비스란 회원이 제품을 구매하기 전에 일정 기간 착용해볼 수 있는 서비스입니다.
-② 피팅 기간은 수령일을 포함하여 3일이며, 기간 초과 시 자동 구매 확정 처리됩니다.
+② 피팅 기간은 피팅박스 수령 확인 시점부터 48시간입니다. 기간 내에 구매 확정 또는 반납 신청을 해야 합니다.
 ③ 피팅박스 서비스는 무료이나, 제품 구매 확정 시 해당 제품 금액이 결제됩니다.`,
 
   privacy: `개인정보보호법에 따라 CLYQ에 회원가입을 신청하시는 분께 수집하는 개인정보의 항목, 목적, 보유기간 등에 대하여 안내드립니다.
@@ -67,7 +68,7 @@ const TERMS = {
 
 제5조 (법적 조치)
 ① 아래의 경우 CLYQ는 민·형사상 법적 조치를 취할 수 있습니다:
-   · 제품 반납 거부 또는 고의 지연 (3일 초과)
+   · 제품 반납 거부 또는 고의 지연 (피팅 기간 48시간 초과)
    · 반납 제품 교체 또는 위조
    · 피팅박스 제품을 제3자에게 판매하거나 대여한 경우
    · 고의 훼손 후 정상 반납을 주장하는 허위 신고
@@ -96,6 +97,8 @@ export default function SignupPage() {
   const [pwVisible, setPwVisible] = useState(false)
   const [styleSetupOpen, setStyleSetupOpen] = useState(false)
   const [styleComplete, setStyleComplete] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [member, setMember] = useState(null)
 
   function toggleAll(checked) {
     setAllChecked(checked)
@@ -114,13 +117,32 @@ export default function SignupPage() {
 
   function validateStep2() {
     const errs = {}
+    const phone = form.phone.replace(/\D/g, '')
     if (!form.name.trim()) errs.name = '이름을 입력해주세요'
-    if (!form.email.includes('@')) errs.email = '올바른 이메일을 입력해주세요'
-    if (form.pw.length < 8) errs.pw = '비밀번호는 8자 이상이어야 해요'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) errs.email = '올바른 이메일을 입력해주세요'
+    else if (emailTaken(form.email)) errs.email = '이미 가입된 이메일이에요'
+    if (form.pw.length < 8 || !/[a-zA-Z]/.test(form.pw) || !/[0-9]/.test(form.pw)) errs.pw = '비밀번호는 8자 이상, 영문과 숫자를 함께 써주세요'
     if (form.pw !== form.pw2) errs.pw2 = '비밀번호가 일치하지 않아요'
-    if (form.phone.length < 10) errs.phone = '올바른 휴대폰 번호를 입력해주세요'
+    if (!/^01[016789]\d{7,8}$/.test(phone)) errs.phone = '올바른 휴대폰 번호를 입력해주세요 (예: 010-1234-5678)'
+    if (form.birthdate && !/^(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/.test(form.birthdate)) errs.birthdate = 'YYYYMMDD 8자리로 입력해주세요'
     setErrors(errs)
     return Object.keys(errs).length === 0
+  }
+
+  async function submit() {
+    if (submitting || !validateStep2()) return
+    setSubmitting(true)
+    try {
+      const r = await signupMember({ ...form, marketing: agreements.marketing })
+      if (!r.ok) { setErrors({ [r.field || 'email']: r.error }); return }
+      setMember(r.member)
+      setStep(3)
+      setDone(true)
+      window.scrollTo(0, 0)
+      setTimeout(() => setStyleSetupOpen(true), 800)
+    } catch (e) {
+      setErrors({ email: '가입 처리 중 오류가 났어요. 잠시 후 다시 시도해주세요' })
+    } finally { setSubmitting(false) }
   }
 
   const termItems = [
@@ -246,7 +268,7 @@ export default function SignupPage() {
             </button>
             <div style={{textAlign:'center',fontSize:'12px',color:'#999',marginTop:'14px'}}>
               이미 회원이신가요?{' '}
-              <a href="/" style={{color:'#3D6A4F',fontWeight:500,textDecoration:'none'}}>로그인</a>
+              <a href="/?login=1" style={{color:'#3D6A4F',fontWeight:500,textDecoration:'none'}}>로그인</a>
             </div>
           </>
         )}
@@ -305,8 +327,8 @@ export default function SignupPage() {
                 <div style={{display:'flex',gap:'8px'}}>
                   <input className={`su-input ${errors.phone?'error':''}`} type="tel" placeholder="010-0000-0000" style={{flex:1}}
                     value={form.phone} onChange={e => setForm({...form,phone:e.target.value.replace(/[^0-9-]/g,'')})}/>
-                  <button style={{padding:'12px 16px',border:'1px solid #111',background:'#fff',fontSize:'12px',cursor:'pointer',whiteSpace:'nowrap',fontFamily:'inherit'}}>
-                    인증
+                  <button disabled title="문자 인증은 준비 중이에요" style={{padding:'12px 16px',border:'1px solid #e8e8e8',background:'#f5f5f5',color:'#aaa',fontSize:'12px',cursor:'not-allowed',whiteSpace:'nowrap',fontFamily:'inherit'}}>
+                    인증 준비중
                   </button>
                 </div>
                 {errors.phone && <div className="su-error">{errors.phone}</div>}
@@ -322,7 +344,8 @@ export default function SignupPage() {
               <div className="su-input-wrap">
                 <div className="su-label">생년월일</div>
                 <input className="su-input" type="text" placeholder="YYYYMMDD (예: 19900101)"
-                  value={form.birthdate} onChange={e => setForm({...form,birthdate:e.target.value})}/>
+                  value={form.birthdate} onChange={e => setForm({...form,birthdate:e.target.value.replace(/\D/g,'').slice(0,8)})}/>
+                {errors.birthdate && <div className="su-error">{errors.birthdate}</div>}
               </div>
 
               <div className="su-input-wrap">
@@ -340,7 +363,7 @@ export default function SignupPage() {
               <div className="su-input-wrap" style={{marginBottom:0}}>
                 <div className="su-label">
                   추천인 코드
-                  <span style={{fontSize:'11px',color:'#B08D57',fontWeight:300}}>입력 시 위디 200P 지급</span>
+                  <span style={{fontSize:'11px',color:'#B08D57',fontWeight:300}}>입력 시 확인 후 위디 200P 지급 예정</span>
                 </div>
                 <input className="su-input" type="text" placeholder="추천인 코드 (선택)"
                   value={form.referral} onChange={e => setForm({...form,referral:e.target.value})}/>
@@ -352,15 +375,8 @@ export default function SignupPage() {
               피팅 제품 훼손 시 배상 책임이 발생하며, 고의적 훼손의 경우 법적 조치가 취해질 수 있습니다.
             </div>
 
-            <button className="su-btn" onClick={() => {
-              if (validateStep2()) {
-                setStep(3)
-                setDone(true)
-                // 가입 완료 후 취향 설정 팝업 자동 오픈
-                setTimeout(() => setStyleSetupOpen(true), 800)
-              }
-            }}>
-              가입 완료하기
+            <button className="su-btn" disabled={submitting} onClick={submit}>
+              {submitting ? '가입 처리 중...' : '가입 완료하기'}
             </button>
             <button className="su-btn-outline" onClick={() => setStep(1)}>← 이전 단계</button>
           </>
@@ -372,16 +388,16 @@ export default function SignupPage() {
             <div className="su-done">
               <div className="su-done-icon">✓</div>
               <div style={{fontSize:'24px',fontWeight:400,marginBottom:'8px'}}>
-                환영합니다, <strong>{form.name||'회원'}</strong>님!
+                환영합니다, <strong>{(member && member.name) || form.name}</strong>님!
               </div>
               <div style={{fontSize:'13px',color:'#999',marginBottom:'20px'}}>CLYQ 회원이 되셨어요 🎉</div>
 
               <div style={{background:'#f9f7f4',padding:'16px',marginBottom:'20px',textAlign:'left'}}>
                 <div style={{fontSize:'12px',color:'#666',lineHeight:2}}>
                   가입 축하 혜택이 지급됐어요<br/>
-                  <strong style={{color:'#B08D57'}}>💛 위디 포인트 500P</strong> 자동 적립<br/>
-                  {agreements.marketing && <span><strong style={{color:'#B08D57'}}>💛 마케팅 동의 보너스 100P</strong> 추가 적립<br/></span>}
-                  {form.referral && <span><strong style={{color:'#B08D57'}}>💛 추천인 코드 보너스 200P</strong> 추가 적립<br/></span>}
+                  <strong style={{color:'#B08D57'}}>💛 위디 포인트 {SIGNUP_BONUS}P</strong> 적립 완료<br/>
+                  {agreements.marketing && <span><strong style={{color:'#B08D57'}}>💛 마케팅 동의 보너스 {MARKETING_BONUS}P</strong> 적립 완료<br/></span>}
+                  {form.referral && <span style={{color:'#999'}}>추천인 코드 {form.referral}는 확인 후 200P가 지급돼요<br/></span>}
                 </div>
               </div>
 
@@ -389,18 +405,18 @@ export default function SignupPage() {
               {!styleComplete ? (
                 <div style={{background:'linear-gradient(110deg,#1a1814,#2d2318)',padding:'20px',marginBottom:'16px',textAlign:'left'}}>
                   <div style={{fontSize:'10px',letterSpacing:'3px',color:'#3D6A4F',fontWeight:600,marginBottom:'8px'}}>AI 취향 분석</div>
-                  <div style={{fontSize:'15px',fontWeight:500,color:'#fff',marginBottom:'6px'}}>취향을 설정하고 위디 100P 받으세요</div>
+                  <div style={{fontSize:'15px',fontWeight:500,color:'#fff',marginBottom:'6px'}}>취향을 분석하고 위디 {STYLE_BONUS}P 받으세요</div>
                   <div style={{fontSize:'12px',color:'rgba(255,255,255,.5)',marginBottom:'16px',lineHeight:1.6}}>
                     스타일·컬러·체형 정보를 입력하면 AI가 나에게 딱 맞는 피팅박스를 추천해드려요.
                   </div>
                   <button onClick={() => setStyleSetupOpen(true)}
                     style={{padding:'12px 20px',background:'#3D6A4F',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
-                    ✨ 취향 설정하기 (+100P)
+                    ✨ 취향 설정하기 (+{STYLE_BONUS}P)
                   </button>
                 </div>
               ) : (
                 <div style={{background:'#f0f9f4',border:'1px solid rgba(42,122,80,.2)',padding:'14px',marginBottom:'16px',fontSize:'12px',color:'#2a7a50',textAlign:'left'}}>
-                  ✓ 취향 설정이 완료됐어요! 위디 100P가 적립됐습니다.
+                  ✓ 취향 설정이 완료됐어요! 위디 {STYLE_BONUS}P가 적립됐습니다.
                 </div>
               )}
 
@@ -419,7 +435,9 @@ export default function SignupPage() {
       {styleSetupOpen && (
         <StyleSetup
           isModal={true}
+          bonusPoints={STYLE_BONUS}
           onComplete={(data) => {
+            if (member) saveStyle(member.id, data)
             setStyleSetupOpen(false)
             setStyleComplete(true)
           }}

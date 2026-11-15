@@ -3,58 +3,8 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import StyleSetup from '../components/StyleSetup'
-
-const user = {
-  name: '김지연',
-  email: 'jiyeon@clyq.com',
-  phone: '010-1234-5678',
-  grade: '골드',
-  gradeIcon: '🥇',
-  gradeColor: '#B08D57',
-  joinDate: '2025.11.03',
-  avatar: '👩',
-  withy: 2400,
-  nextGrade: 'VIP',
-  nextGradeMin: 20000,
-  gradeMin: 5000,
-  subscription: 'STANDARD',
-}
-
-const wityhHistory = [
-  { date:'2026.05.01', desc:'매거진 댓글 작성', amount:'+10P', type:'earn' },
-  { date:'2026.04.28', desc:'마르시아 코트 구매 확정', amount:'+428P', type:'earn' },
-  { date:'2026.04.25', desc:'피팅박스 이용', amount:'+50P', type:'earn' },
-  { date:'2026.04.22', desc:'커뮤니티 피팅 후기 작성', amount:'+50P', type:'earn' },
-  { date:'2026.04.20', desc:'위디 포인트 사용 (할인 적용)', amount:'-200P', type:'use' },
-  { date:'2026.04.15', desc:'에잇 드레스 구매 확정', amount:'+198P', type:'earn' },
-  { date:'2026.04.12', desc:'피팅박스 이용', amount:'+50P', type:'earn' },
-  { date:'2026.04.10', desc:'리뷰 작성 보너스', amount:'+30P', type:'earn' },
-  { date:'2026.04.05', desc:'골드 등급 달성 보너스', amount:'+500P', type:'earn' },
-  { date:'2026.04.01', desc:'구독 멤버십 자동 지급', amount:'+500P', type:'earn' },
-]
-
-const fittingHistory = [
-  { id:'FIT-2406-001', product:'마르시아 오버핏 캐시미어 울 코트', size:'M', status:'구매확정', date:'2026.04.28', price:428000, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=200&auto=format&fit=crop' },
-  { id:'FIT-2405-003', product:'에잇 셔링 디테일 미디 드레스', size:'S', status:'반납완료', date:'2026.04.15', price:198000, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=200&auto=format&fit=crop' },
-  { id:'FIT-2404-007', product:'MATIN KIM 오버핏 레더 재킷', size:'M/L', status:'반납완료', date:'2026.03.22', price:578000, image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&auto=format&fit=crop' },
-  { id:'FIT-2403-012', product:'EENK 셔링 미디 스커트', size:'S', status:'구매확정', date:'2026.03.05', price:148000, image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=200&auto=format&fit=crop' },
-]
-
-const orderHistory = [
-  { id:'ORD-2406-028', product:'마르시아 오버핏 캐시미어 울 코트 / M / 아이보리', status:'배송완료', date:'2026.04.28', price:428000, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=200&auto=format&fit=crop' },
-  { id:'ORD-2404-015', product:'EENK 셔링 미디 스커트 / S / 블랙', status:'배송완료', date:'2026.04.15', price:148000, image:'https://images.unsplash.com/photo-1583496661160-fb5218e5b8a9?w=200&auto=format&fit=crop' },
-]
-
-const badges = [
-  { icon:'📦', label:'첫 피팅박스', earned:true, date:'2025.11.10' },
-  { icon:'🛍️', label:'첫 구매', earned:true, date:'2025.11.15' },
-  { icon:'⭐', label:'첫 리뷰', earned:true, date:'2025.12.01' },
-  { icon:'🥇', label:'골드 달성', earned:true, date:'2026.04.05' },
-  { icon:'💬', label:'커뮤니티 활성', earned:true, date:'2026.04.22' },
-  { icon:'👑', label:'VIP 달성', earned:false, date:null },
-  { icon:'🌱', label:'순환유통 참여', earned:false, date:null },
-  { icon:'🎯', label:'피팅 10회', earned:false, date:null },
-]
+import { useMember, balance, updateMember, saveStyle, normPhone, STYLE_BONUS } from '../lib/auth'
+import { useOrders, DONE } from '../lib/orders'
 
 const styleLabels = {
   minimal:'미니멀', casual:'캐주얼', feminine:'페미닌', classic:'클래식',
@@ -76,22 +26,58 @@ const styleLabels = {
 const tabs = ['홈','피팅 현황','주문 내역','위디 이력','나의 활동','설정']
 
 export default function MyPage() {
+  const [member, ready] = useMember()
+  if (!ready) return <main style={{background:'#fafafa',minHeight:'100vh'}}><Navbar /></main>
+  if (!member) return (
+    <main style={{background:'#fafafa',minHeight:'100vh'}}>
+      <Navbar />
+      <div style={{maxWidth:420,margin:'0 auto',padding:'96px 20px',textAlign:'center',fontFamily:'inherit'}}>
+        <div style={{fontSize:20,fontWeight:500,marginBottom:10}}>로그인이 필요해요</div>
+        <div style={{fontSize:13,color:'#999',lineHeight:1.8,marginBottom:24}}>마이페이지는 로그인한 회원만 볼 수 있어요.</div>
+        <a href="/?login=1" style={{display:'inline-block',padding:'13px 28px',background:'#111',color:'#fff',fontSize:13,textDecoration:'none',marginRight:8}}>로그인</a>
+        <a href="/signup" style={{display:'inline-block',padding:'13px 28px',border:'1px solid #ddd',color:'#555',fontSize:13,textDecoration:'none'}}>회원가입</a>
+      </div>
+    </main>
+  )
+  return <MyPageInner member={member} />
+}
+
+const fmtD = iso => { const d = new Date(iso); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}` }
+const fmtPhone = p => (p || '').replace(/^(\d{3})(\d{3,4})(\d{4})$/, '$1-$2-$3')
+
+function MyPageInner({ member }) {
+  const [orders] = useOrders()
+  const mine = orders.filter(o => o.owner === member.id)
+  const ledger = [...(member.ledger || [])].reverse().map(l => ({ ...l, amount: (l.amount > 0 ? '+' : '') + l.amount.toLocaleString() + 'P' }))
+  const wityhHistory = ledger
+  const earnTotal = (member.ledger || []).filter(l => l.amount > 0).reduce((s, l) => s + l.amount, 0)
+  const useTotal = (member.ledger || []).filter(l => l.amount < 0).reduce((s, l) => s - l.amount, 0)
+  const ym = new Date().toISOString().slice(0, 7).replace('-', '.')
+  const monthEarn = (member.ledger || []).filter(l => l.date.startsWith(ym) && l.amount > 0).reduce((s, l) => s + l.amount, 0)
+  const monthUse = (member.ledger || []).filter(l => l.date.startsWith(ym) && l.amount < 0).reduce((s, l) => s - l.amount, 0)
+  const fittingHistory = mine.filter(o => o.kind === 'fitting').map(o => ({ id: o.id, product: o.items.map(i => i.name).join(', '), size: o.items.map(i => i.size || '-').join(', '), status: o.status, date: fmtD(o.createdAt), price: o.total || 0, image: '' }))
+  const orderHistory = mine.filter(o => o.kind === 'purchase').map(o => ({ id: o.id, product: o.items.map(i => `${i.name} / ${i.size || '-'}`).join(', '), status: o.status, date: fmtD(o.createdAt), price: o.total || 0, image: '' }))
+  const confirmed = mine.filter(o => o.kind === 'fitting' && o.status === '구매확정').length
+  const totalBuy = mine.filter(o => DONE.includes(o.status)).reduce((s, o) => s + (o.total || 0), 0)
+  const user = { name: member.name, email: member.email, phone: fmtPhone(member.phone), joinDate: fmtD(member.joinedAt), avatar: member.name.charAt(0), withy: balance(member) }
+  const badges = [
+    { icon:'📦', label:'첫 피팅박스', earned: fittingHistory.length > 0, date: fittingHistory.length ? fittingHistory[fittingHistory.length-1].date : null },
+    { icon:'🛍️', label:'첫 구매', earned: totalBuy > 0, date: null },
+    { icon:'✨', label:'취향 분석 완료', earned: !!member.style, date: null },
+    { icon:'🎯', label:'피팅 10회', earned: fittingHistory.length >= 10, date: null },
+  ]
   const [activeTab, setActiveTab] = useState('홈')
   const [wityhFilter, setWithyFilter] = useState('전체')
   const [toast, setToast] = useState('')
   const [editMode, setEditMode] = useState(false)
-  const [formData, setFormData] = useState({ name: user.name, phone: user.phone, email: user.email })
+  const [formData, setFormData] = useState({ name: member.name, phone: fmtPhone(member.phone), email: member.email })
   const [styleEditOpen, setStyleEditOpen] = useState(false)
   const [savedStyle, setSavedStyle] = useState(null)
 
-  useEffect(() => {
-    const saved = localStorage.getItem('clyq_style')
-    if (saved) setSavedStyle(JSON.parse(saved))
-  }, [])
+  useEffect(() => { setSavedStyle(member.style || null) }, [member.style])
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(''), 2400) }
 
-  const progress = ((user.withy - user.gradeMin) / (user.nextGradeMin - user.gradeMin)) * 100
 
   const filteredWithy = wityhFilter === '전체' ? wityhHistory
     : wityhFilter === '적립' ? wityhHistory.filter(h => h.type === 'earn')
@@ -182,8 +168,8 @@ export default function MyPage() {
         <div className="mp-avatar">{user.avatar}</div>
         <div className="mp-info">
           <div className="mp-name">{user.name}</div>
-          <div className="mp-grade">{user.gradeIcon} {user.grade} 등급</div>
-          <div className="mp-join">가입일 {user.joinDate} · {user.subscription} 구독중</div>
+          <div className="mp-grade">일반 회원</div>
+          <div className="mp-join">가입일 {user.joinDate} · {user.email}</div>
         </div>
         <div className="mp-withy-quick">
           <div className="mp-withy-num">{user.withy.toLocaleString()}</div>
@@ -220,23 +206,8 @@ export default function MyPage() {
                   포인트 사용
                 </button>
               </div>
-              <div style={{background:'#f9f7f4',padding:'14px',borderRadius:'2px'}}>
-                <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'6px',flexWrap:'wrap',gap:'4px'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                    <span>{user.gradeIcon}</span>
-                    <span style={{fontWeight:500,color:user.gradeColor}}>{user.grade}</span>
-                  </div>
-                  <div style={{color:'#999'}}>👑 {user.nextGrade}까지 <strong style={{color:'#111'}}>{(user.nextGradeMin-user.withy).toLocaleString()}P</strong></div>
-                </div>
-                <div className="prog-bar">
-                  <div className="prog-fill" style={{width:Math.min(progress,100)+'%'}}/>
-                </div>
-                <div style={{fontSize:'11px',color:'#999',marginTop:'4px'}}>
-                  피팅박스 이용 {Math.ceil((user.nextGradeMin-user.withy)/50)}회면 VIP 달성!
-                </div>
-              </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'0',borderTop:'1px solid #f0f0f0',marginTop:'16px'}}>
-                {[{label:'이번달 적립',val:'+638P',color:'#B08D57'},{label:'이번달 사용',val:'-200P',color:'#999'},{label:'누적 적립',val:'3,240P',color:'#111'}].map((item,i) => (
+                {[{label:'이번달 적립',val:'+'+monthEarn.toLocaleString()+'P',color:'#B08D57'},{label:'이번달 사용',val:'-'+monthUse.toLocaleString()+'P',color:'#999'},{label:'누적 적립',val:earnTotal.toLocaleString()+'P',color:'#111'}].map((item,i) => (
                   <div key={i} style={{padding:'12px',textAlign:'center',borderRight:i<2?'1px solid #f0f0f0':'none'}}>
                     <div style={{fontSize:'16px',fontWeight:600,color:item.color,marginBottom:'3px'}}>{item.val}</div>
                     <div style={{fontSize:'10px',color:'#999'}}>{item.label}</div>
@@ -282,7 +253,7 @@ export default function MyPage() {
                   </div>
                   <button onClick={() => setStyleEditOpen(true)}
                     style={{padding:'11px 24px',background:'#3D6A4F',color:'#fff',border:'none',fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
-                    ✨ 지금 설정하기 (+100P)
+                    ✨ 지금 설정하기 (+{STYLE_BONUS}P)
                   </button>
                 </div>
               )}
@@ -290,19 +261,19 @@ export default function MyPage() {
 
             <div className="mp-grid-2">
               <div className="mp-stat">
-                <div className="mp-stat-num">4</div>
+                <div className="mp-stat-num">{fittingHistory.length}</div>
                 <div className="mp-stat-label">피팅박스 이용</div>
               </div>
               <div className="mp-stat">
-                <div className="mp-stat-num">2</div>
+                <div className="mp-stat-num">{confirmed}</div>
                 <div className="mp-stat-label">구매 확정</div>
               </div>
               <div className="mp-stat">
-                <div className="mp-stat-num" style={{color:'#2a7a50'}}>50%</div>
+                <div className="mp-stat-num" style={{color:'#2a7a50'}}>{fittingHistory.length ? Math.round(confirmed / fittingHistory.length * 100) + '%' : '-'}</div>
                 <div className="mp-stat-label">피팅 구매 전환율</div>
               </div>
               <div className="mp-stat">
-                <div className="mp-stat-num" style={{color:'#3D6A4F',fontSize:'22px'}}>576,000</div>
+                <div className="mp-stat-num" style={{color:'#3D6A4F',fontSize:'22px'}}>{totalBuy.toLocaleString()}</div>
                 <div className="mp-stat-label">총 구매 금액(원)</div>
               </div>
             </div>
@@ -314,7 +285,7 @@ export default function MyPage() {
               </div>
               {fittingHistory.slice(0,2).map(fit => (
                 <div key={fit.id} className="fit-card">
-                  <img className="fit-img" src={fit.image} alt={fit.product}/>
+                  <div className="fit-img"/>
                   <div className="fit-info">
                     <div className="fit-id">{fit.id}</div>
                     <div className="fit-name">{fit.product}</div>
@@ -366,7 +337,7 @@ export default function MyPage() {
               <div className="mp-card-title">📦 피팅박스 이용 내역</div>
               {fittingHistory.map(fit => (
                 <div key={fit.id} className="fit-card">
-                  <img className="fit-img" src={fit.image} alt={fit.product}/>
+                  <div className="fit-img"/>
                   <div className="fit-info">
                     <div className="fit-id">{fit.id}</div>
                     <div className="fit-name">{fit.product}</div>
@@ -403,7 +374,7 @@ export default function MyPage() {
                 ))}
               </div>
               <div style={{background:'#f9f7f4',padding:'12px 14px',marginTop:'16px',fontSize:'12px',color:'#666',lineHeight:1.7}}>
-                💡 피팅박스를 이용할수록 구매 후 반품률이 <strong>98% 감소</strong>해요.
+                💡 피팅박스로 먼저 입어보고 구매를 확정할 수 있어요.
               </div>
             </div>
           </>
@@ -420,7 +391,7 @@ export default function MyPage() {
               </div>
             ) : orderHistory.map(order => (
               <div key={order.id} className="fit-card">
-                <img className="fit-img" src={order.image} alt={order.product}/>
+                <div className="fit-img"/>
                 <div className="fit-info">
                   <div className="fit-id">{order.id}</div>
                   <div className="fit-name">{order.product}</div>
@@ -442,7 +413,7 @@ export default function MyPage() {
         {activeTab === '위디 이력' && (
           <div className="mp-card">
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',borderBottom:'1px solid #f0f0f0',marginBottom:'16px'}}>
-              {[{label:'총 적립',val:'1,638P',color:'#B08D57'},{label:'총 사용',val:'200P',color:'#999'},{label:'현재 잔액',val:'2,400P',color:'#3D6A4F'}].map((item,i) => (
+              {[{label:'총 적립',val:earnTotal.toLocaleString()+'P',color:'#B08D57'},{label:'총 사용',val:useTotal.toLocaleString()+'P',color:'#999'},{label:'현재 잔액',val:user.withy.toLocaleString()+'P',color:'#3D6A4F'}].map((item,i) => (
                 <div key={i} style={{padding:'14px',textAlign:'center',borderRight:i<2?'1px solid #f0f0f0':'none'}}>
                   <div style={{fontSize:'20px',color:item.color,fontWeight:300,marginBottom:'3px'}}>{item.val}</div>
                   <div style={{fontSize:'10px',color:'#999'}}>{item.label}</div>
@@ -492,11 +463,11 @@ export default function MyPage() {
             <div className="mp-card">
               <div className="mp-card-title">📊 활동 요약</div>
               {[
-                {icon:'✍️',label:'작성한 글',val:'3개',sub:'커뮤니티'},
-                {icon:'💬',label:'작성한 댓글',val:'12개',sub:'커뮤니티 + 매거진'},
-                {icon:'❤️',label:'좋아요',val:'28개',sub:'매거진 + 커뮤니티'},
-                {icon:'⭐',label:'작성한 리뷰',val:'2개',sub:'상품 리뷰'},
-                {icon:'🔗',label:'공유',val:'6회',sub:'매거진 + 커뮤니티'},
+                {icon:'✍️',label:'작성한 글',val:'0개',sub:'커뮤니티'},
+                {icon:'💬',label:'작성한 댓글',val:'0개',sub:'커뮤니티 + 매거진'},
+                {icon:'❤️',label:'좋아요',val:'0개',sub:'매거진 + 커뮤니티'},
+                {icon:'⭐',label:'작성한 리뷰',val:'0개',sub:'상품 리뷰'},
+                {icon:'🔗',label:'공유',val:'0회',sub:'매거진 + 커뮤니티'},
               ].map((item,i) => (
                 <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid #f5f5f5'}}>
                   <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
@@ -568,7 +539,7 @@ export default function MyPage() {
               ) : (
                 <div style={{textAlign:'center',padding:'20px 0',color:'#999',fontSize:'13px'}}>
                   취향 설정을 완료하면 AI가 나에게 딱 맞는 제품을 추천해드려요.<br/>
-                  <strong style={{color:'#3D6A4F'}}>설정 완료 시 위디 100P 추가 지급!</strong>
+                  <strong style={{color:'#3D6A4F'}}>설정 완료 시 위디 {STYLE_BONUS}P 지급 (최초 1회)!</strong>
                 </div>
               )}
             </div>
@@ -577,7 +548,14 @@ export default function MyPage() {
             <div className="mp-card">
               <div className="mp-card-title">
                 👤 기본 정보
-                <button onClick={() => { if(editMode) showToast('✓ 저장됐어요'); setEditMode(!editMode) }}
+                <button onClick={() => {
+                  if (editMode) {
+                    const ph = normPhone(formData.phone)
+                    if (!formData.name.trim()) { showToast('이름을 입력해주세요'); return }
+                    if (!/^01[016789]\d{7,8}$/.test(ph)) { showToast('휴대폰 번호를 확인해주세요'); return }
+                    updateMember(member.id, { name: formData.name.trim(), phone: ph }); showToast('✓ 저장됐어요')
+                  }
+                  setEditMode(!editMode) }}
                   style={{padding:'7px 14px',border:'1px solid #111',background:editMode?'#111':'#fff',color:editMode?'#fff':'#111',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>
                   {editMode ? '저장' : '수정'}
                 </button>
@@ -585,33 +563,17 @@ export default function MyPage() {
               {[{label:'이름',key:'name',type:'text'},{label:'이메일',key:'email',type:'email'},{label:'휴대폰',key:'phone',type:'tel'}].map(field => (
                 <div key={field.key} style={{marginBottom:'14px'}}>
                   <label className="mp-label">{field.label}</label>
-                  <input className="mp-input" type={field.type} disabled={!editMode}
+                  <input className="mp-input" type={field.type} disabled={!editMode || field.key === 'email'}
                     value={formData[field.key]} onChange={e => setFormData({...formData,[field.key]:e.target.value})}/>
                 </div>
               ))}
               <div style={{marginBottom:'14px'}}>
                 <label className="mp-label">생년월일</label>
-                <input className="mp-input" type="text" disabled value="1990년 8월 15일"/>
+                <input className="mp-input" type="text" disabled value={member.birthdate ? member.birthdate.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1년 $2월 $3일') : '-'}/>
               </div>
               <div>
                 <label className="mp-label">성별</label>
-                <input className="mp-input" type="text" disabled value="여성"/>
-              </div>
-            </div>
-
-            {/* 구독 */}
-            <div className="mp-card">
-              <div className="mp-card-title">📅 구독 멤버십</div>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px',background:'#f9f7f4',marginBottom:'14px',flexWrap:'wrap',gap:'10px'}}>
-                <div>
-                  <div style={{fontSize:'14px',fontWeight:500,color:'#111',marginBottom:'3px'}}>STANDARD 구독중</div>
-                  <div style={{fontSize:'12px',color:'#999'}}>월 9,900원 · 다음 결제일 2026.06.01</div>
-                </div>
-                <span style={{background:'#B08D57',color:'#fff',fontSize:'10px',fontWeight:700,padding:'4px 10px'}}>이용중</span>
-              </div>
-              <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-                <button onClick={() => showToast('PREMIUM으로 업그레이드되었어요!')} style={{flex:1,minWidth:'120px',padding:'11px',border:'1px solid #3D6A4F',color:'#3D6A4F',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>PREMIUM 업그레이드</button>
-                <button onClick={() => showToast('구독 해지 신청이 접수됐어요')} style={{flex:1,minWidth:'120px',padding:'11px',border:'1px solid #e8e8e8',color:'#999',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>구독 해지</button>
+                <input className="mp-input" type="text" disabled value={member.gender || '-'}/>
               </div>
             </div>
 
@@ -668,10 +630,12 @@ export default function MyPage() {
         <StyleSetup
           isModal={true}
           defaultValues={savedStyle || {}}
+          bonusPoints={member.styleRewarded ? 0 : STYLE_BONUS}
           onComplete={(data) => {
+            const rewarded = saveStyle(member.id, data)
             setSavedStyle(data)
             setStyleEditOpen(false)
-            showToast('✨ 취향 설정이 저장됐어요!')
+            showToast(rewarded ? `✨ 취향 설정 저장! 위디 ${STYLE_BONUS}P가 적립됐어요` : '✨ 취향 설정이 저장됐어요!')
           }}
           onSkip={() => setStyleEditOpen(false)}
         />

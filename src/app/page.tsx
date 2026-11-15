@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { useMember } from './lib/auth'
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import { FitDrawer, Footer } from './components/ui'
@@ -100,10 +101,8 @@ export default function Home() {
   const [userName, setUserName] = useState('')
   const [fitProd, setFitProd] = useState(null)
 
-  useEffect(() => {
-    const saved = localStorage.getItem('clyq_user')
-    if (saved) { const u = JSON.parse(saved); setIsLoggedIn(true); setUserName(u.name) }
-  }, [])
+  const [member] = useMember()
+  useEffect(() => { setIsLoggedIn(!!member); setUserName(member ? member.name : '') }, [member])
 
   useEffect(() => {
     const t = setInterval(() => setBannerIdx(i => (i + 1) % banners.length), 6000)

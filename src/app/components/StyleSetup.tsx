@@ -116,11 +116,12 @@ const steps = [
 interface StyleSetupProps {
   onComplete: (data: any) => void
   onSkip?: () => void
+  bonusPoints?: number
   defaultValues?: any
   isModal?: boolean
 }
 
-export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isModal = true }: StyleSetupProps) {
+export default function StyleSetup({ onComplete, onSkip, bonusPoints, defaultValues = {}, isModal = true }: StyleSetupProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [selections, setSelections] = useState<any>(defaultValues || {})
   const [bodyForm, setBodyForm] = useState({
@@ -200,6 +201,11 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
         }
       `}</style>
 
+      {bonusPoints > 0 && (
+        <div style={{ background: '#0F3D2E', color: '#F9FCF8', textAlign: 'center', padding: '12px 16px', fontSize: '13px', fontWeight: 500, flexShrink: 0 }}>
+          💛 취향 분석 입력시 <strong style={{ color: '#A8D5BA' }}>위디 포인트 {bonusPoints.toLocaleString()}p</strong> 적립
+        </div>
+      )}
       {/* 헤더 */}
       <div style={{ padding: '24px 28px 0', flexShrink: 0 }}>
         {/* 진행바 */}
@@ -386,7 +392,7 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
               ← 이전
             </button>
           )}
-          {step.type === 'body' && onSkip && currentStep === 0 && (
+          {onSkip && (
             <button onClick={onSkip}
               style={{ padding: '13px 16px', border: 'none', background: 'none', color: '#999', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>
               건너뛰기
@@ -401,15 +407,6 @@ export default function StyleSetup({ onComplete, onSkip, defaultValues = {}, isM
             }}>
             {currentStep === totalSteps - 1 ? '✨ 분석 완료! 저장하기' : `다음 (${currentStep + 1}/${totalSteps})`}
           </button>
-          {step.id !== 'body' && onSkip && (
-            <button onClick={() => {
-              if (currentStep < totalSteps - 1) setCurrentStep(currentStep + 1)
-              else onSkip()
-            }}
-              style={{ padding: '13px 14px', border: 'none', background: 'none', color: '#ccc', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>
-              건너뛰기
-            </button>
-          )}
         </div>
       </div>
     </div>
