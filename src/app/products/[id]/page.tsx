@@ -114,17 +114,18 @@ export default function ProductDetail() {
         .pd-sec table { border-collapse: collapse; width: 100%; font-size: 13px; }
         .pd-sec th, .pd-sec td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: center; }
         .pd-sec th { color: #8a8a8a; font-weight: 500; }
-        .rel { position: fixed; left: 20px; bottom: 20px; width: 260px; background: #fff; border: 1px solid #e5e5e5; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; }
+        .rel { position: fixed; right: 0; bottom: 20px; width: 260px; background: rgba(255,255,255,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.6); border-right: 0; border-radius: 20px 0 0 20px; box-shadow: 0 8px 28px rgba(0,0,0,.12); z-index: 900; overflow: hidden; }
         .rel-h { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 14px; min-height: 44px; font-size: 13px; font-weight: 600; }
-        .rel ul { margin: 0; padding: 0 8px 8px; list-style: none; max-height: calc(100vh - 160px); overflow-y: auto; }
+        .rel ul { margin: 0; padding: 0 14px 10px 8px; list-style: none; max-height: calc(100vh - 160px); overflow-y: auto; }
         .rel li a { display: flex; gap: 10px; padding: 6px; align-items: center; color: inherit; }
-        .rel li a:hover { background: #fafaf8; }
+        .rel li a:hover { background: rgba(255,255,255,.6); }
+        .rel-h { padding-left: 20px; }
         .rel li img { width: 44px; height: 56px; object-fit: cover; flex-shrink: 0; background: #f4f4f2; }
         .rel li span { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
         .rel em { font-style: normal; font-size: 11px; color: #8a8a8a; }
         .rel b { font-size: 13px; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .rel i { font-style: normal; font-size: 12px; font-weight: 600; }
-        @media (max-width: 768px) { .rel { left: 12px; bottom: 12px; width: min(260px, calc(100vw - 24px)); } }
+        @media (max-width: 768px) { .rel { bottom: 12px; width: min(260px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
         .pd-img img { width: 100%; height: auto; min-height: 320px; object-fit: cover; }
