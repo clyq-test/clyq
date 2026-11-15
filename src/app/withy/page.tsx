@@ -4,36 +4,31 @@ import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import { SharedStyle, Footer } from '../components/ui'
 
-/* 아래 적립률·등급·요금은 화면 구성을 위한 예시 값이며 확정된 정책이 아닙니다. */
+/* 적립률·레벨·규칙은 CLYQ 사업계획서(D-8) 기준이며 오픈 전 변경될 수 있습니다. 내역은 화면 예시입니다. */
 const history = [
-  { date: '2026.04.28', desc: '오버핏 코트 구매 확정', amount: '+428P', type: 'earn' },
-  { date: '2026.04.25', desc: '피팅 서비스 이용', amount: '+50P', type: 'earn' },
-  { date: '2026.04.20', desc: '위디 포인트 사용', amount: '-200P', type: 'use' },
-  { date: '2026.04.15', desc: '셔링 드레스 구매 확정', amount: '+198P', type: 'earn' },
-  { date: '2026.04.12', desc: '피팅 서비스 이용', amount: '+50P', type: 'earn' },
-  { date: '2026.04.10', desc: '리뷰 작성 보너스', amount: '+30P', type: 'earn' },
+  { date: '예시', desc: '회원가입 포인트', amount: '+5,000WT', type: 'earn' },
+  { date: '예시', desc: '피팅박스 신청', amount: '-1,000WT', type: 'use' },
+  { date: '예시', desc: '피팅박스 회수 완료 페이백', amount: '+100WT', type: 'earn' },
 ]
 const grades = [
-  { name: '일반', min: 0, perks: ['피팅 시 50P 적립', '구매가의 0.1% 적립'] },
-  { name: '실버', min: 1000, perks: ['피팅 시 70P 적립', '구매가의 0.15% 적립', '신상품 먼저 보기'] },
-  { name: '골드', min: 5000, perks: ['피팅 시 100P 적립', '구매가의 0.2% 적립', '신상품 먼저 보기'] },
-  { name: 'VIP', min: 20000, perks: ['피팅 시 150P 적립', '구매가의 0.3% 적립', '전담 문의 창구'] },
+  { name: 'Basic', perks: ['구매 적립 3%', '리뷰·댓글 1% / 1%', 'SNS 공유 2%', '회수 페이백 3%~10%'] },
+  { name: 'Easy', perks: ['구매 적립 3.2%', '리뷰·댓글 1.1% / 1.1%', 'SNS 공유 2.2%', '회수 페이백 3.5%~10%'] },
+  { name: 'Fit', perks: ['구매 적립 3.4%', '리뷰·댓글 1.2% / 1.2%', 'SNS 공유 2.4%', '회수 페이백 4%~10%'] },
+  { name: 'Select', perks: ['구매 적립 3.6%', '리뷰·댓글 1.3% / 1.3%', 'SNS 공유 2.6%', '회수 페이백 4.5%~10%'] },
+  { name: 'Withy+', perks: ['구매 적립 4%', '리뷰·댓글 1.5% / 1.5%', 'SNS 공유 3%', '회수 페이백 6%~10%'] },
 ]
 const earnWays = [
-  { title: '피팅 서비스 이용', desc: '피팅박스를 신청하면 자동으로 적립돼요.', point: '50P' },
-  { title: '구매 확정', desc: '구매를 확정한 금액에 비례해 적립돼요.', point: '0.1~0.3%' },
-  { title: '리뷰 작성', desc: '구매한 제품의 후기를 남기면 적립돼요.', point: '30P' },
-  { title: '친구 초대', desc: '초대한 친구가 첫 피팅을 신청하면 양쪽에 적립돼요.', point: '200P' },
+  { title: '회원가입', desc: '가입하면 기본 포인트를 드려요.', point: '5,000WT' },
+  { title: '피팅박스 신청', desc: '신청하면 차감되고, 회수가 끝나면 일부가 돌아와요. 오픈 초기 6~12개월은 무료로 운영할 계획이에요.', point: '-1,000WT' },
+  { title: '회수 완료', desc: '피팅박스를 회수하면 페이백돼요.', point: '+100WT' },
+  { title: '구매·리뷰·공유', desc: '구매, 리뷰와 댓글, SNS 공유에 레벨별 비율로 적립돼요.', point: '레벨별' },
 ]
 const tabs = [['overview', '적립 방법'], ['grade', '등급'], ['history', '내역']]
 
 export default function WithyPage() {
   const [tab, setTab] = useState('overview')
   const [filter, setFilter] = useState('전체')
-  const myPoints = 2400
-  const cur = grades[1]
-  const nxt = grades[2]
-  const progress = Math.min(100, ((myPoints - cur.min) / (nxt.min - cur.min)) * 100)
+  const cur = grades[0]
   const list = filter === '전체' ? history : history.filter(h => (filter === '적립' ? h.type === 'earn' : h.type === 'use'))
 
   return (
@@ -50,7 +45,7 @@ export default function WithyPage() {
         .w-row b { display: block; font-size: 15px; margin-bottom: 4px; }
         .w-row span { font-size: 13px; color: #6b6b6b; }
         .w-row em { font-style: normal; font-weight: 600; font-size: 15px; white-space: nowrap; }
-        .w-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 24px 0 72px; }
+        .w-grades { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 24px 0 72px; }
         .w-g { border-top: 2px solid #e5e5e5; padding-top: 16px; }
         .w-g.on { border-top-color: #111; }
         .w-g h3 { font-size: 17px; margin: 0 0 4px; }
@@ -67,16 +62,15 @@ export default function WithyPage() {
       `}</style>
       <Navbar />
       <div className="wrap">
-        <div className="page-head"><h1>위디</h1><p>피팅하고 구매할 때마다 쌓이는 CLYQ 포인트입니다.</p></div>
+        <div className="page-head"><h1>위디</h1><p>구매와 참여로 쌓이는 CLYQ 포인트입니다.</p></div>
         <div className="w-sum">
           <div>
-            <div className="count">보유 포인트</div>
-            <div className="w-pts">{myPoints.toLocaleString()}<small>P</small></div>
+            <div className="count">가입 포인트(계획)</div>
+            <div className="w-pts">5,000<small>WT</small></div>
           </div>
           <div>
-            <div style={{ fontSize: 14 }}>현재 {cur.name} 등급</div>
-            <div className="w-bar"><i style={{ width: progress + '%' }} /></div>
-            <div className="count">{nxt.name}까지 {(nxt.min - myPoints).toLocaleString()}P 남았어요</div>
+            <div style={{ fontSize: 14 }}>시작 레벨 {cur.name}</div>
+            <div className="count" style={{ marginTop: 8 }}>레벨 승급 조건은 오픈 전에 안내할게요.</div>
           </div>
         </div>
 
@@ -96,8 +90,7 @@ export default function WithyPage() {
             {grades.map(g => (
               <div key={g.name} className={'w-g' + (g.name === cur.name ? ' on' : '')}>
                 <h3>{g.name}</h3>
-                <div className="min">{g.min.toLocaleString()}P 이상</div>
-                <ul>{g.perks.map(p => <li key={p}>{p}</li>)}</ul>
+                                <ul>{g.perks.map(p => <li key={p}>{p}</li>)}</ul>
               </div>
             ))}
           </div>
@@ -117,7 +110,7 @@ export default function WithyPage() {
             ))}
           </div>
         )}
-        <p className="w-note">화면에 표시된 적립률과 등급 기준은 예시이며, 정책 확정 후 변경될 수 있습니다.</p>
+        <p className="w-note">적립률과 규칙은 사업계획 기준이며 오픈 전 변경될 수 있습니다. 내역은 화면 예시입니다.</p>
       </div>
       <Footer />
     </main>
