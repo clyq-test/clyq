@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { BRANDS } from '../../../lib/catalog'
 import { useState } from 'react'
 
 export default function AdminProductNew() {
@@ -196,7 +197,7 @@ export default function AdminProductNew() {
           <div style={cellStyle}>
             <select style={{...selectStyle, minWidth:'200px'}} value={form.brand} onChange={e=>f('brand',e.target.value)}>
               <option value="">브랜드 선택</option>
-              {['MARCIA','MATIN KIM','EENK','D.POUND','ANOTHER A','EIGHT','ANDERSSONBELL','ADER ERROR','SORRY TOO MUCH LOVE'].map(b=><option key={b}>{b}</option>)}
+              {BRANDS.map(b=><option key={b}>{b}</option>)}
             </select>
           </div>
         </div>

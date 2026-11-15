@@ -1,17 +1,16 @@
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
+import { BRAND_INFO, allProducts as catalog } from '../../lib/catalog'
 
-const INIT_BRANDS = [
-  { id:'BR-001', name:'MARCIA', nameKo:'마르시아', category:'여성 컨템포러리', manager:'김지원', email:'jiwon@marcia.co.kr', phone:'02-1234-5678', joinDate:'2024-03-15', contractEnd:'2026-12-31', commission:30, products:24, fitting:4, monthSales:12840000, status:'정상', memo:'' },
-  { id:'BR-002', name:'MATIN KIM', nameKo:'마뗑킴', category:'여성 캐주얼', manager:'이수진', email:'sujin@matinkim.com', phone:'02-2345-6789', joinDate:'2024-05-01', contractEnd:'2026-12-31', commission:30, products:18, fitting:3, monthSales:9620000, status:'정상', memo:'' },
-  { id:'BR-003', name:'EENK', nameKo:'잉크', category:'여성 디자이너', manager:'박민아', email:'mina@eenk.kr', phone:'02-3456-7890', joinDate:'2024-06-10', contractEnd:'2026-09-30', commission:28, products:31, fitting:6, monthSales:5280000, status:'계약만료임박', memo:'계약 갱신 협의 중' },
-  { id:'BR-004', name:'D.POUND', nameKo:'디파운드', category:'여성 스트리트', manager:'최준혁', email:'junhyuk@dpound.com', phone:'02-4567-8901', joinDate:'2024-08-20', contractEnd:'2027-08-19', commission:27, products:12, fitting:2, monthSales:4150000, status:'정상', memo:'' },
-  { id:'BR-005', name:'ANDERSSONBELL', nameKo:'앤더슨벨', category:'유니섹스 컨템포러리', manager:'정하은', email:'haeun@anderssonbell.com', phone:'02-5678-9012', joinDate:'2024-09-01', contractEnd:'2027-08-31', commission:30, products:27, fitting:5, monthSales:3960000, status:'정상', memo:'' },
-  { id:'BR-006', name:'ANOTHER A', nameKo:'어나더에이', category:'여성 미니멀', manager:'한소연', email:'soyeon@anothera.kr', phone:'02-6789-0123', joinDate:'2025-01-15', contractEnd:'2027-01-14', commission:27, products:15, fitting:3, monthSales:2730000, status:'정상', memo:'' },
-  { id:'BR-007', name:'EIGHT', nameKo:'에이트', category:'여성 베이직', manager:'윤채린', email:'chaerin@eight.co.kr', phone:'02-7890-1234', joinDate:'2025-03-01', contractEnd:'2027-02-28', commission:25, products:9, fitting:2, monthSales:1980000, status:'정상', memo:'' },
-  { id:'BR-008', name:'ADER ERROR', nameKo:'아더에러', category:'유니섹스 아방가르드', manager:'조성민', email:'sungmin@adererror.com', phone:'02-8901-2345', joinDate:'2024-11-01', contractEnd:'2025-10-31', commission:30, products:21, fitting:4, monthSales:6410000, status:'계약만료임박', memo:'수수료 재협상 예정' },
-]
+// 쇼핑몰 카탈로그의 가상 브랜드 15곳. 담당자·연락처·계약 정보는 모두 샘플이며 실제 입점 계약 데이터로 교체해야 합니다.
+const INIT_BRANDS = BRAND_INFO.map((b, i) => ({
+  id: 'BR-' + String(i + 1).padStart(3, '0'), name: b.name, nameKo: b.name, category: b.concept,
+  manager: '담당자 ' + (i + 1), email: 'partner' + (i + 1) + '@example.invalid', phone: '02-0000-' + String(1000 + i),
+  joinDate: '2026-0' + (1 + (i % 9)) + '-01', contractEnd: '2027-12-31', commission: 30,
+  products: catalog.filter(p => p.brand === b.name).length, fitting: catalog.filter(p => p.brand === b.name && p.fit).length,
+  monthSales: 0, status: '정상', memo: '',
+}))
 
 const STATUS_STYLE = {
   '정상':      { bg:'#eef4f0', color:'#3D6A4F' },

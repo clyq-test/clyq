@@ -1,26 +1,67 @@
 // @ts-nocheck
-/* 샘플 상품 카탈로그 (실제 상품 데이터 아님) */
-export const allProducts = [
-  { id:1, brand:'MARCIA', name:'오버핏 캐시미어 울 코트', price:428000, original:520000, category:'아우터', fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&q=80&auto=format&fit=crop&crop=center', points:428 },
-  { id:2, brand:'EIGHT', name:'셔링 디테일 미디 드레스', price:198000, original:240000, category:'원피스', fit:true, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80&auto=format&fit=crop&crop=center', points:198 },
-  { id:3, brand:'MATIN KIM', name:'오버핏 레더 재킷', price:578000, original:578000, category:'아우터', fit:true, image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80&auto=format&fit=crop&crop=center', points:578 },
-  { id:4, brand:'SORRY TOO MUCH LOVE', name:'메리노 울 니트 세트업', price:245000, original:245000, category:'상의', fit:false, image:'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80&auto=format&fit=crop&crop=center', points:245 },
-  { id:5, brand:'ANDERSSONBELL', name:'테일러드 수트 재킷', price:318000, original:318000, category:'아우터', fit:true, image:'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80&auto=format&fit=crop&crop=center', points:318 },
-  { id:6, brand:'EENK', name:'셔링 미디 스커트', price:148000, original:148000, category:'하의', fit:true, image:'https://images.unsplash.com/photo-1496217590455-aa63a8350eea?w=600&q=80&auto=format&fit=crop&crop=center', points:148 },
-  { id:7, brand:'D.POUND', name:'라운드넥 실크 블라우스', price:158000, original:198000, category:'상의', fit:true, image:'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80&auto=format&fit=crop&crop=center', points:158 },
-  { id:8, brand:'ANOTHER A', name:'캐시미어 터틀넥 니트', price:218000, original:218000, category:'상의', fit:false, image:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80&auto=format&fit=crop&crop=center', points:218 },
-  { id:9, brand:'ADER ERROR', name:'오버핏 후드 스웨트셔츠', price:198000, original:198000, category:'상의', fit:true, image:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80&auto=format&fit=crop&crop=center', points:198 },
-  { id:10, brand:'MATIN KIM', name:'퀼팅 미니 숄더백', price:368000, original:368000, category:'가방', fit:false, image:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80&auto=format&fit=crop&crop=center', points:368 },
-  { id:11, brand:'MARCIA', name:'울 플리츠 와이드 팬츠', price:248000, original:298000, category:'하의', fit:true, image:'https://images.unsplash.com/photo-1496217590455-aa63a8350eea?w=600&q=80&auto=format&fit=crop&crop=center', points:248 },
-  { id:12, brand:'EENK', name:'오프숄더 리본 블라우스', price:168000, original:168000, category:'상의', fit:true, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80&auto=format&fit=crop&crop=center', points:168 },
-  { id:13, brand:'D.POUND', name:'울 롱 스커트', price:228000, original:268000, category:'하의', fit:true, image:'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=80&auto=format&fit=crop&crop=center', points:228 },
-  { id:14, brand:'ANDERSSONBELL', name:'플리츠 와이드 슬랙스', price:238000, original:238000, category:'하의', fit:false, image:'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80&auto=format&fit=crop&crop=center', points:238 },
-  { id:15, brand:'ANOTHER A', name:'패딩 숏 재킷', price:398000, original:398000, category:'아우터', fit:true, image:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&q=80&auto=format&fit=crop&crop=center', points:398 },
-  { id:16, brand:'SORRY TOO MUCH LOVE', name:'벨벳 미니 원피스', price:188000, original:228000, category:'원피스', fit:true, image:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80&auto=format&fit=crop&crop=center', points:188 },
-]
-
+/* 샘플 카탈로그: 15개 가상 브랜드 × 20개 제품(총 300개). 실제 브랜드·제품·이미지가 아니며 입점 브랜드 데이터로 교체해야 합니다.
+   서버 없이도 항상 같은 결과가 나오도록 무작위 없이 규칙으로 생성합니다. */
+const U = id => `https://images.unsplash.com/photo-${id}?w=600&q=80&auto=format&fit=crop&crop=center`
+// 이미 사이트에서 쓰고 있던 이미지만 재사용합니다(제품마다 별도 사진이 아니라 카테고리별 대표 이미지를 돌려 씀).
+const IMG = {
+  '아우터': ['1539533018447-63fcce2678e3', '1551028719-00167b16eac5', '1507679799987-c73779587ccf'],
+  '상의': ['1581044777550-4cfa60707c03', '1576566588028-4147f3842f27', '1515886657613-9f3515b0c78f', '1434389677669-e08b4cac3105'],
+  '하의': ['1496217590455-aa63a8350eea', '1509631179647-0177331693ae'],
+  '원피스': ['1515372039744-b8f02a3ae446'],
+  '가방': ['1548036328-c9fa89d128fa'],
+}
 export const CATEGORIES = ['아우터', '상의', '하의', '원피스', '가방']
-export const BRANDS = ['MARCIA', 'MATIN KIM', 'EENK', 'D.POUND', 'ANOTHER A', 'EIGHT', 'ANDERSSONBELL', 'ADER ERROR', 'SORRY TOO MUCH LOVE']
+
+export const BRAND_INFO = [
+  { name: 'MARCIA', concept: '절제된 테일러링의 데일리 웨어', tier: 1.1 },
+  { name: 'LUNE ATELIER', concept: '부드러운 실루엣의 페미닌 룩', tier: 1.0 },
+  { name: 'OTTO HAUS', concept: '구조적인 라인의 모던 클래식', tier: 1.3 },
+  { name: 'NORDE', concept: '북유럽 무드의 미니멀 니트웨어', tier: 0.9 },
+  { name: 'SOLEIL PARK', concept: '가볍고 화사한 시즌 캐주얼', tier: 0.8 },
+  { name: 'VAUGHN & CO', concept: '오래 입는 워크웨어 감성', tier: 1.0 },
+  { name: 'MIRELLE', concept: '우아한 이브닝·특별한 날의 옷', tier: 1.4 },
+  { name: 'KOVA', concept: '실용적인 어반 스트릿', tier: 0.8 },
+  { name: 'ATELIER BLANC', concept: '화이트 톤으로 완성하는 기본', tier: 0.9 },
+  { name: 'HALDEN', concept: '울과 가죽 중심의 아우터 전문', tier: 1.5 },
+  { name: 'PIERCE LANE', concept: '출근길 비즈니스 캐주얼', tier: 1.1 },
+  { name: 'YUNA SEOUL', concept: '서울 감성의 트렌디 컨템포러리', tier: 1.0 },
+  { name: 'DORAN', concept: '편안한 오버사이즈 라운지웨어', tier: 0.8 },
+  { name: 'ELSIE MOON', concept: '로맨틱한 디테일의 원피스 중심', tier: 1.2 },
+  { name: 'STUDIO TALE', concept: '이야기를 담은 아티스틱 컬렉션', tier: 1.2 },
+]
+export const BRANDS = BRAND_INFO.map(b => b.name)
+
+const BASE = {
+  '아우터': { price: 360000, names: ['울 롱 코트', '캐시미어 블렌드 코트', '테일러드 재킷', '레더 라이더 재킷', '숏 패딩 재킷', '트렌치 코트', '더블 브레스트 블레이저', '퀼팅 점퍼'] },
+  '상의': { price: 138000, names: ['실크 블라우스', '메리노 울 니트', '오버핏 셔츠', '캐시미어 터틀넥', '코튼 티셔츠', '리본 블라우스', '카디건', '후드 스웨트셔츠'] },
+  '하의': { price: 158000, names: ['와이드 슬랙스', '플리츠 스커트', '울 롱 스커트', '데님 팬츠', '카고 팬츠', '미니 스커트', '조거 팬츠', '하이웨스트 팬츠'] },
+  '원피스': { price: 208000, names: ['셔링 미디 드레스', '벨벳 미니 원피스', '플라워 롱 원피스', '니트 원피스', '셔츠 드레스', '새틴 슬립 드레스', '랩 드레스', '세트업 원피스'] },
+  '가방': { price: 248000, names: ['퀼팅 숄더백', '미니 크로스백', '토트백', '버킷백', '클러치', '호보백', '백팩', '카드 지갑'] },
+}
+const ADJ = ['클래식', '소프트', '에센셜', '데일리', '오버핏', '슬림핏', '빈티지', '모던', '릴랙스드', '시그니처']
+
+export const allProducts = BRAND_INFO.flatMap((b, bi) => {
+  const rows = []
+  CATEGORIES.forEach((cat, ci) => {
+    for (let k = 0; k < 4; k++) {
+      const n = bi * 20 + ci * 4 + k            // 0..299
+      const base = BASE[cat]
+      const price = Math.round(base.price * b.tier * (0.85 + ((n * 37) % 30) / 100) / 1000) * 1000
+      const sale = n % 5 === 0 || n % 7 === 0
+      const original = sale ? Math.round(price / (1 - (10 + (n % 4) * 5) / 100) / 1000) * 1000 : price
+      const imgs = IMG[cat]
+      rows.push({
+        id: n + 1, brand: b.name,
+        name: `${ADJ[(bi + k * 3 + ci) % ADJ.length]} ${base.names[(bi * 3 + k * 2 + ci) % base.names.length]}`,
+        price, original, category: cat,
+        fit: cat !== '가방' && (n * 7 + bi) % 10 < 7,
+        image: U(imgs[(bi + k) % imgs.length]),
+        points: Math.round(price / 1000),
+      })
+    }
+  })
+  return rows
+})
 export const byId = id => allProducts.find(p => p.id === Number(id))
 
 /* 카테고리별 샘플 상세 정보 — 실제 제품 정보가 아니며 입점 브랜드 데이터로 교체해야 합니다. */

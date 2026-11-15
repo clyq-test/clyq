@@ -6,6 +6,8 @@ import { SharedStyle, Footer, Img, FitDrawer } from '../components/ui'
 import { useShop } from '../lib/store'
 import { byId } from '../lib/catalog'
 import { createOrder } from '../lib/orders'
+import { useMember, openLogin, rememberAddr, prefill } from '../lib/auth'
+import { useEffect } from 'react'
 
 export default function Cart() {
   const { cart, setQty, removeCart } = useShop()
@@ -14,12 +16,16 @@ export default function Cart() {
   const [co, setCo] = useState(false)
   const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
   const [err, setErr] = useState('')
+  const [member] = useMember()
+  useEffect(() => { if (member) setF(prev => prev.name || prev.phone || prev.addr ? prev : prefill(member)) }, [member])
   const rows = cart.map(c => ({ ...c, p: byId(c.id) })).filter(r => r.p)
   const total = rows.reduce((n, r) => n + r.p.price * r.qty, 0)
 
   function submit() {
+    if (!member) { setCo(false); openLogin(); return }
     if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 9 || !f.addr.trim()) { setErr('받는 분, 연락처(숫자 9자리 이상), 주소를 입력해 주세요.'); return }
     const o = createOrder({ kind: 'purchase', customer: f, items: rows.map(r => ({ pid: r.id, name: r.p.name, brand: r.p.brand, size: r.size, qty: r.qty, price: r.p.price })) })
+    rememberAddr(member.id, f)
     rows.forEach(r => removeCart(r.id, r.size))
     setCo(false); setOrdered(o)
   }
@@ -79,7 +85,7 @@ export default function Cart() {
               <div className="line"><span>제품 금액</span><span>{total.toLocaleString()}원</span></div>
               <div className="line"><span>배송비</span><span>오픈 시 안내</span></div>
               <div className="line tot"><span>합계</span><span>{total.toLocaleString()}원</span></div>
-              <button className="btn-p" style={{ width: '100%', marginTop: 16 }} onClick={() => { setErr(''); setCo(true) }}>주문하기</button>
+              <button className="btn-p" style={{ width: '100%', marginTop: 16 }} onClick={() => { if (!member) { openLogin(); return } setErr(''); setCo(true) }}>{member ? '주문하기' : '로그인하고 주문하기'}</button>
               <p style={{ fontSize: 12, color: '#8a8a8a', lineHeight: 1.6, margin: '12px 0 0' }}>결제는 아직 연결되지 않아 주문 접수만 진행돼요.</p>
             </aside>
           </div>

@@ -67,9 +67,23 @@ export function patchOrder(id, fn, text, by = '관리자') {
   }))
   if (text) logAct(`${id} ${text}`, by)
 }
+// 위디 적립: 구매 '배송완료' / 피팅 '구매확정' 시 적립률(본사 설정, 기본 3%)만큼 회원 포인트로 지급. 주문당 1회, 반품·취소 시 회수.
+function withyMove(o, status) {
+  const members = kvRead('clyq_members', [])
+  const m = members.find(x => x.id === o.owner)
+  if (!m) return
+  const rate = Number((kvRead('clyq_withy_cfg', { rate: 3 }) || {}).rate ?? 3)
+  const amt = Math.round(o.total * rate / 100)
+  const d = new Date(); const date = `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
+  let entry = null
+  if (DONE.includes(status) && !o.withyAwarded && amt > 0) { o.withyAwarded = amt; entry = { date, desc: `${o.kind === 'fitting' ? '피팅 후 구매 확정' : '구매 완료'} 적립 ${rate}% (${o.id})`, amount: amt, type: 'earn' } }
+  else if (['반품완료', '취소'].includes(status) && o.withyAwarded && !o.withyRevoked) { o.withyRevoked = true; entry = { date, desc: `${status} 적립 회수 (${o.id})`, amount: -o.withyAwarded, type: 'use' } }
+  if (entry) kvWrite('clyq_members', members.map(x => x.id === m.id ? { ...x, ledger: [...(x.ledger || []), entry] } : x))
+}
 export function setStatus(id, status, by = '관리자') {
   patchOrder(id, o => {
     o.status = status
+    withyMove(o, status)
     if (DONE.includes(status)) o.doneAt = now()
     if (status === '피팅중') o.fitStartAt = now()
     if (status === '구매확정' && o.kind === 'fitting') {
@@ -97,6 +111,7 @@ export function setClaim(orderId, claimId, status, note = '') {
     if (status === '완료') {
       if (c.type === '취소') { o.status = '취소' }
       if (c.type === '반품' && o.kind === 'purchase') { o.status = '반품완료' }
+      withyMove(o, o.status)
     }
     return o
   }, `${o_type(orderId, claimId)} ${status}`)
@@ -132,7 +147,7 @@ export function brandShip(id, brand, status, tracking) {
     if (o.kind === 'purchase') { // 피팅 주문의 상태·송장은 피팅박스 기준이라 건드리지 않음
       if (tracking && !o.tracking) o.tracking = tracking
       const sts = [...new Set(o.items.map(i => i.brand))].map(b => o.ship[b] && o.ship[b].status)
-      if (sts.every(x => x === '배송완료')) { o.status = '배송완료'; o.doneAt = now() } else if (sts.some(x => x)) { o.status = '배송중' }
+      if (sts.every(x => x === '배송완료')) { o.status = '배송완료'; o.doneAt = now(); withyMove(o, '배송완료') } else if (sts.some(x => x)) { o.status = '배송중' }
     }
     return o
   }, `${brand} ${status}${tracking ? ` (${tracking.carrier} ${tracking.no})` : ''}`, brand)

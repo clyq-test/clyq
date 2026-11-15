@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { BRANDS } from '../../../lib/catalog'
 import { useState } from 'react'
 
 const ROLE = 'clyq'
@@ -117,7 +118,7 @@ export default function FittingProductNew() {
           <div style={cellS}>
             <select style={selectS} value={form.brand} onChange={e=>f('brand',e.target.value)}>
               <option value="">브랜드 선택</option>
-              {['MARCIA','MATIN KIM','EENK','D.POUND','ANOTHER A','EIGHT','ANDERSSONBELL','ADER ERROR','SORRY TOO MUCH LOVE'].map(b=><option key={b}>{b}</option>)}
+              {BRANDS.map(b=><option key={b}>{b}</option>)}
             </select>
           </div>
         </div>

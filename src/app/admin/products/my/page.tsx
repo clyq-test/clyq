@@ -1,19 +1,16 @@
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
+import { allProducts as catalog } from '../../../lib/catalog'
+import { BRAND } from '../../_brand'
 
-const allProducts = [
-  { id:'MA-2026-CT-001', name:'Oversized Cashmere Wool Coat', nameKo:'오버핏 캐시미어 울 코트', category:'여성 | 의류 > 아우터 > 코트', regDate:'2026-03-10', regularPrice:498000, salePrice:298000, commission:30, supplyPrice:208600, sellStatus:'판매중', fitting:true, display:'Y', season:'2026 F/W', stock:12, optionYn:'Y' },
-  { id:'MA-2026-ST-003', name:'Wool Blazer Set-up', nameKo:'울 블레이저 세트업', category:'여성 | 의류 > 원피스·세트 > 세트업', regDate:'2026-03-10', regularPrice:520000, salePrice:389000, commission:30, supplyPrice:272300, sellStatus:'판매중', fitting:true, display:'Y', season:'2026 F/W', stock:8, optionYn:'Y' },
-  { id:'MA-2026-JK-007', name:'Leather Jacket', nameKo:'레더 재킷', category:'여성 | 의류 > 아우터 > 재킷', regDate:'2026-03-15', regularPrice:680000, salePrice:456000, commission:30, supplyPrice:319200, sellStatus:'판매중', fitting:false, display:'Y', season:'2026 F/W', stock:3, optionYn:'Y' },
-  { id:'MA-2026-KN-012', name:'Cashmere Knit', nameKo:'캐시미어 니트', category:'여성 | 의류 > 상의 > 니트', regDate:'2026-03-20', regularPrice:248000, salePrice:178000, commission:30, supplyPrice:124600, sellStatus:'판매중', fitting:true, display:'Y', season:'2026 F/W', stock:0, optionYn:'N' },
-  { id:'MA-2026-BL-005', name:'Silk Blouse', nameKo:'실크 블라우스', category:'여성 | 의류 > 상의 > 블라우스', regDate:'2026-02-01', regularPrice:198000, salePrice:148000, commission:30, supplyPrice:103600, sellStatus:'품절', fitting:false, display:'Y', season:'2026 S/S', stock:0, optionYn:'Y' },
-  { id:'MA-2025-CT-088', name:'Double Wool Coat', nameKo:'더블 울 코트', category:'여성 | 의류 > 아우터 > 코트', regDate:'2025-09-05', regularPrice:598000, salePrice:398000, commission:30, supplyPrice:278600, sellStatus:'판매중지', fitting:false, display:'N', season:'2025 F/W', stock:5, optionYn:'Y' },
-  { id:'MA-2025-SK-044', name:'Midi Flare Skirt', nameKo:'미디 플레어 스커트', category:'여성 | 의류 > 하의 > 스커트', regDate:'2025-08-20', regularPrice:178000, salePrice:128000, commission:27, supplyPrice:93440, sellStatus:'품절', fitting:false, display:'Y', season:'2025 F/W', stock:0, optionYn:'N' },
-  { id:'MA-2025-KN-031', name:'Merino Wool Turtleneck', nameKo:'메리노 울 터틀넥', category:'여성 | 의류 > 상의 > 니트', regDate:'2025-08-10', regularPrice:168000, salePrice:118000, commission:27, supplyPrice:86140, sellStatus:'판매중', fitting:true, display:'Y', season:'2025 F/W', stock:14, optionYn:'Y' },
-  { id:'MA-2025-PA-019', name:'Wide Leg Trousers', nameKo:'와이드 레그 트라우저', category:'여성 | 의류 > 하의 > 팬츠', regDate:'2025-07-15', regularPrice:228000, salePrice:168000, commission:27, supplyPrice:122640, sellStatus:'판매중', fitting:false, display:'Y', season:'2025 S/S', stock:7, optionYn:'Y' },
-  { id:'MA-2025-BL-011', name:'Linen Shirt Blouse', nameKo:'리넨 셔츠 블라우스', category:'여성 | 의류 > 상의 > 블라우스', regDate:'2025-04-01', regularPrice:148000, salePrice:98000, commission:27, supplyPrice:71540, sellStatus:'품절', fitting:false, display:'Y', season:'2025 S/S', stock:0, optionYn:'N' },
-]
+// 쇼핑몰 카탈로그의 내 브랜드 제품(샘플 20개)을 그대로 보여줍니다. 수수료 30%는 샘플 값이에요.
+const allProducts = catalog.filter(p => p.brand === BRAND).map((p, i) => ({
+  id: 'MA-2026-' + String(p.id).padStart(3, '0'), name: p.name, nameKo: p.name,
+  category: '여성 | 의류 > ' + p.category, regDate: '2026-03-' + String(1 + (i % 28)).padStart(2, '0'),
+  regularPrice: p.original, salePrice: p.price, commission: 30, supplyPrice: Math.round(p.price * 0.7),
+  sellStatus: '판매중', fitting: p.fit, display: 'Y', season: '2026 F/W', stock: 8 + (p.id * 7) % 30, optionYn: 'Y',
+}))
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50]
 const sellStatusOptions = ['전체','판매중','품절','판매중지']

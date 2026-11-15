@@ -91,6 +91,11 @@ export function saveStyle(id, data) {
   return rewarded
 }
 
+export const openLogin = () => window.dispatchEvent(new Event('clyq-open-login'))
+// 주문 때 입력한 배송지를 다음 주문에 미리 채워주기 위해 저장
+export const rememberAddr = (id, f) => updateMember(id, { addr: f.addr, addr2: f.addr2 })
+export const prefill = m => m ? { name: m.name, phone: m.phone || '', addr: m.addr || '', addr2: m.addr2 || '' } : { name: '', phone: '', addr: '', addr2: '' }
+
 export function useMember() {
   const [m, setM] = useState(null)
   const [ready, setReady] = useState(false)

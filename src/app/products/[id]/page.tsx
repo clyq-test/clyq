@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 import { createOrder, addInquiry, useKV } from '../../lib/orders'
+import { useMember, openLogin, rememberAddr, prefill } from '../../lib/auth'
 import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useShop } from '../../lib/store'
@@ -58,6 +59,8 @@ export default function ProductDetail() {
   const [done, setDone] = useState(false)
   const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
   const [oid, setOid] = useState('')
+  const [member] = useMember()
+  useEffect(() => { if (member) setF(prev => prev.name || prev.phone || prev.addr ? prev : prefill(member)) }, [member])
   const [ferr, setFerr] = useState('')
   const [inq] = useKV('clyq_inq', [])
   const [qtxt, setQtxt] = useState('')
@@ -71,12 +74,13 @@ export default function ProductDetail() {
   const say = m => { setToast(m); setTimeout(() => setToast(''), 2400) }
   function openDrawer(k) {
     if (!size) { say('사이즈를 먼저 선택해 주세요'); return }
+    if (!member) { say('로그인 후 이용할 수 있어요'); openLogin(); return }
     setDrawer(k); setStep(1); setDone(false); document.body.style.overflow = 'hidden'
   }
   function submitOrder() {
     if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 9 || !f.addr.trim()) { setFerr('받는 분, 연락처(숫자 9자리 이상), 주소를 입력해 주세요.'); return }
     const o = createOrder({ kind: drawer === 'fit' ? 'fitting' : 'purchase', customer: f, items: [{ pid: cp ? cp.id : 0, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] })
-    setOid(o.id); setFerr(''); setDone(true)
+    rememberAddr(member.id, f); setOid(o.id); setFerr(''); setDone(true)
   }
   function closeDrawer() { setDrawer(null); document.body.style.overflow = '' }
 

@@ -4,6 +4,7 @@ import { useMember, loginMember, logoutMember, balance } from '../lib/auth'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShop } from '../lib/store'
+import { BRANDS } from '../lib/catalog'
 
 export default function Navbar() {
   const router = useRouter()
@@ -24,6 +25,11 @@ export default function Navbar() {
   useEffect(() => {
     setIsLoggedIn(!!member); setUserName(member ? member.name : '')
   }, [member])
+  useEffect(() => {
+    const h = () => { setLoginTab('login'); setLoginOpen(true); document.body.style.overflow = 'hidden' }
+    window.addEventListener('clyq-open-login', h)
+    return () => window.removeEventListener('clyq-open-login', h)
+  }, [])
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('login') === '1' && !member) { setLoginOpen(true); document.body.style.overflow = 'hidden' }
   }, [])
@@ -52,11 +58,7 @@ export default function Navbar() {
       [{ h: '하의', sub: ['스커트', '팬츠', '레깅스', '쇼츠'] }, { h: '원피스·세트', sub: ['미디 드레스', '미니 드레스', '세트업', '점프수트'] }],
       [{ h: '가방', sub: ['숄더백', '크로스백', '토트백', '클러치'] }, { h: '슈즈', sub: ['플랫', '힐', '스니커즈', '부츠'] }],
     ],
-    '브랜드': [
-      ['MARCIA', 'MATIN KIM', 'EENK', 'D.POUND'],
-      ['ANOTHER A', 'EIGHT', 'ANDERSSONBELL', 'ADER ERROR'],
-      ['SORRY TOO MUCH LOVE', '전체 브랜드 보기'],
-    ],
+    '브랜드': [BRANDS.slice(0, 4), BRANDS.slice(4, 8), BRANDS.slice(8, 12), [...BRANDS.slice(12), '전체 브랜드 보기']],
   }
 
   const catItems = [
@@ -177,7 +179,7 @@ export default function Navbar() {
           <div className="nav-di" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <a href="/withy" className="withy-pill">
               <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#C49A6C' }} />
-              위디 2,400P
+              위디 {member ? balance(member).toLocaleString() : 0}P
             </a>
 
             {/* 찜 */}
@@ -210,7 +212,7 @@ export default function Navbar() {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px' }}>
                     <span style={{ fontSize: '11px', fontWeight: 500, color: '#1C1C1C' }}>{userName}님</span>
-                    <span style={{ fontSize: '10px', color: '#A07A4E' }}>골드 2,400P</span>
+                    <span style={{ fontSize: '10px', color: '#A07A4E' }}>위디 {member ? balance(member).toLocaleString() : 0}P</span>
                   </div>
                 </button>
                 {userMenuOpen && (
@@ -221,7 +223,7 @@ export default function Navbar() {
                         { label: '마이페이지', href: '/mypage' },
                         { label: '피팅 현황', href: '/mypage' },
                         { label: '주문 내역', href: '/orders' },
-                        { label: '위디 2,400P', href: '/withy' },
+                        { label: '위디 ' + (member ? balance(member).toLocaleString() : 0) + 'P', href: '/withy' },
                         { label: 'AI 취향 설정', href: '/mypage' },
                       ].map(item => (
                         <a key={item.label} href={item.href} className="udi" onClick={() => setUserMenuOpen(false)}>

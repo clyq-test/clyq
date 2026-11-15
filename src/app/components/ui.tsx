@@ -1,7 +1,8 @@
 // @ts-nocheck
 'use client'
 import { createOrder } from '../lib/orders'
-import { useState } from 'react'
+import { useMember, openLogin, rememberAddr, prefill } from '../lib/auth'
+import { useState, useEffect } from 'react'
 import { useShop } from '../lib/store'
 
 /* 공용 이미지 헬퍼 (Unsplash, 로드 확인된 ID만 사용) */
@@ -153,10 +154,12 @@ export function FitDrawer({ product, onClose }) {
   const [done, setDone] = useState(false)
   const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
   const [oid, setOid] = useState('')
+  const [member, mReady] = useMember()
+  useEffect(() => { if (member) setF(prev => prev.name || prev.phone || prev.addr ? prev : prefill(member)) }, [member])
   if (!product) return null
   const valid = f.name.trim() && f.phone.replace(/\D/g, '').length >= 9 && f.addr.trim()
   const canNext = step === 1 ? !!size : step === 2 ? !!valid : true
-  const submit = () => { const o = createOrder({ kind: 'fitting', customer: f, items: [{ pid: product.id, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] }); setOid(o.id); setDone(true) }
+  const submit = () => { if (!member) return; const o = createOrder({ kind: 'fitting', customer: f, items: [{ pid: product.id, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] }); rememberAddr(member.id, f); setOid(o.id); setDone(true) }
   return (
     <div className="fd-bg" onClick={onClose}>
       <style>{`
@@ -188,7 +191,13 @@ export function FitDrawer({ product, onClose }) {
             <Img src={product.image} alt={product.name} />
             <div><div className="pc-brand" style={{ fontSize: 12, color: '#8a8a8a' }}>{product.brand}</div><div style={{ fontSize: 14, fontWeight: 500, margin: '2px 0 4px' }}>{product.name}</div><div style={{ fontSize: 14, fontWeight: 600 }}>{product.price.toLocaleString()}원</div></div>
           </div>
-          {done ? (
+          {mReady && !member && !done ? (
+            <div>
+              <div className="fd-note">피팅박스는 로그인한 회원만 신청할 수 있어요. 가입하면 위디 포인트도 바로 적립돼요.</div>
+              <button className="fd-btn" style={{ width: '100%', marginTop: 16 }} onClick={() => { onClose(); openLogin() }}>로그인</button>
+              <a href="/signup" className="fd-btn" style={{ width: '100%', marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', color: '#111', border: '1px solid #ddd' }}>회원가입</a>
+            </div>
+          ) : done ? (
             <div>
               <p style={{ fontSize: 14, color: '#6b6b6b', lineHeight: 1.7, margin: '0 0 20px' }}>신청번호 {oid}. 접수 내역은 주문 내역에서 확인할 수 있어요. 실제 일정은 서비스 오픈 시 확정됩니다.</p>
               <button className="fd-btn" style={{ width: '100%' }} onClick={onClose}>확인</button>
@@ -213,7 +222,7 @@ export function FitDrawer({ product, onClose }) {
             </div>
           )}
         </div>
-        {!done && (
+        {!done && member && (
           <div className="fd-f">
             <button onClick={() => step > 1 && setStep(step - 1)} style={{ fontSize: 13, color: '#8a8a8a', visibility: step > 1 ? 'visible' : 'hidden', minHeight: 44 }}>이전</button>
             <button className="fd-btn" disabled={!canNext} onClick={() => step < 3 ? setStep(step + 1) : submit()}>{step < 3 ? '다음' : '신청하기'}</button>

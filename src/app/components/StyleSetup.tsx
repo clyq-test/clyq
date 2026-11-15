@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { BRANDS } from '../lib/catalog'
 import { useState } from 'react'
 
 const steps = [
@@ -99,15 +100,7 @@ const steps = [
     type: 'multi',
     max: 5,
     options: [
-      { value:'marcia', label:'MARCIA', icon:'M' },
-      { value:'matin_kim', label:'MATIN KIM', icon:'MK' },
-      { value:'eenk', label:'EENK', icon:'E' },
-      { value:'eight', label:'EIGHT', icon:'8' },
-      { value:'anderssonbell', label:'ANDERSSONBELL', icon:'AB' },
-      { value:'dpound', label:'D.POUND', icon:'D' },
-      { value:'another_a', label:'ANOTHER A', icon:'AA' },
-      { value:'ader', label:'ADER ERROR', icon:'AE' },
-      { value:'stml', label:'SORRY TOO MUCH LOVE', icon:'S' },
+      ...BRANDS.map(b => ({ value: b, label: b, icon: b.split(/[ &]+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2) })),
       { value:'no_brand', label:'브랜드보다 스타일', icon:'✨' },
     ]
   },
