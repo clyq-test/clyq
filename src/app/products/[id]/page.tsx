@@ -154,7 +154,7 @@ export default function ProductDetail() {
         .pd-wrap { transition: padding-right .35s ease; }
         @media (min-width: 901px) { .wrap-full.pd-open { padding-right: 280px; } }
         @media (prefers-reduced-motion: reduce) { .pd-wrap { transition: none; } .rel, .rel-t, .rel ul { transition: none; } }
-        @media (max-width: 768px) { .rel { bottom: 12px; width: min(232px, calc(100vw - 24px)); } }
+        @media (max-width: 768px) { .rel li:nth-child(n+6) { display: none; } .rel { bottom: 12px; width: min(232px, calc(100vw - 24px)); } }
         .pd-imgs { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 32px 0 16px; border-top: 1px solid #eee; }
         .pd-img { width: 100%; max-width: 1000px; background: #f4f4f2; }
         .pd-img img { width: 100%; height: auto; min-height: 320px; object-fit: cover; }
