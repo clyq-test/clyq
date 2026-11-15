@@ -93,7 +93,7 @@ export default function ProductDetail() {
         .btn-fit { background: #3D6A4F; color: #fff; min-height: 52px; font-size: 15px; font-weight: 500; }
         .btn-fit:hover:not(:disabled) { background: #2F5540; }
         .btn-fit:disabled { background: #ececea; color: #a0a0a0; cursor: not-allowed; }
-        .fit-info { display: flex; gap: 12px; align-items: flex-start; margin-top: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.6; background: #edf4ef; color: #2f5540; }
+        .fit-info { word-break: keep-all; display: flex; gap: 12px; align-items: flex-start; margin-top: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.6; background: #edf4ef; color: #2f5540; }
         .fit-info.no { background: #f4f4f2; color: #6b6b6b; }
         .fit-info b { display: block; font-weight: 600; margin-bottom: 2px; }
         .pd-fitbadge { position: absolute; top: 12px; left: 12px; z-index: 2; background: #fff; color: #3D6A4F; font-size: 12px; font-weight: 500; padding: 5px 10px; }
@@ -152,13 +152,6 @@ export default function ProductDetail() {
               {product.fit && <span className="pd-fitbadge">피팅박스 신청 가능</span>}
               <span className="pd-cnt">{img + 1} / {product.images.length}</span>
             </div>
-            <div className={'fit-info' + (product.fit ? '' : ' no')} style={{ marginTop: 12, marginBottom: 12 }}>
-              {product.fit ? (
-                <div><b>피팅박스 신청 가능</b>집에서 48시간 입어보고, 마음에 들면 구매를 확정하세요. 구매를 확정한 제품만 결제됩니다.</div>
-              ) : (
-                <div><b>피팅박스 신청 불가</b>이 제품은 피팅박스로 받아볼 수 없어요. 바로 구매로 이용해 주세요.</div>
-              )}
-            </div>
             <div className="pd-thumbs">
               {product.images.map((s, i) => (
                 <button key={i} className={'pd-th' + (img === i ? ' on' : '')} onClick={() => go(i)} aria-label={`이미지 ${i + 1}`}><Img src={s.replace('w=900', 'w=200')} alt="" /></button>
@@ -174,6 +167,13 @@ export default function ProductDetail() {
             <div className="sizes">
               {(sizeNames || product.sizes).map(z => <button key={z} className={'size' + (size === z ? ' on' : '')} onClick={() => setSize(z)}>{z}</button>)}
               {!sizeNames && product.soldout.map(z => <button key={z} className="size" disabled>{z}</button>)}
+            </div>
+            <div className={'fit-info' + (product.fit ? '' : ' no')} style={{ marginTop: 0, marginBottom: 12 }}>
+              {product.fit ? (
+                <div><b>피팅박스 신청 가능</b>집에서 48시간 입어보고, 마음에 들면 구매를 확정하세요. 구매를 확정한 제품만 결제됩니다.</div>
+              ) : (
+                <div><b>피팅박스 신청 불가</b>이 제품은 피팅박스로 받아볼 수 없어요. 바로 구매로 이용해 주세요.</div>
+              )}
             </div>
             <div className="pd-btns">
               <button className="btn-fit" disabled={!product.fit} onClick={() => product.fit && openDrawer('fit')}>{product.fit ? '피팅박스 신청' : '피팅박스 신청 불가 제품'}</button>
