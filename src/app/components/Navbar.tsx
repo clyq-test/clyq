@@ -211,7 +211,7 @@ export default function Navbar() {
                       {[
                         { label: '마이페이지', href: '/mypage' },
                         { label: '피팅 현황', href: '/mypage' },
-                        { label: '주문 내역', href: '/mypage' },
+                        { label: '주문 내역', href: '/orders' },
                         { label: '위디 2,400P', href: '/withy' },
                         { label: 'AI 취향 설정', href: '/mypage' },
                       ].map(item => (

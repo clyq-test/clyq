@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
+import { useOrders, won, DONE } from '../lib/orders'
 
 const kpis = [
   { label:'오늘 피팅 신청',  value:'18',         unit:'건', sub:'+8% 어제 대비',   color:'#555' },
@@ -87,6 +88,10 @@ const brandStatusStyle = {
 const stageOptions = ['전체', ...pipeline.map(p => p.stage)]
 
 export default function ClyqDashboard() {
+  const [realOrders] = useOrders()
+  const newN = realOrders.filter(o => ['주문접수', '신청접수'].includes(o.status)).length
+  const shipN = realOrders.filter(o => ['상품준비', '발송준비'].includes(o.status)).length
+  const claimN = realOrders.reduce((n, o) => n + (o.claims || []).filter(c => c.status === '접수' || c.status === '처리중').length, 0)
   const [selectedBrand, setSelectedBrand] = useState(null)
   const [stageFilter, setStageFilter]     = useState('전체')
 
@@ -198,7 +203,17 @@ export default function ClyqDashboard() {
           </div>
         </div>
 
-        {/* KPI */}
+        {/* 실제 접수 주문 (쇼핑몰 연동) */}
+        <div className="cqd-card" style={{ marginBottom:'20px' }}>
+          <div className="cqd-card-head"><span className="cqd-card-title">쇼핑몰 실제 주문 현황</span><button className="cqd-link" onClick={() => location.href='/clyq/orders'}>주문 처리하러 가기</button></div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))' }}>
+            {[['신규 접수', newN], ['출고 준비', shipN], ['미처리 클레임', claimN], ['전체 주문', realOrders.length]].map(([l, v]) => (
+              <div key={l} style={{ padding:'16px 20px', borderRight:'1px solid #eeeeec' }}><div style={{ fontSize:'13px', color:'#767676', marginBottom:'6px' }}>{l}</div><div style={{ fontSize:'24px', fontWeight:700 }}>{v}건</div></div>
+            ))}
+          </div>
+        </div>
+
+        {/* KPI (아래 숫자는 샘플) */}
         <div className="cqd-kpi-grid">
           {kpis.map(k => (
             <div key={k.label} className="cqd-kpi">

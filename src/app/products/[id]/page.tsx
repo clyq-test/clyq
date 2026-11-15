@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { createOrder } from '../../lib/orders'
 import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useShop } from '../../lib/store'
@@ -55,6 +56,9 @@ export default function ProductDetail() {
   const [drawer, setDrawer] = useState(null) // 'fit' | 'buy'
   const [step, setStep] = useState(1)
   const [done, setDone] = useState(false)
+  const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
+  const [oid, setOid] = useState('')
+  const [ferr, setFerr] = useState('')
   const [toast, setToast] = useState('')
   const [zoom, setZoom] = useState({ on: false, x: 50, y: 50 })
   const touchX = useRef(0)
@@ -66,6 +70,11 @@ export default function ProductDetail() {
   function openDrawer(k) {
     if (!size) { say('사이즈를 먼저 선택해 주세요'); return }
     setDrawer(k); setStep(1); setDone(false); document.body.style.overflow = 'hidden'
+  }
+  function submitOrder() {
+    if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 9 || !f.addr.trim()) { setFerr('받는 분, 연락처(숫자 9자리 이상), 주소를 입력해 주세요.'); return }
+    const o = createOrder({ kind: drawer === 'fit' ? 'fitting' : 'purchase', customer: f, items: [{ pid: cp ? cp.id : 0, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] })
+    setOid(o.id); setFerr(''); setDone(true)
   }
   function closeDrawer() { setDrawer(null); document.body.style.overflow = '' }
 
@@ -267,14 +276,14 @@ export default function ProductDetail() {
         <div className="bg" onClick={closeDrawer}>
           <div className="dr" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
             <div className="dr-h">
-              <span>{done ? (drawer === 'fit' ? '신청이 접수됐어요' : '주문 화면 예시') : drawer === 'fit' ? `피팅박스 신청 (${step}/2)` : '주문 확인'}</span>
+              <span>{done ? (drawer === 'fit' ? '신청이 접수됐어요' : '주문이 접수됐어요') : drawer === 'fit' ? `피팅박스 신청 (${step}/2)` : `바로 구매 (${step}/2)`}</span>
               <button style={{ width: 44, height: 44, fontSize: 18 }} onClick={closeDrawer} aria-label="닫기">✕</button>
             </div>
             <div className="dr-b">
               {done ? (
                 <div>
                   <p style={{ fontSize: 14, color: '#6b6b6b', lineHeight: 1.7, margin: '0 0 20px' }}>
-                    {drawer === 'fit' ? '접수 상태는 알림으로 알려드려요. 실제 일정은 서비스 오픈 시 확정됩니다.' : '현재는 결제가 연결되지 않은 화면 예시입니다.'}
+                    {(drawer === 'fit' ? '신청번호 ' : '주문번호 ') + oid + '. 접수 내역은 주문 내역에서 확인할 수 있어요. ' + (drawer === 'fit' ? '실제 일정은 서비스 오픈 시 확정됩니다.' : '결제는 연결 전이라 실제 청구는 없습니다.')}
                   </p>
                   <button className="btn-p" style={{ width: '100%' }} onClick={closeDrawer}>확인</button>
                 </div>
@@ -284,12 +293,13 @@ export default function ProductDetail() {
                     <Img src={product.images[0].replace('w=900', 'w=200')} alt="" style={{ width: 64, height: 80, objectFit: 'cover' }} />
                     <div><div className="pc-brand">{product.brand}</div><div style={{ fontSize: 14, fontWeight: 500, margin: '2px 0 4px' }}>{product.name}</div><div style={{ fontSize: 14, fontWeight: 600 }}>{product.price.toLocaleString()}원</div></div>
                   </div>
-                  {drawer === 'fit' && step === 2 ? (
+                  {step === 2 ? (
                     <div>
-                      <input className="inp" placeholder="받는 분" />
-                      <input className="inp" type="tel" placeholder="연락처" />
-                      <input className="inp" placeholder="주소" />
-                      <input className="inp" placeholder="상세 주소" />
+                      <input className="inp" placeholder="받는 분" value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
+                      <input className="inp" type="tel" placeholder="연락처" value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} />
+                      <input className="inp" placeholder="주소" value={f.addr} onChange={e => setF({ ...f, addr: e.target.value })} />
+                      <input className="inp" placeholder="상세 주소" value={f.addr2} onChange={e => setF({ ...f, addr2: e.target.value })} />
+                      {ferr && <p style={{ fontSize: 13, color: '#b3261e', margin: '4px 0 0' }}>{ferr}</p>}
                     </div>
                   ) : (
                     <div>
@@ -304,8 +314,8 @@ export default function ProductDetail() {
             {!done && (
               <div className="dr-f">
                 <button onClick={() => step > 1 && setStep(step - 1)} style={{ fontSize: 13, color: '#8a8a8a', visibility: step > 1 ? 'visible' : 'hidden', minHeight: 44 }}>이전</button>
-                <button className="btn-p" onClick={() => (drawer === 'fit' && step === 1) ? setStep(2) : setDone(true)}>
-                  {drawer === 'fit' ? (step === 1 ? '다음' : '신청하기') : '결제하기'}
+                <button className="btn-p" onClick={() => step === 1 ? setStep(2) : submitOrder()}>
+                  {step === 1 ? '다음' : drawer === 'fit' ? '신청하기' : '주문 접수하기'}
                 </button>
               </div>
             )}

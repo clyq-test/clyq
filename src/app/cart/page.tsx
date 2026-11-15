@@ -5,13 +5,24 @@ import Navbar from '../components/Navbar'
 import { SharedStyle, Footer, Img, FitDrawer } from '../components/ui'
 import { useShop } from '../lib/store'
 import { byId } from '../lib/catalog'
+import { createOrder } from '../lib/orders'
 
 export default function Cart() {
   const { cart, setQty, removeCart } = useShop()
   const [fit, setFit] = useState(null)
-  const [ordered, setOrdered] = useState(false)
+  const [ordered, setOrdered] = useState(null)
+  const [co, setCo] = useState(false)
+  const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
+  const [err, setErr] = useState('')
   const rows = cart.map(c => ({ ...c, p: byId(c.id) })).filter(r => r.p)
   const total = rows.reduce((n, r) => n + r.p.price * r.qty, 0)
+
+  function submit() {
+    if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 9 || !f.addr.trim()) { setErr('받는 분, 연락처(숫자 9자리 이상), 주소를 입력해 주세요.'); return }
+    const o = createOrder({ kind: 'purchase', customer: f, items: rows.map(r => ({ pid: r.id, name: r.p.name, brand: r.p.brand, size: r.size, qty: r.qty, price: r.p.price })) })
+    rows.forEach(r => removeCart(r.id, r.size))
+    setCo(false); setOrdered(o)
+  }
 
   return (
     <main>
@@ -68,12 +79,36 @@ export default function Cart() {
               <div className="line"><span>제품 금액</span><span>{total.toLocaleString()}원</span></div>
               <div className="line"><span>배송비</span><span>오픈 시 안내</span></div>
               <div className="line tot"><span>합계</span><span>{total.toLocaleString()}원</span></div>
-              <button className="btn-p" style={{ width: '100%', marginTop: 16 }} onClick={() => setOrdered(true)}>주문하기</button>
-              {ordered && <p style={{ fontSize: 12, color: '#8a8a8a', lineHeight: 1.6, margin: '12px 0 0' }}>결제는 아직 연결되지 않았어요. 현재는 화면 예시입니다.</p>}
+              <button className="btn-p" style={{ width: '100%', marginTop: 16 }} onClick={() => { setErr(''); setCo(true) }}>주문하기</button>
+              <p style={{ fontSize: 12, color: '#8a8a8a', lineHeight: 1.6, margin: '12px 0 0' }}>결제는 아직 연결되지 않아 주문 접수만 진행돼요.</p>
             </aside>
           </div>
         )}
       </div>
+      {co && (
+        <div className="co-bg" onClick={() => setCo(false)}>
+          <style>{`.co-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; } .co { background: #fff; width: min(440px, 100%); padding: 28px; max-height: 92vh; overflow-y: auto; } .co h2 { margin: 0 0 16px; font-size: 18px; } .co input { width: 100%; padding: 12px 14px; border: 1px solid #e5e5e5; font-size: 14px; font-family: inherit; margin-bottom: 10px; min-height: 44px; } .co input:focus { outline: none; border-color: #111; }`}</style>
+          <div className="co" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+            <h2>배송 정보</h2>
+            <input placeholder="받는 분" value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
+            <input type="tel" placeholder="연락처" value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} />
+            <input placeholder="주소" value={f.addr} onChange={e => setF({ ...f, addr: e.target.value })} />
+            <input placeholder="상세 주소" value={f.addr2} onChange={e => setF({ ...f, addr2: e.target.value })} />
+            <p style={{ fontSize: 12, color: '#8a8a8a', lineHeight: 1.6, margin: '0 0 12px' }}>합계 {total.toLocaleString()}원 · 결제는 연결 전이라 접수만 되며, 실제 청구는 없습니다.</p>
+            {err && <p style={{ fontSize: 13, color: '#b3261e', margin: '0 0 12px' }}>{err}</p>}
+            <button className="btn-p" style={{ width: '100%' }} onClick={submit}>주문 접수하기</button>
+          </div>
+        </div>
+      )}
+      {ordered && (
+        <div className="co-bg" onClick={() => setOrdered(null)}>
+          <div className="co" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+            <h2>주문이 접수됐어요</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.8, margin: '0 0 16px' }}>주문번호 <b>{ordered.id}</b><br />합계 {ordered.total.toLocaleString()}원 · 결제 연결 전이라 실제 청구는 없습니다.</p>
+            <a href="/orders" className="btn-p" style={{ width: '100%', textAlign: 'center' }}>주문 내역 보기</a>
+          </div>
+        </div>
+      )}
       {fit && <FitDrawer product={fit} onClose={() => setFit(null)} />}
       <Footer />
     </main>

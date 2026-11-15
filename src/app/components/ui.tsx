@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { createOrder } from '../lib/orders'
 import { useState } from 'react'
 import { useShop } from '../lib/store'
 
@@ -150,8 +151,12 @@ export function FitDrawer({ product, onClose }) {
   const [step, setStep] = useState(1)
   const [size, setSize] = useState('')
   const [done, setDone] = useState(false)
+  const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
+  const [oid, setOid] = useState('')
   if (!product) return null
-  const canNext = step === 1 ? !!size : true
+  const valid = f.name.trim() && f.phone.replace(/\D/g, '').length >= 9 && f.addr.trim()
+  const canNext = step === 1 ? !!size : step === 2 ? !!valid : true
+  const submit = () => { const o = createOrder({ kind: 'fitting', customer: f, items: [{ pid: product.id, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] }); setOid(o.id); setDone(true) }
   return (
     <div className="fd-bg" onClick={onClose}>
       <style>{`
@@ -185,7 +190,7 @@ export function FitDrawer({ product, onClose }) {
           </div>
           {done ? (
             <div>
-              <p style={{ fontSize: 14, color: '#6b6b6b', lineHeight: 1.7, margin: '0 0 20px' }}>접수 상태는 알림으로 알려드려요. 실제 일정은 서비스 오픈 시 확정됩니다.</p>
+              <p style={{ fontSize: 14, color: '#6b6b6b', lineHeight: 1.7, margin: '0 0 20px' }}>신청번호 {oid}. 접수 내역은 주문 내역에서 확인할 수 있어요. 실제 일정은 서비스 오픈 시 확정됩니다.</p>
               <button className="fd-btn" style={{ width: '100%' }} onClick={onClose}>확인</button>
             </div>
           ) : step === 1 ? (
@@ -196,8 +201,8 @@ export function FitDrawer({ product, onClose }) {
             </div>
           ) : step === 2 ? (
             <div>
-              <input className="fd-inp" placeholder="받는 분" /><input className="fd-inp" type="tel" placeholder="연락처" />
-              <input className="fd-inp" placeholder="주소" /><input className="fd-inp" placeholder="상세 주소" />
+              <input className="fd-inp" placeholder="받는 분" value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /><input className="fd-inp" type="tel" placeholder="연락처" value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} />
+              <input className="fd-inp" placeholder="주소" value={f.addr} onChange={e => setF({ ...f, addr: e.target.value })} /><input className="fd-inp" placeholder="상세 주소" value={f.addr2} onChange={e => setF({ ...f, addr2: e.target.value })} />
             </div>
           ) : (
             <div>
@@ -211,7 +216,7 @@ export function FitDrawer({ product, onClose }) {
         {!done && (
           <div className="fd-f">
             <button onClick={() => step > 1 && setStep(step - 1)} style={{ fontSize: 13, color: '#8a8a8a', visibility: step > 1 ? 'visible' : 'hidden', minHeight: 44 }}>이전</button>
-            <button className="fd-btn" disabled={!canNext} onClick={() => step < 3 ? setStep(step + 1) : setDone(true)}>{step < 3 ? '다음' : '신청하기'}</button>
+            <button className="fd-btn" disabled={!canNext} onClick={() => step < 3 ? setStep(step + 1) : submit()}>{step < 3 ? '다음' : '신청하기'}</button>
           </div>
         )}
       </div>
