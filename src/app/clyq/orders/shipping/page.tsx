@@ -43,7 +43,7 @@ export default function Shipping() {
             <tbody>{list.map(o => (
               <tr key={o.id}>
                 <td className="ad-mono">{o.id}</td><td>{o.customer.name}<br /><span style={{ color: '#767676', fontSize: 13 }}>{o.customer.phone}</span></td>
-                <td style={{ whiteSpace: 'normal', minWidth: 180 }}>{o.customer.addr} {o.customer.addr2}</td><td>{itemsText(o)}</td><td className="ad-c"><Badge s={o.status} /></td>
+                <td style={{ whiteSpace: 'normal', minWidth: 180 }}>{o.customer.addr} {o.customer.addr2}{(o.customer.req || o.customer.entry) && <><br /><span style={{ color: '#767676', fontSize: 12 }}>{o.customer.req}{o.customer.entry ? ` · 출입: ${o.customer.entry}` : ''}</span></>}</td><td>{itemsText(o)}</td><td className="ad-c"><Badge s={o.status} /></td>
                 <td>{tab === 'wait' ? (
                   <div className="ad-row">
                     <select className="ad-inp" value={(draft[o.id] || {}).carrier || CARRIERS[0]} onChange={e => d(o.id, 'carrier', e.target.value)} aria-label="택배사">{CARRIERS.map(c => <option key={c}>{c}</option>)}</select>

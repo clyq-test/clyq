@@ -25,7 +25,7 @@ export default function BrandShipping() {
           <div className="ad-scroll"><table className="ad-tbl"><thead><tr><th>주문번호</th><th>구분</th><th>수령인</th><th>배송지</th><th>상품</th><th className="ad-c">상태</th><th>{tab === 'wait' ? '송장 입력 · 출고' : '송장 · 완료'}</th></tr></thead>
             <tbody>{list.map(o => <tr key={o.id}>
               <td className="ad-mono">{o.id}</td><td>{o.kind === 'fitting' ? '피팅 후 구매' : '구매'}</td><td>{o.customer.name}<br /><span style={{ color: '#767676', fontSize: 13 }}>{o.customer.phone}</span></td>
-              <td style={{ whiteSpace: 'normal', minWidth: 170 }}>{o.customer.addr} {o.customer.addr2}</td><td>{o.mine.map(i => `${i.name}(${i.size || '-'}) ×${i.qty}`).join(', ')}</td><td className="ad-c"><Badge s={brandStatus(o, BRAND)} /></td>
+              <td style={{ whiteSpace: 'normal', minWidth: 170 }}>{o.customer.addr} {o.customer.addr2}{(o.customer.req || o.customer.entry) && <><br /><span style={{ color: '#767676', fontSize: 12 }}>{o.customer.req}{o.customer.entry ? ` · 출입: ${o.customer.entry}` : ''}</span></>}</td><td>{o.mine.map(i => `${i.name}(${i.size || '-'}) ×${i.qty}`).join(', ')}</td><td className="ad-c"><Badge s={brandStatus(o, BRAND)} /></td>
               <td>{tab === 'wait' ? <div className="ad-row">
                 <select className="ad-inp" value={(draft[o.id] || {}).carrier || CARRIERS[0]} onChange={e => d(o.id, 'carrier', e.target.value)} aria-label="택배사">{CARRIERS.map(c => <option key={c}>{c}</option>)}</select>
                 <input className="ad-inp" style={{ width: 140 }} placeholder="송장번호" value={(draft[o.id] || {}).no || ''} onChange={e => d(o.id, 'no', e.target.value)} />

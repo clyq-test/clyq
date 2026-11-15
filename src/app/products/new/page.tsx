@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import { SharedStyle, Footer, ProductCard, Img, U } from '../../components/ui'
 import { allProducts, CATEGORIES, BRANDS } from '../../lib/catalog'
+import { exhibitionOf, moodOf } from '../../lib/curation'
 
 const sorts = ['최신순', '가격 낮은순', '가격 높은순']
 const banners = {
@@ -15,21 +16,24 @@ export default function NewProducts() {
   const [cat, setCat] = useState('전체')
   const [brand, setBrand] = useState('')
   const [sale, setSale] = useState(false)
+  const [ex, setEx] = useState('')
+  const [mood, setMood] = useState('')
   const [sort, setSort] = useState('최신순')
   const [fitOnly, setFitOnly] = useState(false)
   const [visible, setVisible] = useState(15)
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search)
-    setCat(q.get('c') || '전체'); setBrand(q.get('b') || ''); setSale(q.get('sale') === '1')
+    setCat(q.get('c') || '전체'); setBrand(q.get('b') || ''); setSale(q.get('sale') === '1'); setEx(q.get('ex') || ''); setMood(q.get('m') || '')
   }, [])
 
-  function go(c) { setCat(c); setBrand(''); setSale(false); setVisible(15); window.history.replaceState(null, '', c === '전체' ? '/products/new' : '/products/new?c=' + encodeURIComponent(c)) }
+  function go(c) { setCat(c); setBrand(''); setSale(false); setEx(''); setMood(''); setVisible(15); window.history.replaceState(null, '', c === '전체' ? '/products/new' : '/products/new?c=' + encodeURIComponent(c)) }
 
-  let list = allProducts.filter(p => (cat === '전체' || p.category === cat) && (!brand || p.brand === brand) && (!sale || p.original > p.price) && (!fitOnly || p.fit))
+  const exh = ex ? exhibitionOf(ex) : null, mo = mood ? moodOf(mood) : null
+  let list = allProducts.filter(p => (cat === '전체' || p.category === cat) && (!brand || p.brand === brand) && (!sale || p.original > p.price) && (!fitOnly || p.fit) && (!exh || exh.test(p)) && (!mo || mo.brands.includes(p.brand)))
   if (sort === '가격 낮은순') list = [...list].sort((a, b) => a.price - b.price)
   if (sort === '가격 높은순') list = [...list].sort((a, b) => b.price - a.price)
-  const title = brand || (sale ? 'SALE' : cat === '전체' ? '신상품' : cat)
+  const title = exh ? exh.title : mo ? mo.label + ' 무드' : brand || (sale ? 'SALE' : cat === '전체' ? '신상품' : cat)
 
   return (
     <main>
@@ -47,11 +51,11 @@ export default function NewProducts() {
       <Navbar />
       <section className="cat-hero">
         <Img src={banners[cat] || banners['전체']} alt="" />
-        <div><h1>{title}</h1><p>{list.length}개의 제품</p></div>
+        <div><h1>{title}</h1><p>{exh ? exh.sub + ' · ' : mo ? mo.sub + ' · ' : ''}{list.length}개의 제품</p></div>
       </section>
       <div className="wrap-full">
         <div className="tabs-full">
-          {['전체', ...CATEGORIES].map(c => <button key={c} className={'tab' + (cat === c && !brand && !sale ? ' on' : '')} onClick={() => go(c)}>{c}</button>)}
+          {['전체', ...CATEGORIES].map(c => <button key={c} className={'tab' + (cat === c && !brand && !sale && !exh && !mo ? ' on' : '')} onClick={() => go(c)}>{c}</button>)}
         </div>
         <div className="bar">
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>

@@ -64,7 +64,8 @@ export default function Orders() {
           <dl className="ad-dl">
             <dt>상태</dt><dd><Badge s={cur.status} /> <span style={{ color: '#767676', fontSize: 13 }}>{cur.payment}</span></dd>
             <dt>고객</dt><dd>{cur.customer.name} · {cur.customer.phone}</dd>
-            <dt>배송지</dt><dd>{cur.customer.addr} {cur.customer.addr2}</dd>
+            <dt>배송지</dt><dd>{cur.customer.zip ? `(${cur.customer.zip}) ` : ''}{cur.customer.addr} {cur.customer.addr2}</dd>
+            <dt>배송 요청</dt><dd>{cur.customer.req || '-'}{cur.customer.entry ? ` · 출입: ${cur.customer.entry}` : ''}</dd>
             <dt>송장</dt><dd>{cur.tracking ? `${cur.tracking.carrier} ${cur.tracking.no}` : '-'}</dd>
             {cur.fitStartAt && <dt>피팅 시작</dt>}{cur.fitStartAt && <dd>{dt(cur.fitStartAt)} (48시간 후 {dt(new Date(new Date(cur.fitStartAt).getTime() + 48 * 3600 * 1000).toISOString())})</dd>}
           </dl>

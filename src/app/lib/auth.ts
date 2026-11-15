@@ -92,9 +92,64 @@ export function saveStyle(id, data) {
 }
 
 export const openLogin = () => window.dispatchEvent(new Event('clyq-open-login'))
-// 주문 때 입력한 배송지를 다음 주문에 미리 채워주기 위해 저장
-export const rememberAddr = (id, f) => updateMember(id, { addr: f.addr, addr2: f.addr2 })
-export const prefill = m => m ? { name: m.name, phone: m.phone || '', addr: m.addr || '', addr2: m.addr2 || '' } : { name: '', phone: '', addr: '', addr2: '' }
+/* ── 배송지 목록 + 배송 정보(요청사항·공동현관 출입방법) ──
+   회원당 최대 MAX_ADDR개. 배송 정보는 배송지마다 함께 저장돼 다음 주문에 자동 입력됩니다.
+   출입 비밀번호가 포함될 수 있으므로 서버 연동 시 암호화 저장이 필요합니다. */
+export const MAX_ADDR = 10
+export const REQ_PRESETS = ['문 앞에 놓아주세요', '경비실에 맡겨주세요', '택배함에 넣어주세요', '배송 전 연락 부탁드려요', '직접 받을게요']
+export const REQ_CUSTOM = '직접 입력'
+export const addrList = m => {
+  if (!m) return []
+  if (m.addresses && m.addresses.length) return m.addresses
+  if (m.addr) return [{ id: 'legacy', label: '기본', name: m.name, phone: m.phone || '', zip: '', addr: m.addr, addr2: m.addr2 || '', req: '', entry: '', def: true }]
+  return []
+}
+const blank = m => ({ aid: '', label: '집', name: m ? m.name : '', phone: m ? m.phone || '' : '', zip: '', addr: '', addr2: '', reqSel: '', reqCustom: '', entry: '', saveAddr: true, makeDef: !addrList(m).length })
+export const fromAddress = (a, m) => ({
+  aid: a.id, label: a.label || '집', name: a.name, phone: a.phone, zip: a.zip || '', addr: a.addr, addr2: a.addr2 || '',
+  reqSel: !a.req ? '' : REQ_PRESETS.includes(a.req) ? a.req : REQ_CUSTOM, reqCustom: a.req && !REQ_PRESETS.includes(a.req) ? a.req : '',
+  entry: a.entry || '', saveAddr: true, makeDef: !!a.def,
+})
+// 주문서 초기값: 기본 배송지가 있으면 그것으로, 없으면 이름·연락처만
+export const prefill = m => { const l = addrList(m); const d = l.find(a => a.def) || l[0]; return d ? fromAddress(d, m) : blank(m) }
+export const newShip = blank
+// 주문에 저장되는 배송 정보(고객 객체)
+export const shipOf = f => ({
+  name: f.name.trim(), phone: f.phone.trim(), zip: (f.zip || '').trim(), addr: f.addr.trim(), addr2: (f.addr2 || '').trim(),
+  req: (f.reqSel === REQ_CUSTOM ? f.reqCustom : f.reqSel || '').trim(), entry: (f.entry || '').trim(),
+})
+export const shipError = f =>
+  !f.name.trim() ? '받는 분을 입력해 주세요.' :
+  f.phone.replace(/\D/g, '').length < 9 ? '연락처를 숫자 9자리 이상 입력해 주세요.' :
+  !f.addr.trim() ? '주소 검색으로 배송지를 선택해 주세요.' : ''
+
+function writeAddrs(id, list) {
+  kvWrite(MEMBERS, members().map(m => m.id === id ? { ...m, addresses: list, addr: undefined, addr2: undefined } : m))
+}
+// 주문 완료 시 호출: 체크한 경우에만 배송지 목록에 저장(같은 주소면 갱신)
+export function saveShip(id, f) {
+  const m = members().find(x => x.id === id)
+  if (!m || !f.saveAddr) return false
+  const s = shipOf(f)
+  let list = addrList(m).map(a => a.id === 'legacy' ? { ...a, id: 'A' + Date.now().toString(36) } : a)
+  const same = list.find(a => a.id === f.aid) || list.find(a => a.zip === s.zip && a.addr === s.addr && a.addr2 === s.addr2)
+  const rec = { id: same ? same.id : 'A' + Date.now().toString(36) + Math.random().toString(36).slice(2, 4), label: f.label || '집', ...s, def: same ? same.def : false }
+  if (same) list = list.map(a => a.id === same.id ? rec : a)
+  else { list = [...list, rec]; if (list.length > MAX_ADDR) { const drop = list.findIndex(a => !a.def && a.id !== rec.id); list.splice(drop, 1) } }
+  if (f.makeDef || !list.some(a => a.def)) list = list.map(a => ({ ...a, def: a.id === rec.id }))
+  writeAddrs(id, list)
+  return true
+}
+export function deleteAddress(id, aid) {
+  const m = members().find(x => x.id === id); if (!m) return
+  let list = addrList(m).filter(a => a.id !== aid)
+  if (list.length && !list.some(a => a.def)) list[0] = { ...list[0], def: true }
+  writeAddrs(id, list)
+}
+export function setDefaultAddress(id, aid) {
+  const m = members().find(x => x.id === id); if (!m) return
+  writeAddrs(id, addrList(m).map(a => ({ ...a, def: a.id === aid })))
+}
 
 export function useMember() {
   const [m, setM] = useState(null)

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import StyleSetup from '../components/StyleSetup'
-import { useMember, balance, updateMember, saveStyle, normPhone, STYLE_BONUS } from '../lib/auth'
+import { useMember, balance, updateMember, saveStyle, normPhone, STYLE_BONUS, addrList, saveShip, deleteAddress, setDefaultAddress, newShip, fromAddress, shipError } from '../lib/auth'
+import ShipForm from '../components/ShipForm'
 import { useOrders, DONE } from '../lib/orders'
 
 const styleLabels = {
@@ -73,6 +74,8 @@ function MyPageInner({ member }) {
   const [formData, setFormData] = useState({ name: member.name, phone: fmtPhone(member.phone), email: member.email })
   const [styleEditOpen, setStyleEditOpen] = useState(false)
   const [savedStyle, setSavedStyle] = useState(null)
+  const [af, setAf] = useState(null) // 배송지 추가·수정 폼
+  const [aerr, setAerr] = useState('')
 
   useEffect(() => { setSavedStyle(member.style || null) }, [member.style])
 
@@ -542,6 +545,43 @@ function MyPageInner({ member }) {
                   <strong style={{color:'#3D6A4F'}}>설정 완료 시 위디 {STYLE_BONUS}P 지급 (최초 1회)!</strong>
                 </div>
               )}
+            </div>
+
+            {/* 배송지 관리 */}
+            <div className="mp-card">
+              <div className="mp-card-title">
+                📍 배송지 관리
+                {!af && <button onClick={() => { setAerr(''); setAf({ ...newShip(member), makeDef: !addrList(member).length }) }}
+                  style={{padding:'7px 14px',border:'1px solid #111',background:'#fff',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>+ 배송지 추가</button>}
+              </div>
+              {af ? (
+                <div>
+                  <ShipForm f={af} setF={setAf} member={member} hideSave hidePicker />
+                  {aerr && <p style={{fontSize:'12px',color:'#b3261e',margin:'0 0 8px'}}>{aerr}</p>}
+                  <div style={{display:'flex',gap:'8px'}}>
+                    <button onClick={() => { const e = shipError(af); if (e) { setAerr(e); return } saveShip(member.id, { ...af, saveAddr: true }); setAf(null); showToast('✓ 배송지가 저장됐어요') }}
+                      style={{flex:1,padding:'12px',border:'none',background:'#111',color:'#fff',fontSize:'13px',cursor:'pointer',fontFamily:'inherit'}}>저장</button>
+                    <button onClick={() => setAf(null)} style={{padding:'12px 18px',border:'1px solid #ddd',background:'#fff',fontSize:'13px',cursor:'pointer',fontFamily:'inherit'}}>취소</button>
+                  </div>
+                </div>
+              ) : addrList(member).length === 0 ? (
+                <div style={{textAlign:'center',padding:'16px 0',color:'#999',fontSize:'13px',lineHeight:1.7}}>저장된 배송지가 없어요.<br/>주문할 때 "배송지 저장"을 체크하거나 여기서 추가해 주세요.</div>
+              ) : addrList(member).map(a => (
+                <div key={a.id} style={{padding:'14px 0',borderBottom:'1px solid #f5f5f5'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',gap:'8px',alignItems:'flex-start',flexWrap:'wrap'}}>
+                    <div style={{minWidth:0,flex:1}}>
+                      <div style={{fontSize:'13px',fontWeight:500,color:'#111',marginBottom:'4px'}}>{a.label}{a.def && <span style={{marginLeft:'6px',fontSize:'11px',color:'#3D6A4F'}}>기본 배송지</span>}</div>
+                      <div style={{fontSize:'12px',color:'#555',lineHeight:1.7}}>{a.name} · {fmtPhone(a.phone)}<br/>{a.zip ? `(${a.zip}) ` : ''}{a.addr} {a.addr2}</div>
+                      {(a.req || a.entry) && <div style={{fontSize:'11px',color:'#999',marginTop:'4px'}}>{a.req}{a.entry ? ` · 출입: ${a.entry}` : ''}</div>}
+                    </div>
+                    <div style={{display:'flex',gap:'6px',flexShrink:0}}>
+                      {!a.def && <button onClick={() => { setDefaultAddress(member.id, a.id); showToast('기본 배송지로 설정했어요') }} style={{padding:'6px 10px',border:'1px solid #e8e8e8',background:'#fff',fontSize:'11px',cursor:'pointer',fontFamily:'inherit'}}>기본 설정</button>}
+                      <button onClick={() => { setAerr(''); setAf(fromAddress(a, member)) }} style={{padding:'6px 10px',border:'1px solid #e8e8e8',background:'#fff',fontSize:'11px',cursor:'pointer',fontFamily:'inherit'}}>수정</button>
+                      <button onClick={() => { if (window.confirm('이 배송지를 삭제할까요?')) { deleteAddress(member.id, a.id); showToast('삭제했어요') } }} style={{padding:'6px 10px',border:'1px solid #e8e8e8',background:'#fff',fontSize:'11px',cursor:'pointer',fontFamily:'inherit',color:'#b3261e'}}>삭제</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* 기본 정보 */}

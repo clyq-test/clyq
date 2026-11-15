@@ -33,7 +33,7 @@ export default function BrandOrders() {
       </div>
       {cur && <Modal title={cur.id} onClose={() => setSel(null)}>
         <dl className="ad-dl"><dt>구분</dt><dd>{cur.kind === 'fitting' ? '피팅 후 구매 확정' : '구매 주문'}</dd><dt>상태</dt><dd><Badge s={brandStatus(cur, BRAND)} /></dd>
-          <dt>수령인</dt><dd>{cur.customer.name}</dd><dt>연락처</dt><dd>{cur.customer.phone.replace(/\d{4}$/, '****')}</dd><dt>배송지</dt><dd>{cur.customer.addr} {cur.customer.addr2}</dd>
+          <dt>수령인</dt><dd>{cur.customer.name}</dd><dt>연락처</dt><dd>{cur.customer.phone.replace(/\d{4}$/, '****')}</dd><dt>배송지</dt><dd>{cur.customer.zip ? `(${cur.customer.zip}) ` : ''}{cur.customer.addr} {cur.customer.addr2}</dd><dt>배송 요청</dt><dd>{cur.customer.req || '-'}{cur.customer.entry ? ` · 출입: ${cur.customer.entry}` : ''}</dd>
           <dt>송장</dt><dd>{(cur.ship && cur.ship[BRAND] && cur.ship[BRAND].tracking) ? `${cur.ship[BRAND].tracking.carrier} ${cur.ship[BRAND].tracking.no}` : '-'}</dd></dl>
         <div className="ad-scroll"><table className="ad-tbl"><tbody>{cur.mine.map((i, k) => <tr key={k}><td>{i.name}</td><td>{i.size || '-'}</td><td>{i.qty}개</td><td className="ad-r">{won(i.price * i.qty)}</td></tr>)}</tbody></table></div>
       </Modal>}

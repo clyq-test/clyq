@@ -1,7 +1,8 @@
 // @ts-nocheck
 'use client'
 import { createOrder } from '../lib/orders'
-import { useMember, openLogin, rememberAddr, prefill } from '../lib/auth'
+import { useMember, openLogin, prefill, newShip, shipOf, shipError, saveShip } from '../lib/auth'
+import ShipForm from './ShipForm'
 import { useState, useEffect } from 'react'
 import { useShop } from '../lib/store'
 
@@ -152,14 +153,15 @@ export function FitDrawer({ product, onClose }) {
   const [step, setStep] = useState(1)
   const [size, setSize] = useState('')
   const [done, setDone] = useState(false)
-  const [f, setF] = useState({ name: '', phone: '', addr: '', addr2: '' })
+  const [f, setF] = useState(() => newShip(null))
+  const [touched, setTouched] = useState(false)
   const [oid, setOid] = useState('')
   const [member, mReady] = useMember()
-  useEffect(() => { if (member) setF(prev => prev.name || prev.phone || prev.addr ? prev : prefill(member)) }, [member])
+  useEffect(() => { if (member && !touched) setF(prefill(member)); }, [member])
   if (!product) return null
-  const valid = f.name.trim() && f.phone.replace(/\D/g, '').length >= 9 && f.addr.trim()
+  const valid = !shipError(f)
   const canNext = step === 1 ? !!size : step === 2 ? !!valid : true
-  const submit = () => { if (!member) return; const o = createOrder({ kind: 'fitting', customer: f, items: [{ pid: product.id, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] }); rememberAddr(member.id, f); setOid(o.id); setDone(true) }
+  const submit = () => { if (!member) return; const o = createOrder({ kind: 'fitting', customer: shipOf(f), items: [{ pid: product.id, name: product.name, brand: product.brand, size, qty: 1, price: product.price }] }); saveShip(member.id, f); setOid(o.id); setDone(true) }
   return (
     <div className="fd-bg" onClick={onClose}>
       <style>{`
@@ -210,8 +212,7 @@ export function FitDrawer({ product, onClose }) {
             </div>
           ) : step === 2 ? (
             <div>
-              <input className="fd-inp" placeholder="받는 분" value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /><input className="fd-inp" type="tel" placeholder="연락처" value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} />
-              <input className="fd-inp" placeholder="주소" value={f.addr} onChange={e => setF({ ...f, addr: e.target.value })} /><input className="fd-inp" placeholder="상세 주소" value={f.addr2} onChange={e => setF({ ...f, addr2: e.target.value })} />
+              <ShipForm f={f} setF={v => { setTouched(true); setF(v) }} member={member} />
             </div>
           ) : (
             <div>

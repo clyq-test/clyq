@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import { FitDrawer, Footer } from './components/ui'
 import { useShop } from './lib/store'
+import { allProducts, CATEGORIES, BRAND_INFO } from './lib/catalog'
+import { MOODS, EXHIBITIONS, exhibitionItems, moodItems, mix, categoryCover, recommend } from './lib/curation'
 
 /* ── 이미지 (Unsplash, 전부 로드 확인된 ID만 사용) ── */
 const U = (id, w = 600) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop&crop=center`
@@ -17,42 +19,11 @@ const banners = [
   { title: '커뮤니티에서\n함께 나누는\n패션 이야기', sub: '피팅 후기와 스타일을 공유해 보세요.', image: U('1496217590455-aa63a8350eea', 2400), cta: '커뮤니티 가기', ctaLink: '/community' },
 ]
 
-const bestProducts = [
-  { id: 1, brand: 'MARCIA', name: '오버핏 캐시미어 울 코트', price: 428000, original: 520000, points: 428, fit: true, image: U('1539533018447-63fcce2678e3'), rank: 1 },
-  { id: 2, brand: 'EIGHT', name: '셔링 디테일 미디 드레스', price: 198000, original: 240000, points: 198, fit: true, image: U('1515372039744-b8f02a3ae446'), rank: 2 },
-  { id: 3, brand: 'MATIN KIM', name: '오버핏 레더 재킷', price: 578000, original: 578000, points: 578, fit: true, image: U('1551028719-00167b16eac5'), rank: 3 },
-  { id: 4, brand: 'SORRY TOO MUCH LOVE', name: '메리노 울 니트 세트업', price: 245000, original: 245000, points: 245, fit: false, image: U('1434389677669-e08b4cac3105'), rank: 4 },
-  { id: 5, brand: 'ANDERSSONBELL', name: '테일러드 수트 재킷', price: 318000, original: 318000, points: 318, fit: true, image: U('1507679799987-c73779587ccf'), rank: 5 },
-]
-
-const newProducts = [
-  { id: 6, brand: 'EENK', name: '셔링 미디 스커트', price: 148000, original: 148000, points: 148, fit: true, image: U('1496217590455-aa63a8350eea') },
-  { id: 7, brand: 'D.POUND', name: '라운드넥 실크 블라우스', price: 158000, original: 198000, points: 158, fit: true, image: U('1581044777550-4cfa60707c03') },
-  { id: 8, brand: 'ANOTHER A', name: '캐시미어 터틀넥 니트', price: 218000, original: 218000, points: 218, fit: false, image: U('1576566588028-4147f3842f27') },
-  { id: 9, brand: 'ADER ERROR', name: '오버핏 후드 스웨트셔츠', price: 198000, original: 198000, points: 198, fit: true, image: U('1515886657613-9f3515b0c78f') },
-  { id: 10, brand: 'MATIN KIM', name: '퀼팅 미니 숄더백', price: 368000, original: 368000, points: 368, fit: false, image: U('1548036328-c9fa89d128fa') },
-  { id: 11, brand: 'MARCIA', name: '울 플리츠 와이드 팬츠', price: 248000, original: 298000, points: 248, fit: true, image: U('1509631179647-0177331693ae') },
-  { id: 12, brand: 'EENK', name: '오프숄더 리본 블라우스', price: 168000, original: 168000, points: 168, fit: true, image: U('1490481651871-ab68de25d43d') },
-  { id: 13, brand: 'D.POUND', name: '울 롱 스커트', price: 228000, original: 268000, points: 228, fit: true, image: U('1496747611176-843222e1e57c') },
-  { id: 14, brand: 'ANDERSSONBELL', name: '플리츠 와이드 슬랙스', price: 238000, original: 238000, points: 238, fit: false, image: U('1485968579580-b6d095142e6e') },
-  { id: 15, brand: 'ANOTHER A', name: '패딩 숏 재킷', price: 398000, original: 398000, points: 398, fit: true, image: U('1470309864661-68328b2cd0a5') },
-  { id: 16, brand: 'SORRY TOO MUCH LOVE', name: '벨벳 미니 원피스', price: 188000, original: 228000, points: 188, fit: true, image: U('1566174053879-31528523f8ae') },
-  { id: 17, brand: 'MARCIA', name: '캐시미어 브이넥 가디건', price: 268000, original: 268000, points: 268, fit: true, image: U('1469334031218-e382a71b716b') },
-]
-
-const aiProducts = [
-  { id: 1, brand: 'MARCIA', name: '캐시미어 울 코트', price: 428000, original: 428000, points: 428, fit: true, image: U('1539533018447-63fcce2678e3'), rank: 1 },
-  { id: 6, brand: 'EENK', name: '셔링 미디 스커트', price: 148000, original: 148000, points: 148, fit: true, image: U('1496217590455-aa63a8350eea'), rank: 2 },
-  { id: 5, brand: 'ANDERSSONBELL', name: '테일러드 재킷', price: 318000, original: 318000, points: 318, fit: true, image: U('1507679799987-c73779587ccf'), rank: 3 },
-  { id: 7, brand: 'D.POUND', name: '실크 블라우스', price: 158000, original: 158000, points: 158, fit: true, image: U('1581044777550-4cfa60707c03'), rank: 4 },
-  { id: 12, brand: 'EENK', name: '오프숄더 블라우스', price: 168000, original: 168000, points: 168, fit: true, image: U('1490481651871-ab68de25d43d'), rank: 5 },
-]
-
-const editorials = [
-  { title: 'F/W 코트 피팅박스', sub: '이번 시즌 베스트 코트 7선', image: U('1539533018447-63fcce2678e3', 700), link: '/fitting' },
-  { title: '출근룩 스타일 가이드', sub: '오피스 룩 모아보기', image: U('1507679799987-c73779587ccf', 700), link: '/magazine' },
-  { title: '니트·가디건 모아보기', sub: '가을에 입기 좋은 니트', image: U('1576566588028-4147f3842f27', 700), link: '/products/new' },
-]
+// 큐레이션 데이터(전부 카탈로그에서 규칙으로 계산 — 판매 실적 기반 순위가 아님)
+const editorPicks = mix(allProducts.filter(p => p.fit && p.original === p.price), 5)
+const saleItems = mix(allProducts.filter(p => p.original > p.price).sort((x, y) => (y.original - y.price) / y.original - (x.original - x.price) / x.original), 5)
+const fitItems = mix(allProducts.filter(p => p.fit && p.category !== '아우터'), 5)
+const featured = ['coat', 'office', 'knit'].map(k => EXHIBITIONS.find(e => e.key === k))
 
 const communityPosts = [
   { title: '마르시아 코트 S/M 비교 피팅 후기', author: '김지연', likes: 48, comments: 12, tag: '피팅 후기', image: U('1539533018447-63fcce2678e3', 200) },
@@ -100,6 +71,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
   const [fitProd, setFitProd] = useState(null)
+  const [mood, setMood] = useState(MOODS[0].key)
 
   const [member] = useMember()
   useEffect(() => { setIsLoggedIn(!!member); setUserName(member ? member.name : '') }, [member])
@@ -110,7 +82,9 @@ export default function Home() {
   }, [])
 
   const b = banners[bannerIdx]
-  const displayProducts = isLoggedIn ? aiProducts : bestProducts
+  const personal = member ? recommend(member.style, 5) : null
+  const moodList = mix(moodItems(mood), 10)
+  const curMood = MOODS.find(m => m.key === mood)
 
   return (
     <main>
@@ -164,6 +138,23 @@ export default function Home() {
         .sec-more:hover { color: #111; }
         .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 36px 20px; }
         .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 36px 20px; }
+
+        .sec-sub { margin: -14px 0 24px; font-size: 13px; color: #8a8a8a; line-height: 1.6; }
+        .cat-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .cat-tile { color: inherit; display: block; }
+        .cat-img { aspect-ratio: 4/3; background: #f4f4f2; overflow: hidden; margin-bottom: 10px; }
+        .cat-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform .5s ease; }
+        .cat-tile:hover .cat-img img { transform: scale(1.04); }
+        .cat-tile b { font-size: 15px; font-weight: 600; margin-right: 8px; } .cat-tile span { font-size: 12px; color: #8a8a8a; }
+        .mood-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
+        .mood-tabs::-webkit-scrollbar { display: none; }
+        .mood-tab { flex-shrink: 0; padding: 0 20px; min-height: 42px; border: 1px solid #e0e0e0; background: #fff; font-size: 14px; color: #555; border-radius: 21px; }
+        .mood-tab.on { background: #111; border-color: #111; color: #fff; }
+        .brand-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .brand-tile { background: #fff; border: 1px solid #eee; padding: 18px 16px; color: inherit; display: block; min-height: 84px; transition: border-color .2s; }
+        .brand-tile:hover { border-color: #111; }
+        .brand-tile b { display: block; font-size: 14px; letter-spacing: .03em; margin-bottom: 6px; }
+        .brand-tile span { font-size: 12px; color: #8a8a8a; line-height: 1.5; display: block; }
 
         /* 상품 카드 */
         .pc { display: block; color: inherit; }
@@ -219,6 +210,8 @@ export default function Home() {
         @media (max-width: 1024px) {
           .wrap { padding: 0 24px; }
           .grid-5, .grid-6 { grid-template-columns: repeat(3, 1fr); }
+          .cat-tiles { grid-template-columns: repeat(3, 1fr); }
+          .brand-grid { grid-template-columns: repeat(3, 1fr); }
           .hero { gap: 32px; }
           .hero-title { font-size: 44px; }
           .fit { grid-template-columns: 1fr; gap: 32px; }
@@ -235,6 +228,9 @@ export default function Home() {
           .sec { padding: 44px 0; }
           .sec-title { font-size: 20px; }
           .grid-5, .grid-6 { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
+          .cat-tiles { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+          .brand-grid { grid-template-columns: repeat(2, 1fr); }
+          .sec-sub { margin-top: -10px; }
           .steps { grid-template-columns: 1fr; gap: 16px; }
           .fit h2 { font-size: 24px; }
           .ed-grid { grid-template-columns: 1fr; }
@@ -266,15 +262,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 베스트 / 추천 ── */}
-      <section id="best" className="sec" style={{ paddingTop: 56 }}>
+      {/* ── 카테고리 ── */}
+      <section className="sec" style={{ paddingBottom: 24 }}>
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">카테고리별 쇼핑</h2><a href="/products/new" className="sec-more">전체보기</a></div>
+          <div className="cat-tiles">
+            {CATEGORIES.map(c => (
+              <a key={c} href={'/products/new?c=' + encodeURIComponent(c)} className="cat-tile">
+                <div className="cat-img"><img src={categoryCover(c)} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} /></div>
+                <b>{c}</b><span>{allProducts.filter(p => p.category === c).length}개</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 추천 ── */}
+      <section id="best" className="sec" style={{ paddingTop: 40 }}>
         <div className="wrap-full">
           <div className="sec-row">
-            <h2 className="sec-title">{isLoggedIn ? `${userName}님을 위한 추천` : '이번 주 베스트'}</h2>
+            <h2 className="sec-title">{personal && personal.length ? `${userName}님 취향 기반 추천` : '에디터 픽'}</h2>
             <a href="/products/new" className="sec-more">전체보기</a>
           </div>
+          {!(personal && personal.length) && <p className="sec-sub">{isLoggedIn ? '마이페이지에서 취향 분석을 입력하면 취향에 맞는 제품을 골라 드려요.' : '피팅박스로 먼저 입어볼 수 있는 제품이에요. 로그인 후 취향 분석을 입력하면 맞춤 추천을 받을 수 있어요.'}</p>}
           <div className="grid-5">
-            {displayProducts.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
+            {(personal && personal.length ? personal : editorPicks).map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 무드별 ── */}
+      <section className="sec alt">
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">무드별 스타일</h2><a href={'/products/new?m=' + mood} className="sec-more">{curMood.label} 전체보기</a></div>
+          <div className="mood-tabs" role="tablist" aria-label="무드">
+            {MOODS.map(m => <button key={m.key} role="tab" aria-selected={mood === m.key} className={'mood-tab' + (mood === m.key ? ' on' : '')} onClick={() => setMood(m.key)}>{m.label}</button>)}
+          </div>
+          <p className="sec-sub">{curMood.sub} · {curMood.brands.join(', ')}</p>
+          <div className="grid-5">
+            {moodList.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 기획전 ── */}
+      <section className="sec">
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">기획전</h2><a href="/exhibition" className="sec-more">전체 기획전</a></div>
+          <div className="ed-grid">
+            {featured.map(ed => { const l = exhibitionItems(ed); return (
+              <a key={ed.key} href={'/products/new?ex=' + ed.key} className="ed">
+                <div className="ed-img"><img src={l[0].image} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} /></div>
+                <b>{ed.title}</b>
+                <span>{ed.sub} · {l.length}개</span>
+              </a>
+            ) })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 세일 ── */}
+      <section className="sec alt">
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">시즌 세일</h2><a href="/products/new?sale=1" className="sec-more">전체보기</a></div>
+          <p className="sec-sub">할인율이 큰 제품부터 보여드려요.</p>
+          <div className="grid-5">
+            {saleItems.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
           </div>
         </div>
       </section>
@@ -294,32 +347,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 신상품 ── */}
+      {/* ── 피팅 가능 제품 ── */}
       <section className="sec">
         <div className="wrap-full">
-          <div className="sec-row">
-            <h2 className="sec-title">신상품</h2>
-            <a href="/products/new" className="sec-more">전체보기</a>
-          </div>
-          <div className="grid-6">
-            {newProducts.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
+          <div className="sec-row"><h2 className="sec-title">먼저 입어보세요</h2><a href="/exhibition" className="sec-more">피팅 가능 제품 전체</a></div>
+          <p className="sec-sub">피팅박스로 신청하면 집에서 48시간 입어볼 수 있는 제품이에요.</p>
+          <div className="grid-5">
+            {fitItems.map(p => <ProductCard key={p.id} p={p} onFit={setFitProd} />)}
           </div>
         </div>
       </section>
 
-      {/* ── 기획전 ── */}
+      {/* ── 브랜드 ── */}
       <section className="sec alt">
-        <div className="wrap">
-          <div className="sec-row"><h2 className="sec-title">기획전</h2></div>
-          <div className="ed-grid">
-            {editorials.map((ed, i) => (
-              <a key={i} href={ed.link} className="ed">
-                <div className="ed-img">
-                  <img src={ed.image} alt="" loading="lazy" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }} />
-                </div>
-                <b>{ed.title}</b>
-                <span>{ed.sub}</span>
-              </a>
+        <div className="wrap-full">
+          <div className="sec-row"><h2 className="sec-title">입점 브랜드</h2><a href="/lookbook" className="sec-more">룩북 보기</a></div>
+          <div className="brand-grid">
+            {BRAND_INFO.map(b => (
+              <a key={b.name} href={'/products/new?b=' + encodeURIComponent(b.name)} className="brand-tile"><b>{b.name}</b><span>{b.concept}</span></a>
             ))}
           </div>
         </div>
@@ -374,9 +419,6 @@ export default function Home() {
             ))}
             <a href="/withy" className="btn-p">위디 알아보기</a>
           </div>
-        </div>
-        <div className="brands">
-          {['MARCIA', 'MATIN KIM', 'EENK', 'D.POUND', 'ANOTHER A', 'EIGHT', 'ANDERSSONBELL', 'ADER ERROR'].map(br => <span key={br}>{br}</span>)}
         </div>
       </div>
 
