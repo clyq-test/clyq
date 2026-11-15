@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Navbar from '../../components/Navbar'
 import { SharedStyle, Footer, Img, U, ProductCard } from '../../components/ui'
 
@@ -31,6 +31,9 @@ export default function ProductDetail() {
   const [step, setStep] = useState(1)
   const [done, setDone] = useState(false)
   const [toast, setToast] = useState('')
+  const [zoom, setZoom] = useState({ on: false, x: 50, y: 50 })
+  const touchX = useRef(0)
+  const go = i => { const n = product.images.length; setImg((i + n) % n); setZoom({ on: false, x: 50, y: 50 }) }
 
   const dc = Math.round((1 - product.price / product.original) * 100)
   const say = m => { setToast(m); setTimeout(() => setToast(''), 2400) }
@@ -45,8 +48,14 @@ export default function ProductDetail() {
       <SharedStyle />
       <style>{`
         .pd { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; padding: 32px 0 64px; align-items: start; }
-        .pd-main { aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; }
-        .pd-main img { width: 100%; height: 100%; object-fit: cover; }
+        .pd-main { position: relative; aspect-ratio: 4/5; background: #f4f4f2; overflow: hidden; touch-action: pan-y; }
+        .pd-track { display: flex; height: 100%; transition: transform .35s ease; }
+        .pd-slide { flex: 0 0 100%; height: 100%; overflow: hidden; }
+        .pd-slide img { width: 100%; height: 100%; object-fit: cover; transition: transform .15s ease-out; }
+        .pd-arr { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; background: rgba(255,255,255,.85); font-size: 24px; line-height: 1; }
+        .pd-arr.l { left: 10px; } .pd-arr.r { right: 10px; }
+        .pd-cnt { position: absolute; right: 10px; bottom: 10px; background: rgba(255,255,255,.85); font-size: 12px; padding: 4px 8px; }
+        @media (hover: none) { .pd-slide img { transform: none !important; } }
         .pd-thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
         .pd-th { aspect-ratio: 1; background: #f4f4f2; overflow: hidden; border: 1px solid transparent; padding: 0; }
         .pd-th.on { border-color: #111; }
@@ -97,10 +106,29 @@ export default function ProductDetail() {
         <div className="crumb"><a href="/">홈</a> / <a href="/products/new">신상품</a> / {product.name}</div>
         <div className="pd">
           <div>
-            <div className="pd-main"><Img src={product.images[img]} alt={product.name} /></div>
+            <div className="pd-main"
+              onMouseEnter={() => setZoom(z => ({ ...z, on: true }))}
+              onMouseLeave={() => setZoom({ on: false, x: 50, y: 50 })}
+              onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); setZoom({ on: true, x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }) }}
+              onTouchStart={e => { touchX.current = e.touches[0].clientX }}
+              onTouchEnd={e => { const d = e.changedTouches[0].clientX - touchX.current; if (Math.abs(d) > 40) go(img + (d < 0 ? 1 : -1)) }}
+              tabIndex={0} onKeyDown={e => { if (e.key === 'ArrowLeft') go(img - 1); if (e.key === 'ArrowRight') go(img + 1) }}
+              aria-label="상품 이미지, 좌우 방향키로 넘기기">
+              <div className="pd-track" style={{ transform: `translateX(-${img * 100}%)` }}>
+                {product.images.map((s, i) => (
+                  <div key={i} className="pd-slide">
+                    <Img src={s} alt={i === img ? product.name : ''}
+                      style={i === img ? { transform: zoom.on ? 'scale(2.2)' : 'scale(1)', transformOrigin: `${zoom.x}% ${zoom.y}%`, cursor: zoom.on ? 'zoom-in' : 'default' } : undefined} />
+                  </div>
+                ))}
+              </div>
+              <button className="pd-arr l" onClick={() => go(img - 1)} aria-label="이전 이미지">‹</button>
+              <button className="pd-arr r" onClick={() => go(img + 1)} aria-label="다음 이미지">›</button>
+              <span className="pd-cnt">{img + 1} / {product.images.length}</span>
+            </div>
             <div className="pd-thumbs">
               {product.images.map((s, i) => (
-                <button key={i} className={'pd-th' + (img === i ? ' on' : '')} onClick={() => setImg(i)} aria-label={`이미지 ${i + 1}`}><Img src={s.replace('w=900', 'w=200')} alt="" /></button>
+                <button key={i} className={'pd-th' + (img === i ? ' on' : '')} onClick={() => go(i)} aria-label={`이미지 ${i + 1}`}><Img src={s.replace('w=900', 'w=200')} alt="" /></button>
               ))}
             </div>
           </div>
