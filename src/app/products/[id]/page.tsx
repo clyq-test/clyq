@@ -146,10 +146,11 @@ export default function ProductDetail() {
         .rel.shut { transform: translateX(calc(100% - 44px)); }
         .rel-h { justify-content: flex-start; gap: 10px; padding-left: 14px; }
         .rel-h .arr { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
-        .rel.shut .rel-h { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 14px 16px; }
+        .rel.shut { padding-top: 44px; }
+        .rel.shut .rel-h { position: absolute; top: 0; left: 0; width: 44px; height: 100%; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; padding: 14px 0; }
         .rel.shut .rel-t { writing-mode: vertical-rl; line-height: 16px; letter-spacing: .08em; }
         .rel-t { transition: opacity .2s; white-space: nowrap; }
-        .rel ul { transition: opacity .2s; } .rel.shut ul { display: none; }
+        .rel ul { transition: opacity .2s; } .rel.shut ul { opacity: 0; visibility: hidden; pointer-events: none; }
         .pd-wrap { transition: padding-right .35s ease; }
         @media (min-width: 901px) { .wrap-full.pd-open { padding-right: 280px; } }
         @media (prefers-reduced-motion: reduce) { .pd-wrap { transition: none; } .rel, .rel-t, .rel ul { transition: none; } }
