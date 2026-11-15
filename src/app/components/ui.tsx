@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 import { useState } from 'react'
+import { useShop } from '../lib/store'
 
 /* 공용 이미지 헬퍼 (Unsplash, 로드 확인된 ID만 사용) */
 export const U = (id, w = 600) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop&crop=center`
@@ -18,7 +19,8 @@ export function SharedStyle() {
       *, *::before, *::after { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
       button, a { touch-action: manipulation; }
       img { display: block; }
-      main { background: #fff; color: #111; font-size: 14px; }
+      main { background: #fff; color: #111; font-size: 14px; min-height: 100vh; display: flex; flex-direction: column; }
+      main > .foot { margin-top: auto; }
       .wrap { max-width: 1320px; margin: 0 auto; padding: 0 40px; }
       .page-head { padding: 48px 0 24px; }
       .page-head h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 8px; }
@@ -36,6 +38,11 @@ export function SharedStyle() {
       .toggle.on i { background: #3D6A4F; }
       .toggle.on i::after { left: 18px; }
       .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 20px; padding-bottom: 72px; }
+      .wrap-full { width: 100%; padding: 0 48px; }
+      .grid-full { display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px 20px; padding-bottom: 80px; }
+      @media (max-width: 1280px) { .grid-full { grid-template-columns: repeat(4, 1fr); } }
+      @media (max-width: 1024px) { .grid-full { grid-template-columns: repeat(3, 1fr); } .wrap-full { padding: 0 24px; } }
+      @media (max-width: 768px) { .wrap-full { padding: 0 16px; } .grid-full { grid-template-columns: repeat(2, 1fr); gap: 24px 12px; padding-bottom: 48px; } }
       .pc { display: block; color: inherit; }
       .pc-img { position: relative; aspect-ratio: 3/4; background: #f4f4f2; overflow: hidden; margin-bottom: 12px; }
       .pc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
@@ -59,7 +66,7 @@ export function SharedStyle() {
       .step b { display: block; font-size: 15px; margin-bottom: 4px; }
       .step span { font-size: 13px; color: #6b6b6b; line-height: 1.6; }
       .foot { background: #fafaf8; border-top: 1px solid #eee; padding: 28px 0; }
-      .foot .wrap { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #aaa; }
+      .foot .wrap-full { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #aaa; }
       .foot b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: #111; }
       @media (max-width: 1024px) { .grid-4 { grid-template-columns: repeat(3, 1fr); } }
       @media (max-width: 768px) {
@@ -76,7 +83,7 @@ export function SharedStyle() {
 export function Footer() {
   return (
     <footer className="foot">
-      <div className="wrap">
+      <div className="wrap-full">
         <b>CLYQ</b>
         <span>© 2026 CLYQ Inc.</span>
       </div>
@@ -86,12 +93,14 @@ export function Footer() {
 
 export function ProductCard({ p, onFit }) {
   const [hovered, setHovered] = useState(false)
+  const { isWished, toggleWish } = useShop()
   const dc = p.original > p.price ? Math.round((1 - p.price / p.original) * 100) : 0
   const Tag = onFit ? 'div' : 'a'
   return (
     <Tag href={onFit ? undefined : '/products/' + p.id} className="pc" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <div className="pc-img">
         <Img src={p.image} alt={p.name} style={{ transform: hovered ? 'scale(1.03)' : 'scale(1)' }} />
+        <button className={'pc-heart' + (isWished(p.id) ? ' on' : '')} aria-label="찜하기" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWish(p.id) }}>{isWished(p.id) ? '♥' : '♡'}</button>
         {p.fit && <span className="pc-fit">피팅</span>}
         {hovered && (
           <button className="pc-add" onClick={e => { e.preventDefault(); onFit && onFit(p) }}>피팅박스 담기</button>

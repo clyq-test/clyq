@@ -50,3 +50,8 @@ body {
 
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
+/* 상품 카드 찜 버튼 (공용) */
+.pc-heart { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #111; background: rgba(255,255,255,.85); border-radius: 50%; opacity: 0; transition: opacity .2s; }
+.pc:hover .pc-heart, .pc-heart.on, .pc-heart:focus-visible { opacity: 1; }
+.pc-heart.on { color: #c04b4b; }
+@media (hover: none) { .pc-heart { opacity: 1; } }

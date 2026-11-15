@@ -1,11 +1,14 @@
 // @ts-nocheck
 'use client'
 import { useState, useRef } from 'react'
+import { useParams } from 'next/navigation'
+import { useShop } from '../../lib/store'
+import { byId } from '../../lib/catalog'
 import Navbar from '../../components/Navbar'
 import { SharedStyle, Footer, Img, U, ProductCard } from '../../components/ui'
 
 /* 샘플 상품 데이터 — 실제 상품 정보가 아닙니다. */
-const product = {
+const baseProduct = {
   brand: 'MARCIA', name: '오버핏 캐시미어 울 코트', price: 428000, original: 520000, fit: true,
   images: [
     U('1539533018447-63fcce2678e3', 900), U('1551028719-00167b16eac5', 900), U('1507679799987-c73779587ccf', 900),
@@ -24,9 +27,12 @@ const related = [
 ]
 
 export default function ProductDetail() {
+  const params = useParams()
+  const cp = byId(params?.id)
+  const product = cp ? { ...baseProduct, brand: cp.brand, name: cp.name, price: cp.price, original: cp.original, fit: cp.fit, images: [cp.image.replace('w=600', 'w=900'), ...baseProduct.images.filter(x => !x.includes(cp.image.split('photo-')[1].split('?')[0]))].slice(0, 5) } : baseProduct
+  const { isWished, toggleWish, addCart } = useShop()
   const [img, setImg] = useState(0)
   const [size, setSize] = useState('')
-  const [wish, setWish] = useState(false)
   const [drawer, setDrawer] = useState(null) // 'fit' | 'buy'
   const [step, setStep] = useState(1)
   const [done, setDone] = useState(false)
@@ -35,7 +41,8 @@ export default function ProductDetail() {
   const touchX = useRef(0)
   const go = i => { const n = product.images.length; setImg((i + n) % n); setZoom({ on: false, x: 50, y: 50 }) }
 
-  const dc = Math.round((1 - product.price / product.original) * 100)
+  const wish = cp ? isWished(cp.id) : false
+  const dc = product.original > product.price ? Math.round((1 - product.price / product.original) * 100) : 0
   const say = m => { setToast(m); setTimeout(() => setToast(''), 2400) }
   function openDrawer(k) {
     if (!size) { say('사이즈를 먼저 선택해 주세요'); return }
@@ -135,7 +142,7 @@ export default function ProductDetail() {
           <div className="pd-info">
             <div className="pd-brand">{product.brand}</div>
             <h1>{product.name}</h1>
-            <div className="pd-price"><span className="dc">{dc}%</span><b>{product.price.toLocaleString()}원</b><s>{product.original.toLocaleString()}원</s></div>
+            <div className="pd-price">{dc > 0 && <span className="dc">{dc}%</span>}<b>{product.price.toLocaleString()}원</b>{dc > 0 && <s>{product.original.toLocaleString()}원</s>}</div>
             <div className="lbl"><span>사이즈</span></div>
             <div className="sizes">
               {product.sizes.map(z => <button key={z} className={'size' + (size === z ? ' on' : '')} onClick={() => setSize(z)}>{z}</button>)}
@@ -143,9 +150,10 @@ export default function ProductDetail() {
             </div>
             <div className="pd-btns">
               {product.fit && <button className="btn-fit" onClick={() => openDrawer('fit')}>피팅박스 신청</button>}
+              <button className="btn-s" onClick={() => { if (!size) { say('사이즈를 먼저 선택해 주세요'); return } if (cp) { addCart(cp.id, size); say('장바구니에 담았어요') } }}>장바구니 담기</button>
               <div className="pd-row">
                 <button className="btn-p" onClick={() => openDrawer('buy')}>바로 구매</button>
-                <button className="btn-s" onClick={() => { setWish(!wish); say(wish ? '찜을 해제했어요' : '찜했어요') }} aria-label="찜하기" style={{ padding: 0 }}>{wish ? '♥' : '♡'}</button>
+                <button className="btn-s" onClick={() => { if (!cp) return; toggleWish(cp.id); say(wish ? '찜을 해제했어요' : '찜했어요') }} aria-label="찜하기" style={{ padding: 0, color: wish ? '#c04b4b' : undefined }}>{wish ? '♥' : '♡'}</button>
               </div>
             </div>
             <p className="pd-note">피팅박스는 받은 뒤 48시간 동안 입어보고, 구매를 확정한 제품만 결제합니다.</p>

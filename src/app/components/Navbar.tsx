@@ -2,9 +2,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useShop } from '../lib/store'
 
 export default function Navbar() {
   const router = useRouter()
+  const { wish, cartCount } = useShop()
   const [menuOpen, setMenuOpen] = useState(false)
   const [loginOpen, setLoginOpen] = useState(false)
   const [loginTab, setLoginTab] = useState('login')
@@ -50,10 +52,10 @@ export default function Navbar() {
 
   const catItems = [
     { label: '신상품', href: '/products/new', hot: true },
-    { label: '베스트', href: '/' },
-    { label: '카테고리', href: '/', mega: true },
-    { label: '브랜드', href: '/', mega: true },
-    { label: 'SALE', href: '/', red: true },
+    { label: '베스트', href: '/#best' },
+    { label: '카테고리', href: '/products/new', mega: true },
+    { label: '브랜드', href: '/products/new', mega: true },
+    { label: 'SALE', href: '/products/new?sale=1', red: true },
     { label: '매거진', href: '/magazine' },
     { label: '커뮤니티', href: '/community' },
   ]
@@ -61,6 +63,7 @@ export default function Navbar() {
   return (
     <>
       <style>{`
+        .nb-badge { position: absolute; top: -5px; right: -8px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #111; color: #fff; font-size: 10px; line-height: 16px; text-align: center; }
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap');
 
         /* ── 전역 터치 최적화 ── */
@@ -168,22 +171,24 @@ export default function Navbar() {
             </a>
 
             {/* 찜 */}
-            <div onClick={() => !isLoggedIn && openLogin()}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s' }}
+            <a href="/wishlist"
+              style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s', textDecoration: 'none' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
               onMouseLeave={e => (e.currentTarget.style.color = '#A09B97')}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
               찜
-            </div>
+              {wish.length > 0 && <span className="nb-badge">{wish.length}</span>}
+            </a>
 
             {/* 장바구니 */}
-            <div onClick={() => !isLoggedIn && openLogin()}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s' }}
+            <a href="/cart"
+              style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: '#A09B97', fontSize: '10px', transition: 'color .15s', textDecoration: 'none' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1C1C')}
               onMouseLeave={e => (e.currentTarget.style.color = '#A09B97')}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
               장바구니
-            </div>
+              {cartCount > 0 && <span className="nb-badge">{cartCount}</span>}
+            </a>
 
             {/* 유저 */}
             {isLoggedIn ? (
@@ -282,7 +287,7 @@ export default function Navbar() {
                     <div key={col.h} className="mega-col">
                       <div className="mega-col-title">{col.h}</div>
                       {col.sub.map(s => (
-                        <a key={s} href="/" className="mega-sub-link">{s}</a>
+                        <a key={s} href={'/products/new?c=' + encodeURIComponent(col.h.split('·')[0])} className="mega-sub-link">{s}</a>
                       ))}
                     </div>
                   ))}
@@ -297,7 +302,7 @@ export default function Navbar() {
               {megaData['브랜드'].map((col, ci) => (
                 <div key={ci} className="mega-col">
                   {col.map(b => (
-                    <a key={b} href="/" className="mega-sub-link"
+                    <a key={b} href={b === '전체 브랜드 보기' ? '/products/new' : '/products/new?b=' + encodeURIComponent(b)} className="mega-sub-link"
                       style={{ fontSize: '13px', letterSpacing: '0' }}>
                       {b}
                     </a>
@@ -325,13 +330,13 @@ export default function Navbar() {
               { label: '커뮤니티', href: '/community', sub: '피팅 후기 공유하고 위디 적립' },
               { label: '위디 포인트', href: '/withy', sub: '적립·등급·구독 혜택 확인' },
               { label: '매거진', href: '/magazine', sub: '패션 트렌드와 브랜드 소식' },
-              { label: '아우터', href: '/', sub: '코트·재킷·패딩' },
-              { label: '상의', href: '/', sub: '블라우스·니트·티셔츠' },
-              { label: '하의', href: '/', sub: '스커트·팬츠·레깅스' },
-              { label: '원피스·세트', href: '/', sub: '미디·미니·세트업' },
-              { label: '가방', href: '/', sub: '숄더·크로스·토트' },
-              { label: '슈즈', href: '/', sub: '플랫·힐·스니커즈' },
-              { label: 'SALE', href: '/', sub: '한정 기간 특가', red: true },
+              { label: '아우터', href: '/products/new?c=아우터', sub: '코트·재킷·패딩' },
+              { label: '상의', href: '/products/new?c=상의', sub: '블라우스·니트·티셔츠' },
+              { label: '하의', href: '/products/new?c=하의', sub: '스커트·팬츠·레깅스' },
+              { label: '원피스·세트', href: '/products/new?c=원피스', sub: '미디·미니·세트업' },
+              { label: '가방', href: '/products/new?c=가방', sub: '숄더·크로스·토트' },
+              { label: '슈즈', href: '/products/new?c=슈즈', sub: '플랫·힐·스니커즈' },
+              { label: 'SALE', href: '/products/new?sale=1', sub: '한정 기간 특가', red: true },
             ].map((item, i) => (
               <a key={i} href={item.href} onClick={() => setMenuOpen(false)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid #F7F4F0', textDecoration: 'none', background: item.hl ? '#EDF4EF' : '#fff' }}>

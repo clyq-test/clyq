@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import { FitDrawer } from './components/ui'
+import { useShop } from './lib/store'
 
 /* ── 이미지 (Unsplash, 전부 로드 확인된 ID만 사용) ── */
 const U = (id, w = 600) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop&crop=center`
@@ -66,6 +67,7 @@ const articles = [
 
 function ProductCard({ p, onFit }) {
   const [hovered, setHovered] = useState(false)
+  const { isWished, toggleWish } = useShop()
   const dc = p.original > p.price ? Math.round((1 - p.price / p.original) * 100) : 0
   return (
     <a href={'/products/' + p.id} className="pc" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
@@ -75,6 +77,7 @@ function ProductCard({ p, onFit }) {
           onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = FB }}
           style={{ transform: hovered ? 'scale(1.03)' : 'scale(1)' }}
         />
+        <button className={'pc-heart' + (isWished(p.id) ? ' on' : '')} aria-label="찜하기" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWish(p.id) }}>{isWished(p.id) ? '♥' : '♡'}</button>
         {p.fit && <span className="pc-fit">피팅</span>}
         {hovered && (
           <button className="pc-add" onClick={e => { e.preventDefault(); e.stopPropagation(); onFit && onFit(p) }}>피팅박스 신청</button>
@@ -277,7 +280,7 @@ export default function Home() {
       </section>
 
       {/* ── 베스트 / 추천 ── */}
-      <section className="sec" style={{ paddingTop: 56 }}>
+      <section id="best" className="sec" style={{ paddingTop: 56 }}>
         <div className="wrap-full">
           <div className="sec-row">
             <h2 className="sec-title">{isLoggedIn ? `${userName}님을 위한 추천` : '이번 주 베스트'}</h2>
